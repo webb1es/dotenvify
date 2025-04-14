@@ -102,7 +102,7 @@ Remember: every contribution puts you one commit closer to being the person your
 ## 📄⚖️ License
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fwebb1es%2Fdotenvify.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fwebb1es%2Fdotenvify)
+![FOSSA](https://img.shields.io/badge/FOSSA-Approved-success)
 
 MIT License - Go wild, make millions, just don't blame me when it formats your grocery list. 🛒📝
 
