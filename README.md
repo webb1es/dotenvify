@@ -88,18 +88,35 @@ Because I value my remaining sanity points and figured you might too. Those prec
 
 One of these is clearly better than manual formatting. Probably.
 
-## 🔧 Contributing
+## 🔧🛠️ Contributing
 
-Found a bug? Have a feature idea? PRs welcome! Just don't mess with my tabs vs. spaces setup—that debate ended my last relationship.
+Found a bug? 🐛 Have a feature idea? 💡 PRs welcome! Just don't mess with my tabs vs. spaces setup—that debate ended my last relationship. 💔
 
-## 📄 License
+- 🕵️‍♂️ **Bug Hunters**: If you spot something weird, open an issue faster than you can say "it works on my machine"
+- 🧪 **Feature Wizards**: Got an idea? PRs are the ultimate "scratch your own itch" spell
+- 📚 **Documentation Heroes**: Fixed a typo? You're saving developers from Stack Overflow shame
+- 🧙‍♀️ **Code Reviewers**: Your nitpicks are actually appreciated (just don't tell anyone I said that)
 
-MIT License - Go wild, make millions, just don't blame me when it formats your grocery list.
+Remember: every contribution puts you one commit closer to being the person your rubber duck thinks you are. 🦆✨
+
+## 📄⚖️ License
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fwebb1es%2Fdotenvify.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fwebb1es%2Fdotenvify)
+
+MIT License - Go wild, make millions, just don't blame me when it formats your grocery list. 🛒📝
+
+This project is about as restrictive as a cat's opinion of your personal space—technically there are boundaries, but nobody seems to care. 🐱
 
 ---
 
 <div align="center">
 
 **Made with 💻, ☕, and the burning desire to never format env vars manually again**
+
+![Works on My Machine](https://forthebadge.com/images/badges/works-on-my-machine.svg)
+![Built with Swag](https://forthebadge.com/images/badges/built-with-swag.svg)
+
+*"Life's too short for manual formatting."* 🧙‍♂️✨
 
 </div>
