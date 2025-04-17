@@ -59,6 +59,11 @@ dotenvify your-vars.txt custom-output.env
 # Get help with available options
 dotenvify -h
 
+# Ignore variables with lowercase keys
+dotenvify -no-lower your-vars.txt
+# or using the shorthand flag
+dotenvify -nl your-vars.txt
+
 # The output is always in export KEY="VALUE" format
 # .env will be overwritten if it already exists
 ```
@@ -77,30 +82,35 @@ az login
 
 # Fetch variables using your project URL (easiest method)
 dotenvify -azure -url "https://dev.azure.com/your-org/your-project" -group "your-variable-group"
+# or using shorthand flags
+dotenvify -az -u "https://dev.azure.com/your-org/your-project" -g "your-variable-group"
 
 # Or use the traditional way with organization and project
 dotenvify -azure -org "your-org" -project "your-project" -group "your-variable-group"
+# or using shorthand flags
+dotenvify -az -o "your-org" -p "your-project" -g "your-variable-group"
 
 # Set a default URL in your environment to make it even easier
 export AZURE_DEVOPS_URL="https://dev.azure.com/your-org/your-project"
 dotenvify -azure -group "your-variable-group"
+# or using shorthand flags
+dotenvify -az -g "your-variable-group"
 
 # If you don't provide a URL or org/project, dotenvify will ask you interactively
 dotenvify -azure -group "your-variable-group"
+
+# Ignore variables with lowercase keys
+dotenvify -azure -group "your-variable-group" -no-lower
+# or using shorthand flags
+dotenvify -az -g "your-variable-group" -nl
+
+# Save to a specific file instead of .env
+dotenvify -azure -group "your-variable-group" -output "custom-output.env"
+# or using shorthand flags
+dotenvify -az -g "your-variable-group" -out "custom-output.env"
 ```
 
 All commands above will save the variables to `.env` by default, overwriting any existing file.
-
-#### 🔍 Finding Your Azure DevOps Project URL
-
-To get your Azure DevOps project URL:
-
-1. Go to [https://dev.azure.com/](https://dev.azure.com/)
-2. Sign in with your Azure credentials
-3. Select your organization from the list
-4. Select your project
-5. Copy the URL from your browser's address bar, which should look like:
-   `https://dev.azure.com/your-org/your-project`
 
 #### 🔒 Security First
 
@@ -113,21 +123,33 @@ DotEnvify prioritizes security:
 
 Just make sure you're logged in with `az login` before running the tool.
 
+#### 🔍 Finding Your Azure DevOps Project URL
+
+To get your Azure DevOps project URL:
+
+1. Go to [https://dev.azure.com/](https://dev.azure.com/)
+2. Sign in with your Azure credentials
+3. Select your organization from the list
+4. Select your project
+5. Copy the URL from your browser's address bar, which should look like:
+   `https://dev.azure.com/your-org/your-project`
+
 #### 🧠 Smart Defaults
 
 DotEnvify tries to minimize the parameters you need to provide:
 
-- Project URL: Uses `AZURE_DEVOPS_URL` environment variable if set
-- Organization name: Uses `AZURE_DEVOPS_ORG` environment variable if set (if URL not provided)
-- Project name: Uses `AZURE_DEVOPS_PROJECT` environment variable if set (if URL not provided)
-- Variable group name: Uses current directory name if not specified (but is **required** - will prompt if not provided)
+- Project URL: Uses `AZURE_DEVOPS_URL` environment variable if set (recommended approach)
+- Organization name: Inferred from URL
+- Project name: Inferred from URL
+- Variable group name: Is **required** - will prompt if not provided
 - Output file: Always defaults to `.env` in the current directory
 
 **Environment Variable Precedence:**
 1. Command-line arguments (highest precedence)
 2. `AZURE_DEVOPS_URL` environment variable
-3. `AZURE_DEVOPS_ORG` and `AZURE_DEVOPS_PROJECT` environment variables
-4. Interactive prompt (if needed)
+3. Interactive prompt (if needed)
+
+DotEnvify will offer to save your URL to the AZURE_DEVOPS_URL environment variable when entered interactively, so you won't need to type it again.
 
 This is perfect for developers who need to run microservices locally with the same environment variables used in Azure DevOps pipelines!
 
@@ -147,6 +169,8 @@ This is perfect for developers who need to run microservices locally with the sa
 - 🎨 Beautiful terminal output with fun emojis because we're all nerds here
 - 📝 Always defaults to `.env` output file, overwriting any existing file
 - 🔮 Extensible: More integrations coming soon!
+- 🔤 Case-sensitive: Option to ignore variables with lowercase keys using -no-lower flag
+- 🔍 Short flags: All flags have short alternatives for even less typing
 
 ## 📝 Format It Understands
 

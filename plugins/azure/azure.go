@@ -134,24 +134,6 @@ func (c *Client) GetVariableGroupByName(name string) (*VariableGroup, error) {
 	return nil, fmt.Errorf("variable group '%s' not found", name)
 }
 
-// GetDefaultOrganization gets the default organization name from environment variables
-func GetDefaultOrganization() string {
-	// Check environment variable
-	if org := os.Getenv("AZURE_DEVOPS_ORG"); org != "" {
-		return org
-	}
-	return ""
-}
-
-// GetDefaultProject gets the default project name from environment variables
-func GetDefaultProject() string {
-	// Check environment variable
-	if proj := os.Getenv("AZURE_DEVOPS_PROJECT"); proj != "" {
-		return proj
-	}
-	return ""
-}
-
 // ParseURL parses an Azure DevOps URL to extract organization and project
 func ParseURL(url string) (string, string, error) {
 	// URL format: https://dev.azure.com/{organization}/{project}
@@ -179,8 +161,19 @@ func GetDefaultURL() string {
 	return os.Getenv("AZURE_DEVOPS_URL")
 }
 
-// ProcessVariables processes variables from Azure DevOps
-func ProcessVariables(org, project, groupName, outputFile string, msgFunc func(string, string)) ([]string, error) {
+// GetVariables gets variables from Azure DevOps
+func GetVariables(org, project, groupName string, msgFunc func(string, string)) (map[string]string, error) {
+	// Validate inputs
+	if strings.TrimSpace(org) == "" {
+		return nil, fmt.Errorf("organization name is required")
+	}
+	if strings.TrimSpace(project) == "" {
+		return nil, fmt.Errorf("project name is required")
+	}
+	if strings.TrimSpace(groupName) == "" {
+		return nil, fmt.Errorf("variable group name is required")
+	}
+
 	// Create Azure DevOps client
 	client := NewClient(org, project)
 
@@ -192,25 +185,12 @@ func ProcessVariables(org, project, groupName, outputFile string, msgFunc func(s
 	}
 
 	// Process variables
-	var outputLines []string
-	variableCount := 0
-
+	variables := make(map[string]string)
 	msgFunc("info", fmt.Sprintf("🧩 Processing variables from group '%s'...", groupName))
 
 	for key, variable := range group.Variables {
-		outputLines = append(outputLines, fmt.Sprintf("export %s=\"%s\"", key, variable.Value))
-		variableCount++
+		variables[key] = variable.Value
 	}
 
-	// Write the output file
-	msgFunc("info", fmt.Sprintf("💾 Writing %d variables to '%s'...", variableCount, outputFile))
-	err = os.WriteFile(outputFile, []byte(strings.Join(outputLines, "\n")+"\n"), 0644)
-	if err != nil {
-		return nil, fmt.Errorf("Failed to write output file: %v", err)
-	}
-
-	// Show success message
-	msgFunc("success", fmt.Sprintf("✨ Variables successfully fetched and saved to '%s'", outputFile))
-
-	return outputLines, nil
+	return variables, nil
 }

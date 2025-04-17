@@ -52,21 +52,91 @@ func readUserInput(prompt string) string {
 	return strings.TrimSpace(input)
 }
 
+// Read user input and ask if they want to store it in an environment variable
+func readUserInputWithEnvOption(prompt, envVar string) string {
+	value := readUserInput(prompt)
+	if value != "" {
+		saveToEnv := readUserInput(fmt.Sprintf("Would you like to save this to %s environment variable? [Y/n]: ", envVar))
+		if saveToEnv == "" || strings.ToLower(saveToEnv) == "y" || strings.ToLower(saveToEnv) == "yes" {
+			// Set for current process
+			err := os.Setenv(envVar, value)
+			if err != nil {
+				msg("warning", fmt.Sprintf("Failed to set environment variable %s: %v", envVar, err))
+			} else {
+				msg("info", fmt.Sprintf("🔒 Saved to %s environment variable for this session", envVar))
+				// Provide instructions for permanent setting
+				shellType := os.Getenv("SHELL")
+				if strings.Contains(shellType, "bash") {
+					msg("info", fmt.Sprintf("To save permanently, add this to your ~/.bashrc: export %s=\"%s\"", envVar, value))
+				} else if strings.Contains(shellType, "zsh") {
+					msg("info", fmt.Sprintf("To save permanently, add this to your ~/.zshrc: export %s=\"%s\"", envVar, value))
+				} else {
+					msg("info", fmt.Sprintf("To save permanently, add this to your shell profile: export %s=\"%s\"", envVar, value))
+				}
+			}
+		}
+	}
+	return value
+}
+
+// WriteVariablesToFile writes variables to a file in export format
+func writeVariablesToFile(variables map[string]string, outputFile string, noLower bool) error {
+	var outputLines []string
+	variableCount := 0
+	skippedCount := 0
+
+	for key, value := range variables {
+		// Skip lowercase keys if noLower is true
+		if noLower && key == strings.ToLower(key) && key != strings.ToUpper(key) {
+			skippedCount++
+			continue
+		}
+		outputLines = append(outputLines, fmt.Sprintf("export %s=\"%s\"", key, value))
+		variableCount++
+	}
+
+	if skippedCount > 0 {
+		msg("info", fmt.Sprintf("🔍 Skipped %d variables with lowercase keys", skippedCount))
+	}
+
+	// Write the output file
+	msg("info", fmt.Sprintf("💾 Writing %d variables to '%s'...", variableCount, outputFile))
+	err := os.WriteFile(outputFile, []byte(strings.Join(outputLines, "\n")+"\n"), 0644)
+	if err != nil {
+		return fmt.Errorf("Failed to write output file: %v", err)
+	}
+
+	// Show a success message
+	msg("success", fmt.Sprintf("✨ Variables successfully saved to '%s'", outputFile))
+
+	return nil
+}
+
+// ProcessVariables processes variables from a source and writes them to a file
+func ProcessVariables(variables map[string]string, outputFile string, noLower bool) {
+	// Write variables to file
+	err := writeVariablesToFile(variables, outputFile, noLower)
+	if err != nil {
+		exitOnError(err, "Failed to write variables to file")
+	}
+}
+
 // Process variables from Azure DevOps
-func processAzureDevOpsVariables(org, project, groupName, outputFile string) {
+func processAzureDevOpsVariables(org, project, groupName, outputFile string, noLower bool) {
 	// Process variables using the Azure plugin
-	_, err := azure.ProcessVariables(org, project, groupName, outputFile, msg)
+	variables, err := azure.GetVariables(org, project, groupName, msg)
 	if err != nil {
 		// Check if the error is related to Azure CLI login
-		if strings.Contains(err.Error(), "not logged in to Azure CLI") {
+		errMsg := err.Error()
+		if strings.Contains(errMsg, "not logged in to Azure CLI") {
 			msg("error", "🔑 Authentication required: You need to log in to Azure CLI first")
 			msg("info", "Run 'az login' in your terminal and then try again")
 			os.Exit(1)
-		} else if strings.Contains(err.Error(), "Azure CLI not found") {
+		} else if strings.Contains(errMsg, "Azure CLI not found") {
 			msg("error", "🔧 Azure CLI not installed: You need to install the Azure CLI")
 			msg("info", "Visit https://docs.microsoft.com/en-us/cli/azure/install-azure-cli to install it")
 			os.Exit(1)
-		} else if strings.Contains(err.Error(), "failed to get access token") {
+		} else if strings.Contains(errMsg, "failed to get access token") {
 			msg("error", "🔑 Authentication failed: Could not get access token from Azure CLI")
 			msg("info", "Run 'az login' in your terminal and then try again")
 			os.Exit(1)
@@ -74,16 +144,33 @@ func processAzureDevOpsVariables(org, project, groupName, outputFile string) {
 			exitOnError(err, "Failed to process Azure DevOps variables")
 		}
 	}
+
+	// Process variables
+	ProcessVariables(variables, outputFile, noLower)
 }
 
 func main() {
 	// Define command line flags
 	azureMode := flag.Bool("azure", false, "Enable Azure DevOps mode")
+	flag.BoolVar(azureMode, "az", false, "Enable Azure DevOps mode (shorthand)")
+
 	projectURL := flag.String("url", azure.GetDefaultURL(), "Azure DevOps project URL (default: $AZURE_DEVOPS_URL)")
-	organization := flag.String("org", azure.GetDefaultOrganization(), "Azure DevOps organization name (default: $AZURE_DEVOPS_ORG)")
-	project := flag.String("project", azure.GetDefaultProject(), "Azure DevOps project name (default: $AZURE_DEVOPS_PROJECT)")
+	flag.StringVar(projectURL, "u", azure.GetDefaultURL(), "Azure DevOps project URL (shorthand)")
+
+	organization := flag.String("org", "", "Azure DevOps organization name (inferred from URL if not provided)")
+	flag.StringVar(organization, "o", "", "Azure DevOps organization name (shorthand)")
+
+	project := flag.String("project", "", "Azure DevOps project name (inferred from URL if not provided)")
+	flag.StringVar(project, "p", "", "Azure DevOps project name (shorthand)")
+
 	varGroup := flag.String("group", "", "Azure DevOps variable group name (required)")
+	flag.StringVar(varGroup, "g", "", "Azure DevOps variable group name (shorthand)")
+
 	outputFilePath := flag.String("output", ".env", "Output file path (default: .env)")
+	flag.StringVar(outputFilePath, "out", ".env", "Output file path (shorthand)")
+
+	noLower := flag.Bool("no-lower", false, "Ignore variables with lowercase keys")
+	flag.BoolVar(noLower, "nl", false, "Ignore variables with lowercase keys (shorthand)")
 
 	// Set custom usage function
 	flag.Usage = func() {
@@ -92,7 +179,17 @@ func main() {
 		fmt.Fprintf(os.Stderr, "  Local file mode:  dotenvify source_file [output_file]\n")
 		fmt.Fprintf(os.Stderr, "  Azure DevOps:     dotenvify -azure -group \"variable-group-name\" [options]\n\n")
 		fmt.Fprintf(os.Stderr, "Options:\n")
-		flag.PrintDefaults()
+
+		// Custom flag printing to combine short and long forms
+		fmt.Fprintf(os.Stderr, "  -az (azure)\tEnable Azure DevOps mode\n")
+		fmt.Fprintf(os.Stderr, "  -u (url)\tAzure DevOps project URL (default: $AZURE_DEVOPS_URL)\n")
+		fmt.Fprintf(os.Stderr, "  -o (org)\tAzure DevOps organization name (inferred from URL if not provided)\n")
+		fmt.Fprintf(os.Stderr, "  -p (project)\tAzure DevOps project name (inferred from URL if not provided)\n")
+		fmt.Fprintf(os.Stderr, "  -g (group)\tAzure DevOps variable group name (required)\n")
+		fmt.Fprintf(os.Stderr, "  -out (output)\tOutput file path (default: .env)\n")
+		fmt.Fprintf(os.Stderr, "  -nl (no-lower)\tIgnore variables with lowercase keys\n")
+		fmt.Fprintf(os.Stderr, "  -h (help)\tShow this help message\n")
+
 		fmt.Fprintf(os.Stderr, "\nFor more information, visit: https://github.com/webb1es/dotenvify\n")
 	}
 
@@ -103,19 +200,27 @@ func main() {
 	if *azureMode {
 		org := *organization
 		proj := *project
+		url := *projectURL
 
-		// If URL is provided, parse it to get org and project
-		if *projectURL != "" {
+		// Check for URL from environment variable
+		envURL := azure.GetDefaultURL()
+		if url == "" && envURL != "" {
+			url = envURL
+			msg("info", fmt.Sprintf("🔗 Using Azure DevOps URL from AZURE_DEVOPS_URL environment variable: %s", url))
+		}
+
+		// If URL is provided (from args or env), parse it to get org and project
+		if url != "" {
 			var err error
-			org, proj, err = azure.ParseURL(*projectURL)
+			org, proj, err = azure.ParseURL(url)
 			if err != nil {
 				exitOnError(err, "Failed to parse Azure DevOps URL")
 			}
 			msg("info", fmt.Sprintf("🔗 Using Azure DevOps organization: %s, project: %s", org, proj))
 		} else if org == "" || proj == "" {
 			// If org or project is still empty, prompt for URL
-			msg("info", "No Azure DevOps URL or organization/project provided")
-			url := readUserInput("Enter your Azure DevOps project URL (e.g., https://dev.azure.com/org/project): ")
+			msg("info", "No Azure DevOps URL provided")
+			url = readUserInputWithEnvOption("Enter your Azure DevOps project URL (e.g., https://dev.azure.com/org/project): ", "AZURE_DEVOPS_URL")
 			if url == "" {
 				exitOnError(fmt.Errorf("no URL provided"), "Failed to get Azure DevOps URL")
 			}
@@ -139,7 +244,7 @@ func main() {
 		}
 
 		// Process Azure DevOps variables
-		processAzureDevOpsVariables(org, proj, *varGroup, *outputFilePath)
+		processAzureDevOpsVariables(org, proj, *varGroup, *outputFilePath, *noLower)
 		return
 	}
 
@@ -180,14 +285,14 @@ func main() {
 
 	msg("info", fmt.Sprintf("🔄 Converting %d lines to environment variables...", len(lines)))
 
-	// Process the lines into environment variable exports
-	var outputLines []string
+	// Process the lines into a map of variables
+	variables := make(map[string]string)
 	var errors []string
 	for i := 0; i < len(lines); i += 2 {
 		if i+1 < len(lines) {
 			key := lines[i]
 			value := lines[i+1]
-			outputLines = append(outputLines, fmt.Sprintf("export %s=\"%s\"", key, value))
+			variables[key] = value
 		} else {
 			errors = append(errors, fmt.Sprintf("Line %d: Key '%s' has no value", i+1, lines[i]))
 		}
@@ -205,13 +310,6 @@ func main() {
 		}
 	}
 
-	// Write the output file
-	msg("info", fmt.Sprintf("💾 Writing %d variables to '%s'...", len(outputLines), outputFile))
-	err = os.WriteFile(outputFile, []byte(strings.Join(outputLines, "\n")+"\n"), 0644)
-	exitOnError(err, "Failed to write output file")
-
-	// Show success message
-	if !hasErrors {
-		msg("success", fmt.Sprintf("✨ Variables successfully formatted and saved to '%s'", outputFile))
-	}
+	// Process variables
+	ProcessVariables(variables, outputFile, *noLower)
 }
