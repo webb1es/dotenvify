@@ -45,15 +45,60 @@ sudo mv dotenvify /usr/local/bin/
 
 ## 🔮 How To Use It
 
-Seriously, it's two commands:
+### Basic Usage
+
+Seriously, it's simple:
 
 ```bash
-# Overwrite the same file (living dangerously)
+# Process a file and save to .env (default)
 dotenvify your-vars.txt
 
-# Save to a new file (your therapist would approve)
-dotenvify your-vars.txt .env
+# Save to a specific file instead of .env
+dotenvify your-vars.txt custom-output.env
+
+# The output is always in export KEY="VALUE" format
+# .env will be overwritten if it already exists
 ```
+
+### 🚀 Azure DevOps Integration
+
+Now with Azure DevOps integration! Fetch variables directly from your Azure DevOps variable groups:
+
+```bash
+# First, make sure you're logged in to Azure CLI
+az login
+
+# Fetch variables using your project URL (easiest method)
+dotenvify -azure -url "https://dev.azure.com/your-org/your-project" -group "your-variable-group"
+
+# Or use the traditional way with organization and project
+dotenvify -azure -org "your-org" -project "your-project" -group "your-variable-group"
+
+# Set a default URL in your environment to make it even easier
+export AZURE_DEVOPS_URL="https://dev.azure.com/your-org/your-project"
+dotenvify -azure -group "your-variable-group"
+
+# If you don't provide a URL or org/project, dotenvify will ask you interactively
+dotenvify -azure -group "your-variable-group"
+```
+
+All commands above will save the variables to `.env` by default, overwriting any existing file.
+
+#### 🔒 Security First
+
+DotEnvify uses your existing Azure CLI authentication - no need to provide or store credentials! Just make sure you're logged in with `az login` before running the tool.
+
+#### 🧠 Smart Defaults
+
+DotEnvify tries to minimize the parameters you need to provide:
+
+- Project URL: Uses `AZURE_DEVOPS_URL` environment variable if set
+- Organization name: Uses `AZURE_DEVOPS_ORG` environment variable if set (if URL not provided)
+- Project name: Uses `AZURE_DEVOPS_PROJECT` environment variable if set (if URL not provided)
+- Variable group name: Uses current directory name if not specified
+- Output file: Always defaults to `.env` in the current directory
+
+This is perfect for developers who need to run microservices locally with the same environment variables used in Azure DevOps pipelines!
 
 ## ✨ Features That Keep Me Sane
 
@@ -62,6 +107,13 @@ dotenvify your-vars.txt .env
 - 🧹 Skips empty lines (because whitespace is only scary in Python)
 - 🛡️ Won't wreck your original file if something goes wrong
 - 👻 No dependencies because who has time for npm install
+- 🔄 Azure DevOps integration to fetch variables directly from variable groups
+- 🔒 Secure: Uses your existing Azure CLI authentication - no credentials stored or handled by dotenvify
+- 🧠 Smart defaults: Minimizes required parameters with environment variables and sensible defaults
+- 🎯 Simple: Just give it a variable group name, and it figures out the rest
+- 💬 Interactive: Will ask for input if needed rather than just failing
+- 🎨 Beautiful terminal output with fun emojis because we're all nerds here
+- 📝 Always defaults to `.env` output file, overwriting any existing file
 
 ## 📝 Format It Understands
 
