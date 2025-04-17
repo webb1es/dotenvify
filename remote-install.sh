@@ -43,17 +43,23 @@ BRANCH="main"  # or "master" depending on your default branch
 
 show_message "info" "Downloading DotEnvify from GitHub..."
 
-# Download the Go source file
-curl -s "https://raw.githubusercontent.com/$REPO_OWNER/$REPO_NAME/$BRANCH/dotenvify.go" -o dotenvify.go
+# Create directory structure
+mkdir -p plugins/azure
 
-if [ ! -f "dotenvify.go" ]; then
+# Download the Go source files
+show_message "info" "Downloading DotEnvify source files..."
+curl -s "https://raw.githubusercontent.com/$REPO_OWNER/$REPO_NAME/$BRANCH/dotenvify.go" -o dotenvify.go
+curl -s "https://raw.githubusercontent.com/$REPO_OWNER/$REPO_NAME/$BRANCH/plugins/azure/azure.go" -o plugins/azure/azure.go
+curl -s "https://raw.githubusercontent.com/$REPO_OWNER/$REPO_NAME/$BRANCH/go.mod" -o go.mod
+
+if [ ! -f "dotenvify.go" ] || [ ! -f "plugins/azure/azure.go" ]; then
   show_message "error" "Failed to download source code from GitHub."
   exit 1
 fi
 
 # Compile
 show_message "info" "Compiling DotEnvify..."
-go build -o dotenvify dotenvify.go
+go build
 
 if [ ! -f "dotenvify" ]; then
   show_message "error" "Compilation failed."

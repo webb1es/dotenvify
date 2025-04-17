@@ -56,13 +56,20 @@ dotenvify your-vars.txt
 # Save to a specific file instead of .env
 dotenvify your-vars.txt custom-output.env
 
+# Get help with available options
+dotenvify -h
+
 # The output is always in export KEY="VALUE" format
 # .env will be overwritten if it already exists
 ```
 
+## 🔌 Supported Plugins
+
+DotEnvify uses a plugin architecture that allows it to integrate with various services. Currently supported plugins:
+
 ### 🚀 Azure DevOps Integration
 
-Now with Azure DevOps integration! Fetch variables directly from your Azure DevOps variable groups:
+Fetch variables directly from your Azure DevOps variable groups:
 
 ```bash
 # First, make sure you're logged in to Azure CLI
@@ -84,9 +91,27 @@ dotenvify -azure -group "your-variable-group"
 
 All commands above will save the variables to `.env` by default, overwriting any existing file.
 
+#### 🔍 Finding Your Azure DevOps Project URL
+
+To get your Azure DevOps project URL:
+
+1. Go to [https://dev.azure.com/](https://dev.azure.com/)
+2. Sign in with your Azure credentials
+3. Select your organization from the list
+4. Select your project
+5. Copy the URL from your browser's address bar, which should look like:
+   `https://dev.azure.com/your-org/your-project`
+
 #### 🔒 Security First
 
-DotEnvify uses your existing Azure CLI authentication - no need to provide or store credentials! Just make sure you're logged in with `az login` before running the tool.
+DotEnvify prioritizes security:
+
+- Uses your existing Azure CLI authentication - no credentials stored or handled
+- Tokens are used only in memory and never written to disk
+- Respects your organization's security policies (including MFA)
+- No sensitive information is ever logged or exposed
+
+Just make sure you're logged in with `az login` before running the tool.
 
 #### 🧠 Smart Defaults
 
@@ -95,8 +120,14 @@ DotEnvify tries to minimize the parameters you need to provide:
 - Project URL: Uses `AZURE_DEVOPS_URL` environment variable if set
 - Organization name: Uses `AZURE_DEVOPS_ORG` environment variable if set (if URL not provided)
 - Project name: Uses `AZURE_DEVOPS_PROJECT` environment variable if set (if URL not provided)
-- Variable group name: Uses current directory name if not specified
+- Variable group name: Uses current directory name if not specified (but is **required** - will prompt if not provided)
 - Output file: Always defaults to `.env` in the current directory
+
+**Environment Variable Precedence:**
+1. Command-line arguments (highest precedence)
+2. `AZURE_DEVOPS_URL` environment variable
+3. `AZURE_DEVOPS_ORG` and `AZURE_DEVOPS_PROJECT` environment variables
+4. Interactive prompt (if needed)
 
 This is perfect for developers who need to run microservices locally with the same environment variables used in Azure DevOps pipelines!
 
@@ -107,6 +138,7 @@ This is perfect for developers who need to run microservices locally with the sa
 - 🧹 Skips empty lines (because whitespace is only scary in Python)
 - 🛡️ Won't wreck your original file if something goes wrong
 - 👻 No dependencies because who has time for npm install
+- 🔌 Plugin architecture: Core functionality is platform-agnostic with plugins for different integrations
 - 🔄 Azure DevOps integration to fetch variables directly from variable groups
 - 🔒 Secure: Uses your existing Azure CLI authentication - no credentials stored or handled by dotenvify
 - 🧠 Smart defaults: Minimizes required parameters with environment variables and sensible defaults
@@ -114,6 +146,7 @@ This is perfect for developers who need to run microservices locally with the sa
 - 💬 Interactive: Will ask for input if needed rather than just failing
 - 🎨 Beautiful terminal output with fun emojis because we're all nerds here
 - 📝 Always defaults to `.env` output file, overwriting any existing file
+- 🔮 Extensible: More integrations coming soon!
 
 ## 📝 Format It Understands
 
