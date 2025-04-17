@@ -213,6 +213,27 @@ Remember: every contribution puts you one commit closer to being the person your
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 ![FOSSA](https://img.shields.io/badge/FOSSA-Approved-success)
 
+### What the MIT License Means for You
+
+DotEnvify is released under the MIT License, which is one of the most permissive and user-friendly open source licenses out there. Here's what it means in plain English:
+
+#### 🆓 You Can:
+- **Use it however you want**: Personal projects, commercial products, secret government operations (we won't ask)
+- **Modify it**: Change the code, add features, remove the emojis (but why would you?)
+- **Distribute it**: Share it with friends, colleagues, or include it in your own projects
+- **Sell it**: Incorporate it into commercial products without paying royalties
+
+#### ⚠️ The Only Requirements:
+- Keep the original copyright notice and MIT license text in your copy/modification
+- That's literally it
+
+#### 🛡️ What You Get:
+- **No Warranty**: The software is provided "as is" without any guarantees
+- **Limited Liability**: The author isn't responsible if DotEnvify accidentally formats your hard drive (it won't, but legally speaking, we're covered)
+
+#### 💼 In Business Terms:
+The MIT License is business-friendly and perfect for both open source projects and commercial use. It doesn't require you to open-source your own code, even if you modify DotEnvify.
+
 MIT License - Go wild, make millions, just don't blame me when it formats your grocery list. 🛒📝
 
 This project is about as restrictive as a cat's opinion of your personal space—technically there are boundaries, but nobody seems to care. 🐱
