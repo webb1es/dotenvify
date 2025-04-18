@@ -163,6 +163,9 @@ func processAzureDevOpsVariables(org, project, groupName, outputFile string, noL
 
 func main() {
 	// Define command line flags
+	versionFlag := flag.Bool("version", false, "Show version information")
+	flag.BoolVar(versionFlag, "v", false, "Show version information (shorthand)")
+
 	azureMode := flag.Bool("azure", false, "Enable Azure DevOps mode")
 	flag.BoolVar(azureMode, "az", false, "Enable Azure DevOps mode (shorthand)")
 
@@ -193,6 +196,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Options:\n")
 
 		// Custom flag printing to combine short and long forms
+		fmt.Fprintf(os.Stderr, "  -v (version)\tShow version information\n")
 		fmt.Fprintf(os.Stderr, "  -az (azure)\tEnable Azure DevOps mode\n")
 		fmt.Fprintf(os.Stderr, "  -u (url)\tAzure DevOps project URL (default: $AZURE_DEVOPS_URL)\n")
 		fmt.Fprintf(os.Stderr, "  -o (org)\tAzure DevOps organization name (inferred from URL if not provided)\n")
@@ -207,6 +211,14 @@ func main() {
 
 	// Parse command line flags
 	flag.Parse()
+
+	// Check if a version flag was provided
+	if *versionFlag {
+		fmt.Printf("dotenvify version: %s\n", version)
+		fmt.Printf("commit: %s\n", commit)
+		fmt.Printf("build date: %s\n", date)
+		os.Exit(0)
+	}
 
 	// Check if we're in Azure DevOps mode
 	if *azureMode {
