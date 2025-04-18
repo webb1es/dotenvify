@@ -1,0 +1,44 @@
+name: Release dotenvify
+
+# This workflow will build and release the dotenvify CLI tool
+# It triggers when a tag matching v*.*.* is pushed to the repository
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write  # Needed to create GitHub releases
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Required for GoReleaser to get all tags and history
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v5
+        with:
+          args: release --clean
+        env:
+          # GITHUB_TOKEN is automatically provided by GitHub Actions
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+          # HOMEBREW_TAP_TOKEN is needed to push to the Homebrew tap repository
+          # This should be a personal access token with 'repo' scope
+          # Add this token as a repository secret in your GitHub repository settings
+          HOMEBREW_TAP_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+
+          # SCOOP_BUCKET_TOKEN is needed to push to the Scoop bucket repository
+          # This should be a personal access token with 'repo' scope
+          # Add this token as a repository secret in your GitHub repository settings
+          SCOOP_BUCKET_TOKEN: ${{ secrets.SCOOP_BUCKET_TOKEN }}

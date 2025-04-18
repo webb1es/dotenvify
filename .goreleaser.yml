@@ -1,0 +1,78 @@
+# This is a GoReleaser configuration file for dotenvify
+# Documentation: https://goreleaser.com
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ignore:
+      - goos: windows
+        goarch: arm64
+    ldflags:
+      - -s -w
+      - -X main.version={{.Version}}
+      - -X main.commit={{.Commit}}
+      - -X main.date={{.Date}}
+    main: .
+
+archives:
+  - format: tar.gz
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    format_overrides:
+      - goos: windows
+        format: zip
+    files:
+      - LICENSE
+      - README.md
+
+checksum:
+  name_template: 'checksums.txt'
+  algorithm: sha256
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^chore:'
+      - '^docs:'
+      - '^test:'
+      - '^ci:'
+      - Merge pull request
+      - Merge branch
+
+release:
+  github:
+    owner: webb1es
+    name: dotenvify
+
+brews:
+  - name: dotenvify
+    tap:
+      owner: webb1es
+      name: homebrew-tap
+    homepage: "https://github.com/webb1es/dotenvify"
+    description: "Convert key-value pairs to environment variables"
+    license: "MIT"
+    install: |
+      bin.install "dotenvify"
+    test: |
+      system "#{bin}/dotenvify", "-h"
+
+scoops:
+  - name: dotenvify
+    bucket:
+      owner: webb1es
+      name: scoop-bucket
+    homepage: "https://github.com/webb1es/dotenvify"
+    description: "Convert key-value pairs to environment variables"
+    license: "MIT"
