@@ -30,12 +30,30 @@ After doing this manually for the 17th time last month, I rage-coded this tool. 
 
 ## 🚀 Install This Sanity-Saver
 
-**The lazy way** (we don't judge, we encourage):
+### 🍺 Homebrew (macOS and Linux)
+
 ```bash
-curl -s https://raw.githubusercontent.com/webb1es/dotenvify/main/remote-install.sh | bash
+# Install from the Homebrew tap
+brew install webb1es/tap/dotenvify
 ```
 
-**The "I read every line of code before running it" way**:
+### 🪣 Scoop (Windows)
+
+```bash
+# Add the scoop bucket
+scoop bucket add webb1es https://github.com/webb1es/scoop-bucket.git
+
+# Install dotenvify
+scoop install dotenvify
+```
+
+### 📦 Direct Download (All Platforms)
+
+Download the latest release for your platform from the [GitHub Releases page](https://github.com/webb1es/dotenvify/releases).
+
+
+### 👨‍💻 The "I Read Every Line of Code" Way
+
 ```bash
 git clone https://github.com/webb1es/dotenvify.git
 cd dotenvify

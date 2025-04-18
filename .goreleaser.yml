@@ -54,6 +54,29 @@ release:
   github:
     owner: webb1es
     name: dotenvify
+  release_notes_template: |
+    # DotEnvify {{.Version}} Release
+
+    ## Summary
+    This release of DotEnvify brings new features and improvements to help you manage environment variables more efficiently.
+
+    <!-- You can edit this section manually before each release to provide a human-readable summary -->
+
+    ## What's Changed
+    {{.Changelog}}
+
+    ## Installation
+
+    ### Homebrew
+    ```bash
+    brew install webb1es/tap/dotenvify
+    ```
+
+    ### Manual Installation
+    Download the appropriate binary for your platform from the assets below.
+
+    ## Thank You
+    Thanks to all contributors who made this release possible!
 
 brews:
   - name: dotenvify
