@@ -10,6 +10,13 @@ import (
 	"dotenvify/plugins/azure"
 )
 
+// Version information (populated by ldflags during build)
+var (
+	version = "dev"
+	commit  = "none"
+	date    = "unknown"
+)
+
 // ANSI color codes
 const (
 	colorReset  = "\033[0m"
