@@ -178,6 +178,7 @@ This is perfect for developers who need to run microservices locally with the sa
 - 🧹 Skips empty lines (because whitespace is only scary in Python)
 - 🛡️ Won't wreck your original file if something goes wrong
 - 👻 No dependencies because who has time for npm install
+- 🚀 Blazing fast execution for those tight deadlines
 - 🔌 Plugin architecture: Core functionality is platform-agnostic with plugins for different integrations
 - 🔄 Azure DevOps integration to fetch variables directly from variable groups
 - 🔒 Secure: Uses your existing Azure CLI authentication - no credentials stored or handled by dotenvify
@@ -217,12 +218,12 @@ One of these is clearly better than manual formatting. Probably.
 
 ## 🔧🛠️ Contributing
 
-Found a bug? 🐛 Have a feature idea? 💡 PRs welcome! Just don't mess with my tabs vs. spaces setup—that debate ended my last relationship. 💔
+Found a bug? 🐛 Have a feature idea? 💡 PRs welcome! Just don't mess with my tabs vs. spaces setup—that debate ended my last relationship. 💔 Let's make this tool even more awesome together! 🚀
 
 - 🕵️‍♂️ **Bug Hunters**: If you spot something weird, open an issue faster than you can say "it works on my machine"
 - 🧪 **Feature Wizards**: Got an idea? PRs are the ultimate "scratch your own itch" spell
 - 📚 **Documentation Heroes**: Fixed a typo? You're saving developers from Stack Overflow shame
-- 🧙‍♀️ **Code Reviewers**: Your nitpicks are actually appreciated (just don't tell anyone I said that)
+- 🧙‍♀️ **Code Reviewers**: Your nitpicks are actually appreciated (just don't tell anyone I said that) ✨
 
 Remember: every contribution puts you one commit closer to being the person your rubber duck thinks you are. 🦆✨
 

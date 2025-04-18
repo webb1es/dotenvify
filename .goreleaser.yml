@@ -41,6 +41,38 @@ checksum:
 
 changelog:
   sort: asc
+  use: conventional-commits
+  groups:
+    - title: '🚀 Features'
+      regexp: '^feat'
+      order: 0
+    - title: '🐛 Bug Fixes'
+      regexp: '^fix'
+      order: 1
+    - title: '⚡ Performance Improvements'
+      regexp: '^perf'
+      order: 2
+    - title: '♻️ Refactoring'
+      regexp: '^refactor'
+      order: 3
+    - title: '📚 Documentation'
+      regexp: '^docs'
+      order: 4
+    - title: '✅ Tests'
+      regexp: '^test'
+      order: 5
+    - title: '🏗️ Build System'
+      regexp: '^build'
+      order: 6
+    - title: '👷 CI'
+      regexp: '^ci'
+      order: 7
+    - title: '🧹 Chore'
+      regexp: '^chore'
+      order: 8
+    - title: '💄 Style'
+      regexp: '^style'
+      order: 9
   filters:
     exclude:
       - '^chore:'
@@ -67,6 +99,12 @@ release:
     ### Homebrew
     ```bash
     brew install webb1es/tap/dotenvify
+    ```
+
+    ### Scoop
+    ```bash
+    scoop bucket add webb1es https://github.com/webb1es/scoop-bucket
+    scoop install dotenvify
     ```
 
     ### Manual Installation
