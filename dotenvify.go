@@ -48,7 +48,11 @@ func exitOnError(err error, message string) {
 func readUserInput(prompt string) string {
 	fmt.Print(prompt)
 	reader := bufio.NewReader(os.Stdin)
-	input, _ := reader.ReadString('\n')
+	input, err := reader.ReadString('\n')
+	if err != nil {
+		msg("warning", fmt.Sprintf("Error reading input: %v", err))
+		return ""
+	}
 	return strings.TrimSpace(input)
 }
 
@@ -101,7 +105,8 @@ func writeVariablesToFile(variables map[string]string, outputFile string, noLowe
 
 	// Write the output file
 	msg("info", fmt.Sprintf("💾 Writing %d variables to '%s'...", variableCount, outputFile))
-	err := os.WriteFile(outputFile, []byte(strings.Join(outputLines, "\n")+"\n"), 0644)
+	// Use more restrictive file permissions (0600) for files containing sensitive data
+	err := os.WriteFile(outputFile, []byte(strings.Join(outputLines, "\n")+"\n"), 0600)
 	if err != nil {
 		return fmt.Errorf("Failed to write output file: %v", err)
 	}
@@ -262,6 +267,11 @@ func main() {
 	}
 
 	msg("info", fmt.Sprintf("📄 Processing source file: %s", sourceFile))
+
+	// Validate file paths to prevent path traversal
+	if strings.Contains(sourceFile, "..") || strings.Contains(outputFile, "..") {
+		exitOnError(fmt.Errorf("path contains potentially unsafe '..' sequence"), "Invalid file path")
+	}
 
 	// Check if source file exists
 	_, err := os.Stat(sourceFile)

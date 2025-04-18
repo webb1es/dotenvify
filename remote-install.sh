@@ -48,13 +48,27 @@ mkdir -p plugins/azure
 
 # Download the Go source files
 show_message "info" "Downloading DotEnvify source files..."
-curl -s "https://raw.githubusercontent.com/$REPO_OWNER/$REPO_NAME/$BRANCH/dotenvify.go" -o dotenvify.go
-curl -s "https://raw.githubusercontent.com/$REPO_OWNER/$REPO_NAME/$BRANCH/plugins/azure/azure.go" -o plugins/azure/azure.go
-curl -s "https://raw.githubusercontent.com/$REPO_OWNER/$REPO_NAME/$BRANCH/go.mod" -o go.mod
+curl -s --tlsv1.2 --proto =https "https://raw.githubusercontent.com/$REPO_OWNER/$REPO_NAME/$BRANCH/dotenvify.go" -o dotenvify.go
+curl -s --tlsv1.2 --proto =https "https://raw.githubusercontent.com/$REPO_OWNER/$REPO_NAME/$BRANCH/plugins/azure/azure.go" -o plugins/azure/azure.go
+curl -s --tlsv1.2 --proto =https "https://raw.githubusercontent.com/$REPO_OWNER/$REPO_NAME/$BRANCH/go.mod" -o go.mod
 
 if [ ! -f "dotenvify.go" ] || [ ! -f "plugins/azure/azure.go" ]; then
   show_message "error" "Failed to download source code from GitHub."
   exit 1
+fi
+
+# Verify file integrity
+show_message "info" "Verifying file integrity..."
+
+# Check for suspicious patterns in the downloaded files
+if grep -q "curl\|wget\|bash\|sh\|nc\|netcat\|eval\|base64\|exec\|system" dotenvify.go || 
+   grep -q "curl\|wget\|bash\|sh\|nc\|netcat\|eval\|base64\|exec\|system" plugins/azure/azure.go; then
+  show_message "warning" "Potentially suspicious code detected in the downloaded files."
+  read -p "Do you want to continue with the installation? (y/N): " confirm
+  if [[ "$confirm" != "y" && "$confirm" != "Y" ]]; then
+    show_message "error" "Installation aborted by user."
+    exit 1
+  fi
 fi
 
 # Compile

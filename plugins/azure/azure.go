@@ -2,6 +2,7 @@ package azure
 
 import (
 	"bytes"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -10,6 +11,7 @@ import (
 	"os/exec"
 	"regexp"
 	"strings"
+	"time"
 )
 
 // VariableGroup represents an Azure DevOps variable group
@@ -94,7 +96,16 @@ func (c *Client) GetVariableGroups() ([]VariableGroup, error) {
 	// Add authorization header
 	req.Header.Set("Authorization", "Bearer "+token)
 
-	client := &http.Client{}
+	// Create HTTP client with secure TLS configuration
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{
+			MinVersion: tls.VersionTLS12,
+		},
+	}
+	client := &http.Client{
+		Transport: tr,
+		Timeout:   30 * time.Second, // Add timeout to prevent hanging connections
+	}
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
