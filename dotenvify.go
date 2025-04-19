@@ -312,18 +312,106 @@ func main() {
 	}
 	exitOnError(scanner.Err(), "Error reading source file")
 
+	// Check if the file is already in the expected output format
+	alreadyInCorrectFormat := true
+	for _, line := range lines {
+		// Skip comment lines
+		if strings.HasPrefix(line, "#") {
+			continue
+		}
+
+		// Check if line follows the pattern "export KEY="VALUE""
+		if !strings.HasPrefix(line, "export ") || !strings.Contains(line, "=\"") || !strings.HasSuffix(line, "\"") {
+			alreadyInCorrectFormat = false
+			break
+		}
+	}
+
+	if alreadyInCorrectFormat && len(lines) > 0 {
+		msg("success", fmt.Sprintf("✨ File '%s' is already in the expected format!", sourceFile))
+		if sourceFile != outputFile {
+			// If output file is different, copy the source file to the output file
+			sourceContent, err := os.ReadFile(sourceFile)
+			exitOnError(err, "Failed to read source file")
+			err = os.WriteFile(outputFile, sourceContent, 0600)
+			exitOnError(err, "Failed to write output file")
+			msg("success", fmt.Sprintf("✨ File copied to '%s'", outputFile))
+		}
+		return
+	}
+
 	msg("info", fmt.Sprintf("🔄 Converting %d lines to environment variables...", len(lines)))
 
-	// Process the lines into a map of variables
+	// Parse the lines into a map of variables
 	variables := make(map[string]string)
 	var errors []string
-	for i := 0; i < len(lines); i += 2 {
+
+	// Try to parse in various formats
+	i := 0
+	for i < len(lines) {
+		line := lines[i]
+
+		// Skip comment lines
+		if strings.HasPrefix(line, "#") {
+			i++
+			continue
+		}
+
+		// Check for KEY=VALUE or KEY="VALUE" format
+		if strings.Contains(line, "=") {
+			parts := strings.SplitN(line, "=", 2)
+			key := strings.TrimSpace(parts[0])
+			value := strings.TrimSpace(parts[1])
+
+			// Handle quoted values: KEY="VALUE" or KEY='VALUE'
+			if (strings.HasPrefix(value, "\"") && strings.HasSuffix(value, "\"")) ||
+				(strings.HasPrefix(value, "'") && strings.HasSuffix(value, "'")) {
+				value = value[1 : len(value)-1]
+			}
+
+			if key != "" {
+				variables[key] = value
+			}
+			i++
+			continue
+		}
+
+		// Check for KEY VALUE format on the same line
+		parts := strings.Fields(line)
+		if len(parts) == 2 {
+			key := parts[0]
+			value := parts[1]
+			if key != "" {
+				variables[key] = value
+			}
+			i++
+			continue
+		}
+
+		// Check for multiple KEY VALUE pairs on the same line
+		if len(parts) >= 4 && len(parts)%2 == 0 {
+			for j := 0; j < len(parts); j += 2 {
+				key := parts[j]
+				value := parts[j+1]
+				if key != "" {
+					variables[key] = value
+				}
+			}
+			i++
+			continue
+		}
+
+		// Traditional format: KEY on one line, VALUE on the next
 		if i+1 < len(lines) {
-			key := lines[i]
+			key := line
 			value := lines[i+1]
-			variables[key] = value
+			if key != "" {
+				variables[key] = value
+			}
+			i += 2
 		} else {
-			errors = append(errors, fmt.Sprintf("Line %d: Key '%s' has no value", i+1, lines[i]))
+			errors = append(errors, fmt.Sprintf("Line %d: Key '%s' has no value", i+1, line))
+			i++
 		}
 	}
 

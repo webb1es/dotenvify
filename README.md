@@ -107,17 +107,38 @@ Just make sure you're logged in with `az login` before running the tool.
 - 🔄 **Azure Integration**: Fetch variables directly from Azure DevOps
 - 🔒 **Secure Auth**: Uses your existing Azure CLI credentials
 - 🧹 **Smart Parsing**: Skips empty lines automatically
+- 🔍 **Format Detection**: Recognizes when files are already in the expected format
 - 🔤 **Case Control**: Option to ignore lowercase variables with `-nl`
 - 👻 **Zero Dependencies**: No package nightmares
 
 ## 📝 Input Format
 
+DotEnvify now supports multiple input formats:
+
 ```
+# Traditional format (key and value on separate lines)
 KEY1
 value1
 KEY2
 value2
+
+# KEY=VALUE format
+KEY1=value1
+KEY2=value2
+
+# KEY="VALUE" format with quotes
+KEY1="value1"
+KEY2="value1 with spaces"
+
+# KEY VALUE format (on same line)
+KEY1 value1
+KEY2 value2
+
+# Multiple KEY VALUE pairs on one line
+KEY1 value1 KEY2 value2
 ```
+
+Lines starting with `#` are treated as comments and ignored. The tool is smart enough to try different parsing strategies if one fails, making it robust against unfamiliar formats.
 
 <details>
 <summary>🤓 Why I Made This</summary>
