@@ -8,7 +8,7 @@ name: Release dotenvify
 on:
   push:
     tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+'
+      - 'v[0-9]+.[0-9]+.[0-9]+*'
 
 permissions:
   contents: write  # Needed to create GitHub releases
