@@ -227,6 +227,16 @@ Found a bug? 🐛 Have a feature idea? 💡 PRs welcome! Just don't mess with my
 
 Remember: every contribution puts you one commit closer to being the person your rubber duck thinks you are. 🦆✨
 
+### 🏷️ Versioning and Releases
+
+DotEnvify follows [Semantic Versioning](https://semver.org/) (SemVer):
+- Version format: `vMAJOR.MINOR.PATCH` (e.g., `v0.1.3`)
+- MAJOR: Breaking changes
+- MINOR: New features, no breaking changes
+- PATCH: Bug fixes, no breaking changes
+
+⚠️ **Important**: When creating release tags, strictly follow the `vX.Y.Z` format. Tags like `v0.1.3.1` are not valid semantic versions and will cause the release process to fail.
+
 ## 📄⚖️ License
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)

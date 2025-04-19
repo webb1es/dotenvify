@@ -2,11 +2,13 @@ name: Release dotenvify
 
 # This workflow will build and release the dotenvify CLI tool
 # It triggers when a tag matching v*.*.* is pushed to the repository
+# Note: GoReleaser requires strict semantic versioning (vMAJOR.MINOR.PATCH)
+# Tags like v0.1.3.1 are not valid and will cause the release to fail
 
 on:
   push:
     tags:
-      - 'v*.*.*'
+      - 'v[0-9]+.[0-9]+.[0-9]+'
 
 permissions:
   contents: write  # Needed to create GitHub releases
