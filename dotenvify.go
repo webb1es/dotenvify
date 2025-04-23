@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"sort"
 	"strings"
 
 	"dotenvify/plugins/azure"
@@ -91,19 +92,31 @@ func readUserInputWithEnvOption(prompt, envVar string) string {
 }
 
 // WriteVariablesToFile writes variables to a file in export format
-func writeVariablesToFile(variables map[string]string, outputFile string, noLower bool) error {
+func writeVariablesToFile(variables map[string]string, outputFile string, noLower bool, noSort bool) error {
 	var outputLines []string
 	variableCount := 0
 	skippedCount := 0
 
-	for key, value := range variables {
+	// Collect the keys
+	var keys []string
+	for key := range variables {
 		// Skip lowercase keys if noLower is true
 		if noLower && key == strings.ToLower(key) && key != strings.ToUpper(key) {
 			skippedCount++
 			continue
 		}
-		outputLines = append(outputLines, fmt.Sprintf("export %s=\"%s\"", key, value))
+		keys = append(keys, key)
 		variableCount++
+	}
+
+	// Sort keys alphabetically unless noSort is true
+	if !noSort {
+		sort.Strings(keys)
+	}
+
+	// Create output lines using sorted keys
+	for _, key := range keys {
+		outputLines = append(outputLines, fmt.Sprintf("export %s=\"%s\"", key, variables[key]))
 	}
 
 	if skippedCount > 0 {
@@ -125,16 +138,16 @@ func writeVariablesToFile(variables map[string]string, outputFile string, noLowe
 }
 
 // ProcessVariables processes variables from a source and writes them to a file
-func ProcessVariables(variables map[string]string, outputFile string, noLower bool) {
+func ProcessVariables(variables map[string]string, outputFile string, noLower bool, noSort bool) {
 	// Write variables to file
-	err := writeVariablesToFile(variables, outputFile, noLower)
+	err := writeVariablesToFile(variables, outputFile, noLower, noSort)
 	if err != nil {
 		exitOnError(err, "Failed to write variables to file")
 	}
 }
 
 // Process variables from Azure DevOps
-func processAzureDevOpsVariables(org, project, groupName, outputFile string, noLower bool) {
+func processAzureDevOpsVariables(org, project, groupName, outputFile string, noLower bool, noSort bool) {
 	// Process variables using the Azure plugin
 	variables, err := azure.GetVariables(org, project, groupName, msg)
 	if err != nil {
@@ -158,7 +171,7 @@ func processAzureDevOpsVariables(org, project, groupName, outputFile string, noL
 	}
 
 	// Process variables
-	ProcessVariables(variables, outputFile, noLower)
+	ProcessVariables(variables, outputFile, noLower, noSort)
 }
 
 func main() {
@@ -187,6 +200,9 @@ func main() {
 	noLower := flag.Bool("no-lower", false, "Ignore variables with lowercase keys")
 	flag.BoolVar(noLower, "nl", false, "Ignore variables with lowercase keys (shorthand)")
 
+	noSort := flag.Bool("no-sort", false, "Do not sort variables alphabetically")
+	flag.BoolVar(noSort, "ns", false, "Do not sort variables alphabetically (shorthand)")
+
 	// Set custom usage function
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "🧙‍♂️ DotEnvify - Convert key-value pairs to environment variables\n\n")
@@ -204,6 +220,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "  -g (group)\tAzure DevOps variable group name (required)\n")
 		fmt.Fprintf(os.Stderr, "  -out (output)\tOutput file path (default: .env)\n")
 		fmt.Fprintf(os.Stderr, "  -nl (no-lower)\tIgnore variables with lowercase keys\n")
+		fmt.Fprintf(os.Stderr, "  -ns (no-sort)\tDo not sort variables alphabetically\n")
 		fmt.Fprintf(os.Stderr, "  -h (help)\tShow this help message\n")
 
 		fmt.Fprintf(os.Stderr, "\nFor more information, visit: https://github.com/webb1es/dotenvify\n")
@@ -268,7 +285,7 @@ func main() {
 		}
 
 		// Process Azure DevOps variables
-		processAzureDevOpsVariables(org, proj, *varGroup, *outputFilePath, *noLower)
+		processAzureDevOpsVariables(org, proj, *varGroup, *outputFilePath, *noLower, *noSort)
 		return
 	}
 
@@ -428,5 +445,5 @@ func main() {
 	}
 
 	// Process variables
-	ProcessVariables(variables, outputFile, *noLower)
+	ProcessVariables(variables, outputFile, *noLower, *noSort)
 }
