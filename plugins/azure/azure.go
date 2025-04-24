@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
 	"os/exec"
 	"regexp"
 	"strings"
@@ -165,11 +164,6 @@ func ParseURL(url string) (string, string, error) {
 	}
 
 	return "", "", fmt.Errorf("invalid Azure DevOps URL format. Expected: https://dev.azure.com/{organization}/{project} or https://{organization}.visualstudio.com/{project}")
-}
-
-// GetDefaultURL gets the default project URL from environment variables
-func GetDefaultURL() string {
-	return os.Getenv("AZURE_DEVOPS_URL")
 }
 
 // GetVariables gets variables from Azure DevOps

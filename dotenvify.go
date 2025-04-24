@@ -64,33 +64,6 @@ func readUserInput(prompt string) string {
 	return strings.TrimSpace(input)
 }
 
-// Read user input and ask if they want to store it in an environment variable
-func readUserInputWithEnvOption(prompt, envVar string) string {
-	value := readUserInput(prompt)
-	if value != "" {
-		saveToEnv := readUserInput(fmt.Sprintf("Would you like to save this to %s environment variable? [Y/n]: ", envVar))
-		if saveToEnv == "" || strings.ToLower(saveToEnv) == "y" || strings.ToLower(saveToEnv) == "yes" {
-			// Set for current process
-			err := os.Setenv(envVar, value)
-			if err != nil {
-				msg("warning", fmt.Sprintf("Failed to set environment variable %s: %v", envVar, err))
-			} else {
-				msg("info", fmt.Sprintf("🔒 Saved to %s environment variable for this session", envVar))
-				// Provide instructions for permanent setting
-				shellType := os.Getenv("SHELL")
-				if strings.Contains(shellType, "bash") {
-					msg("info", fmt.Sprintf("To save permanently, add this to your ~/.bashrc: export %s=\"%s\"", envVar, value))
-				} else if strings.Contains(shellType, "zsh") {
-					msg("info", fmt.Sprintf("To save permanently, add this to your ~/.zshrc: export %s=\"%s\"", envVar, value))
-				} else {
-					msg("info", fmt.Sprintf("To save permanently, add this to your shell profile: export %s=\"%s\"", envVar, value))
-				}
-			}
-		}
-	}
-	return value
-}
-
 // WriteVariablesToFile writes variables to a file in export format
 func writeVariablesToFile(variables map[string]string, outputFile string, noLower bool, noSort bool) error {
 	var outputLines []string
@@ -182,8 +155,8 @@ func main() {
 	azureMode := flag.Bool("azure", false, "Enable Azure DevOps mode")
 	flag.BoolVar(azureMode, "az", false, "Enable Azure DevOps mode (shorthand)")
 
-	projectURL := flag.String("url", azure.GetDefaultURL(), "Azure DevOps project URL (default: $AZURE_DEVOPS_URL)")
-	flag.StringVar(projectURL, "u", azure.GetDefaultURL(), "Azure DevOps project URL (shorthand)")
+	projectURL := flag.String("url", "", "Azure DevOps project URL")
+	flag.StringVar(projectURL, "u", "", "Azure DevOps project URL (shorthand)")
 
 	organization := flag.String("org", "", "Azure DevOps organization name (inferred from URL if not provided)")
 	flag.StringVar(organization, "o", "", "Azure DevOps organization name (shorthand)")
@@ -214,7 +187,7 @@ func main() {
 		// Custom flag printing to combine short and long forms
 		fmt.Fprintf(os.Stderr, "  -v (version)\tShow version information\n")
 		fmt.Fprintf(os.Stderr, "  -az (azure)\tEnable Azure DevOps mode\n")
-		fmt.Fprintf(os.Stderr, "  -u (url)\tAzure DevOps project URL (default: $AZURE_DEVOPS_URL)\n")
+		fmt.Fprintf(os.Stderr, "  -u (url)\tAzure DevOps project URL\n")
 		fmt.Fprintf(os.Stderr, "  -o (org)\tAzure DevOps organization name (inferred from URL if not provided)\n")
 		fmt.Fprintf(os.Stderr, "  -p (project)\tAzure DevOps project name (inferred from URL if not provided)\n")
 		fmt.Fprintf(os.Stderr, "  -g (group)\tAzure DevOps variable group name (required)\n")
@@ -243,14 +216,7 @@ func main() {
 		proj := *project
 		url := *projectURL
 
-		// Check for URL from environment variable
-		envURL := azure.GetDefaultURL()
-		if url == "" && envURL != "" {
-			url = envURL
-			msg("info", fmt.Sprintf("🔗 Using Azure DevOps URL from AZURE_DEVOPS_URL environment variable: %s", url))
-		}
-
-		// If URL is provided (from args or env), parse it to get org and project
+		// If URL is provided, parse it to get org and project
 		if url != "" {
 			var err error
 			org, proj, err = azure.ParseURL(url)
@@ -261,7 +227,7 @@ func main() {
 		} else if org == "" || proj == "" {
 			// If org or project is still empty, prompt for URL
 			msg("info", "No Azure DevOps URL provided")
-			url = readUserInputWithEnvOption("Enter your Azure DevOps project URL (e.g., https://dev.azure.com/org/project): ", "AZURE_DEVOPS_URL")
+			url = readUserInput("Enter your Azure DevOps project URL (e.g., https://dev.azure.com/org/project): ")
 			if url == "" {
 				exitOnError(fmt.Errorf("no URL provided"), "Failed to get Azure DevOps URL")
 			}

@@ -78,7 +78,7 @@ Fetch variables directly from your Azure DevOps variable groups:
 # First, make sure you're logged in
 az login
 
-# Using project URL (recommended)
+# Using project URL
 dotenvify -az -u "https://dev.azure.com/your-org/your-project" -g "your-variable-group"
 
 # Save to a specific file
@@ -98,8 +98,6 @@ DotEnvify uses your existing Azure CLI authentication:
 
 Just make sure you're logged in with `az login` before running the tool.
 </details>
-
-> 💡 **Tip**: Set `AZURE_DEVOPS_URL` in your environment to avoid typing the URL each time!
 
 ## ✨ Key Features
 
