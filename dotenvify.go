@@ -89,7 +89,7 @@ func writeVariablesToFile(variables map[string]string, outputFile string, noLowe
 
 	// Create output lines using sorted keys
 	for _, key := range keys {
-		outputLines = append(outputLines, fmt.Sprintf("export %s=\"%s\"", key, variables[key]))
+		outputLines = append(outputLines, fmt.Sprintf("export %s=%s", key, variables[key]))
 	}
 
 	if skippedCount > 0 {
@@ -303,8 +303,8 @@ func main() {
 			continue
 		}
 
-		// Check if line follows the pattern "export KEY="VALUE""
-		if !strings.HasPrefix(line, "export ") || !strings.Contains(line, "=\"") || !strings.HasSuffix(line, "\"") {
+		// Check if line follows the pattern "export KEY=VALUE"
+		if !strings.HasPrefix(line, "export ") || !strings.Contains(line, "=") {
 			alreadyInCorrectFormat = false
 			break
 		}
