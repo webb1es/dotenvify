@@ -64,6 +64,29 @@ func readUserInput(prompt string) string {
 	return strings.TrimSpace(input)
 }
 
+// isURL checks if a string is likely a URL
+func isURL(s string) bool {
+	// Check for common URL prefixes
+	return strings.HasPrefix(s, "http://") || 
+	       strings.HasPrefix(s, "https://") || 
+	       strings.HasPrefix(s, "ftp://") ||
+	       strings.HasPrefix(s, "sftp://") ||
+	       strings.HasPrefix(s, "ssh://") ||
+	       strings.HasPrefix(s, "git://") ||
+	       strings.HasPrefix(s, "file://") ||
+	       strings.HasPrefix(s, "mailto:") ||
+	       strings.HasPrefix(s, "postgres://") ||
+	       strings.HasPrefix(s, "mysql://") ||
+	       strings.HasPrefix(s, "mongodb://") ||
+	       strings.HasPrefix(s, "redis://")
+}
+
+// isQuoted checks if a string is already quoted
+func isQuoted(s string) bool {
+	return (strings.HasPrefix(s, "\"") && strings.HasSuffix(s, "\"")) ||
+	       (strings.HasPrefix(s, "'") && strings.HasSuffix(s, "'"))
+}
+
 // WriteVariablesToFile writes variables to a file, optionally with export prefix
 func writeVariablesToFile(variables map[string]string, outputFile string, noLower bool, noSort bool, useExport bool) error {
 	var outputLines []string
@@ -89,10 +112,17 @@ func writeVariablesToFile(variables map[string]string, outputFile string, noLowe
 
 	// Create output lines using sorted keys
 	for _, key := range keys {
+		value := variables[key]
+
+		// Check if the value is a URL and not already quoted
+		if isURL(value) && !isQuoted(value) {
+			value = fmt.Sprintf("\"%s\"", value)
+		}
+
 		if useExport {
-			outputLines = append(outputLines, fmt.Sprintf("export %s=%s", key, variables[key]))
+			outputLines = append(outputLines, fmt.Sprintf("export %s=%s", key, value))
 		} else {
-			outputLines = append(outputLines, fmt.Sprintf("%s=%s", key, variables[key]))
+			outputLines = append(outputLines, fmt.Sprintf("%s=%s", key, value))
 		}
 	}
 
@@ -223,6 +253,7 @@ func main() {
 		org := *organization
 		proj := *project
 		url := *projectURL
+		defaultURL := "https://dev.azure.com/MTN-South-Africa/MyMTN%20NextGen"
 
 		// If URL is provided, parse it to get org and project
 		if url != "" {
@@ -233,17 +264,24 @@ func main() {
 			}
 			msg("info", fmt.Sprintf("🔗 Using Azure DevOps organization: %s, project: %s", org, proj))
 		} else if org == "" || proj == "" {
-			// If org or project is still empty, prompt for URL
-			msg("info", "No Azure DevOps URL provided")
-			url = readUserInput("Enter your Azure DevOps project URL (e.g., https://dev.azure.com/org/project): ")
-			if url == "" {
-				exitOnError(fmt.Errorf("no URL provided"), "Failed to get Azure DevOps URL")
-			}
+			// If org or project is still empty, use default URL
+			msg("info", fmt.Sprintf("🔗 Using default Azure DevOps URL: %s", defaultURL))
+			msg("info", "You can specify a custom URL with the -url or -u flag")
 
 			var err error
-			org, proj, err = azure.ParseURL(url)
+			org, proj, err = azure.ParseURL(defaultURL)
 			if err != nil {
-				exitOnError(err, "Failed to parse Azure DevOps URL")
+				// If default URL fails, prompt for URL
+				msg("warning", "Failed to use default URL, please provide your own")
+				url = readUserInput("Enter your Azure DevOps project URL (e.g., https://dev.azure.com/org/project): ")
+				if url == "" {
+					exitOnError(fmt.Errorf("no URL provided"), "Failed to get Azure DevOps URL")
+				}
+
+				org, proj, err = azure.ParseURL(url)
+				if err != nil {
+					exitOnError(err, "Failed to parse Azure DevOps URL")
+				}
 			}
 			msg("info", fmt.Sprintf("🔗 Using Azure DevOps organization: %s, project: %s", org, proj))
 		}
