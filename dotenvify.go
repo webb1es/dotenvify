@@ -64,8 +64,8 @@ func readUserInput(prompt string) string {
 	return strings.TrimSpace(input)
 }
 
-// WriteVariablesToFile writes variables to a file in export format
-func writeVariablesToFile(variables map[string]string, outputFile string, noLower bool, noSort bool) error {
+// WriteVariablesToFile writes variables to a file, optionally with export prefix
+func writeVariablesToFile(variables map[string]string, outputFile string, noLower bool, noSort bool, useExport bool) error {
 	var outputLines []string
 	variableCount := 0
 	skippedCount := 0
@@ -89,7 +89,11 @@ func writeVariablesToFile(variables map[string]string, outputFile string, noLowe
 
 	// Create output lines using sorted keys
 	for _, key := range keys {
-		outputLines = append(outputLines, fmt.Sprintf("export %s=%s", key, variables[key]))
+		if useExport {
+			outputLines = append(outputLines, fmt.Sprintf("export %s=%s", key, variables[key]))
+		} else {
+			outputLines = append(outputLines, fmt.Sprintf("%s=%s", key, variables[key]))
+		}
 	}
 
 	if skippedCount > 0 {
@@ -111,16 +115,16 @@ func writeVariablesToFile(variables map[string]string, outputFile string, noLowe
 }
 
 // ProcessVariables processes variables from a source and writes them to a file
-func ProcessVariables(variables map[string]string, outputFile string, noLower bool, noSort bool) {
+func ProcessVariables(variables map[string]string, outputFile string, noLower bool, noSort bool, useExport bool) {
 	// Write variables to file
-	err := writeVariablesToFile(variables, outputFile, noLower, noSort)
+	err := writeVariablesToFile(variables, outputFile, noLower, noSort, useExport)
 	if err != nil {
 		exitOnError(err, "Failed to write variables to file")
 	}
 }
 
 // Process variables from Azure DevOps
-func processAzureDevOpsVariables(org, project, groupName, outputFile string, noLower bool, noSort bool) {
+func processAzureDevOpsVariables(org, project, groupName, outputFile string, noLower bool, noSort bool, useExport bool) {
 	// Process variables using the Azure plugin
 	variables, err := azure.GetVariables(org, project, groupName, msg)
 	if err != nil {
@@ -144,7 +148,7 @@ func processAzureDevOpsVariables(org, project, groupName, outputFile string, noL
 	}
 
 	// Process variables
-	ProcessVariables(variables, outputFile, noLower, noSort)
+	ProcessVariables(variables, outputFile, noLower, noSort, useExport)
 }
 
 func main() {
@@ -176,6 +180,9 @@ func main() {
 	noSort := flag.Bool("no-sort", false, "Do not sort variables alphabetically")
 	flag.BoolVar(noSort, "ns", false, "Do not sort variables alphabetically (shorthand)")
 
+	useExport := flag.Bool("export", false, "Add 'export' prefix to variables")
+	flag.BoolVar(useExport, "e", false, "Add 'export' prefix to variables (shorthand)")
+
 	// Set custom usage function
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "🧙‍♂️ DotEnvify - Convert key-value pairs to environment variables\n\n")
@@ -194,6 +201,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "  -out (output)\tOutput file path (default: .env)\n")
 		fmt.Fprintf(os.Stderr, "  -nl (no-lower)\tIgnore variables with lowercase keys\n")
 		fmt.Fprintf(os.Stderr, "  -ns (no-sort)\tDo not sort variables alphabetically\n")
+		fmt.Fprintf(os.Stderr, "  -e (export)\tAdd 'export' prefix to variables\n")
 		fmt.Fprintf(os.Stderr, "  -h (help)\tShow this help message\n")
 
 		fmt.Fprintf(os.Stderr, "\nFor more information, visit: https://github.com/webb1es/dotenvify\n")
@@ -251,7 +259,7 @@ func main() {
 		}
 
 		// Process Azure DevOps variables
-		processAzureDevOpsVariables(org, proj, *varGroup, *outputFilePath, *noLower, *noSort)
+		processAzureDevOpsVariables(org, proj, *varGroup, *outputFilePath, *noLower, *noSort, *useExport)
 		return
 	}
 
@@ -303,10 +311,19 @@ func main() {
 			continue
 		}
 
-		// Check if line follows the pattern "export KEY=VALUE"
-		if !strings.HasPrefix(line, "export ") || !strings.Contains(line, "=") {
-			alreadyInCorrectFormat = false
-			break
+		// Check if line follows the expected pattern based on useExport flag
+		if *useExport {
+			// If useExport is true, expect "export KEY=VALUE"
+			if !strings.HasPrefix(line, "export ") || !strings.Contains(line, "=") {
+				alreadyInCorrectFormat = false
+				break
+			}
+		} else {
+			// If useExport is false, expect "KEY=VALUE" without export prefix
+			if strings.HasPrefix(line, "export ") || !strings.Contains(line, "=") {
+				alreadyInCorrectFormat = false
+				break
+			}
 		}
 	}
 
@@ -411,5 +428,5 @@ func main() {
 	}
 
 	// Process variables
-	ProcessVariables(variables, outputFile, *noLower, *noSort)
+	ProcessVariables(variables, outputFile, *noLower, *noSort, *useExport)
 }
