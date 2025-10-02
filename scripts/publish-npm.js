@@ -75,12 +75,20 @@ try {
     console.log(`✅ Successfully published ${packageName}@${npmVersion} to npm`);
     console.log(`🎉 Package is now available for installation via: npm install -g ${packageName}`);
   } catch (error) {
-    // Check if it's a 409 conflict (version already exists)
+    // Check if it's an idempotent publish error (version already exists)
     const errOut = (error && (error.stderr?.toString() || error.stdout?.toString() || error.message)) || '';
-    if (errOut.includes('E409') || errOut.includes('409') || errOut.includes('Conflict')) {
-      console.log(`✅ Version ${npmVersion} already published to npm (409 conflict - this is expected for subsequent artifact runs)`);
+    const alreadyPublished = (
+      errOut.includes('E409') ||
+      errOut.includes('409') ||
+      errOut.includes('Conflict') ||
+      errOut.includes('E403') ||
+      errOut.includes('EPUBLISHCONFLICT') ||
+      /cannot publish over (the )?previously published versions/i.test(errOut)
+    );
+    if (alreadyPublished) {
+      console.log(`✅ Version ${npmVersion} already published to npm (idempotent: treating conflict/forbidden as success)`);
       console.log('📦 npm package is up to date');
-      // Exit successfully for 409 conflicts
+      // Exit successfully for conflicts indicating the version already exists
       process.exit(0);
     } else {
       // Re-throw other errors
