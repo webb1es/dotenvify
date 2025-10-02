@@ -67,28 +67,33 @@ func readUserInput(prompt string) string {
 // isURL checks if a string is likely a URL
 func isURL(s string) bool {
 	// Check for common URL prefixes
-	return strings.HasPrefix(s, "http://") || 
-	       strings.HasPrefix(s, "https://") || 
-	       strings.HasPrefix(s, "ftp://") ||
-	       strings.HasPrefix(s, "sftp://") ||
-	       strings.HasPrefix(s, "ssh://") ||
-	       strings.HasPrefix(s, "git://") ||
-	       strings.HasPrefix(s, "file://") ||
-	       strings.HasPrefix(s, "mailto:") ||
-	       strings.HasPrefix(s, "postgres://") ||
-	       strings.HasPrefix(s, "mysql://") ||
-	       strings.HasPrefix(s, "mongodb://") ||
-	       strings.HasPrefix(s, "redis://")
+	return strings.HasPrefix(s, "http://") ||
+		strings.HasPrefix(s, "https://") ||
+		strings.HasPrefix(s, "ftp://") ||
+		strings.HasPrefix(s, "sftp://") ||
+		strings.HasPrefix(s, "ssh://") ||
+		strings.HasPrefix(s, "git://") ||
+		strings.HasPrefix(s, "file://") ||
+		strings.HasPrefix(s, "mailto:") ||
+		strings.HasPrefix(s, "postgres://") ||
+		strings.HasPrefix(s, "mysql://") ||
+		strings.HasPrefix(s, "mongodb://") ||
+		strings.HasPrefix(s, "redis://")
+}
+
+// isHTTPURL checks if a string is specifically an HTTP/HTTPS URL
+func isHTTPURL(s string) bool {
+	return strings.HasPrefix(s, "http://") || strings.HasPrefix(s, "https://")
 }
 
 // isQuoted checks if a string is already quoted
 func isQuoted(s string) bool {
 	return (strings.HasPrefix(s, "\"") && strings.HasSuffix(s, "\"")) ||
-	       (strings.HasPrefix(s, "'") && strings.HasSuffix(s, "'"))
+		(strings.HasPrefix(s, "'") && strings.HasSuffix(s, "'"))
 }
 
 // WriteVariablesToFile writes variables to a file, optionally with export prefix
-func writeVariablesToFile(variables map[string]string, outputFile string, noLower bool, noSort bool, useExport bool) error {
+func writeVariablesToFile(variables map[string]string, outputFile string, noLower bool, noSort bool, useExport bool, urlOnly bool) error {
 	var outputLines []string
 	variableCount := 0
 	skippedCount := 0
@@ -98,6 +103,11 @@ func writeVariablesToFile(variables map[string]string, outputFile string, noLowe
 	for key := range variables {
 		// Skip lowercase keys if noLower is true
 		if noLower && key == strings.ToLower(key) && key != strings.ToUpper(key) {
+			skippedCount++
+			continue
+		}
+		// Skip non-URL values if urlOnly is true
+		if urlOnly && !isHTTPURL(variables[key]) {
 			skippedCount++
 			continue
 		}
@@ -127,7 +137,11 @@ func writeVariablesToFile(variables map[string]string, outputFile string, noLowe
 	}
 
 	if skippedCount > 0 {
-		msg("info", fmt.Sprintf("🔍 Skipped %d variables with lowercase keys", skippedCount))
+		if urlOnly {
+			msg("info", fmt.Sprintf("🔍 Skipped %d variables (filtered)", skippedCount))
+		} else {
+			msg("info", fmt.Sprintf("🔍 Skipped %d variables with lowercase keys", skippedCount))
+		}
 	}
 
 	// Write the output file
@@ -145,16 +159,16 @@ func writeVariablesToFile(variables map[string]string, outputFile string, noLowe
 }
 
 // ProcessVariables processes variables from a source and writes them to a file
-func ProcessVariables(variables map[string]string, outputFile string, noLower bool, noSort bool, useExport bool) {
+func ProcessVariables(variables map[string]string, outputFile string, noLower bool, noSort bool, useExport bool, urlOnly bool) {
 	// Write variables to file
-	err := writeVariablesToFile(variables, outputFile, noLower, noSort, useExport)
+	err := writeVariablesToFile(variables, outputFile, noLower, noSort, useExport, urlOnly)
 	if err != nil {
 		exitOnError(err, "Failed to write variables to file")
 	}
 }
 
 // Process variables from Azure DevOps
-func processAzureDevOpsVariables(org, project, groupName, outputFile string, noLower bool, noSort bool, useExport bool) {
+func processAzureDevOpsVariables(org, project, groupName, outputFile string, noLower bool, noSort bool, useExport bool, urlOnly bool) {
 	// Process variables using the Azure plugin
 	variables, err := azure.GetVariables(org, project, groupName, msg)
 	if err != nil {
@@ -178,7 +192,7 @@ func processAzureDevOpsVariables(org, project, groupName, outputFile string, noL
 	}
 
 	// Process variables
-	ProcessVariables(variables, outputFile, noLower, noSort, useExport)
+	ProcessVariables(variables, outputFile, noLower, noSort, useExport, urlOnly)
 }
 
 func main() {
@@ -213,12 +227,15 @@ func main() {
 	useExport := flag.Bool("export", false, "Add 'export' prefix to variables")
 	flag.BoolVar(useExport, "e", false, "Add 'export' prefix to variables (shorthand)")
 
+	urlOnly := flag.Bool("url-only", false, "Include only variables with HTTP/HTTPS URL values")
+	flag.BoolVar(urlOnly, "urls", false, "Include only variables with HTTP/HTTPS URL values (shorthand)")
+
 	// Set custom usage function
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "🧙‍♂️ DotEnvify - Convert key-value pairs to environment variables\n\n")
 		fmt.Fprintf(os.Stderr, "Usage:\n")
 		fmt.Fprintf(os.Stderr, "  Local file mode:  dotenvify source_file [output_file]\n")
-		fmt.Fprintf(os.Stderr, "  Azure DevOps:     dotenvify -azure -group \"variable-group-name\" [options]\n\n")
+		fmt.Fprintf(os.Stderr, "  Azure DevOps:     dotenvify -azure -group \"group1,group2,group3\" [options]\n\n")
 		fmt.Fprintf(os.Stderr, "Options:\n")
 
 		// Custom flag printing to combine short and long forms
@@ -227,11 +244,12 @@ func main() {
 		fmt.Fprintf(os.Stderr, "  -u (url)\tAzure DevOps project URL\n")
 		fmt.Fprintf(os.Stderr, "  -o (org)\tAzure DevOps organization name (inferred from URL if not provided)\n")
 		fmt.Fprintf(os.Stderr, "  -p (project)\tAzure DevOps project name (inferred from URL if not provided)\n")
-		fmt.Fprintf(os.Stderr, "  -g (group)\tAzure DevOps variable group name (required)\n")
+		fmt.Fprintf(os.Stderr, "  -g (group)\tAzure DevOps variable group name(s) - comma-separated for multiple groups\n")
 		fmt.Fprintf(os.Stderr, "  -out (output)\tOutput file path (default: .env)\n")
 		fmt.Fprintf(os.Stderr, "  -nl (no-lower)\tIgnore variables with lowercase keys\n")
 		fmt.Fprintf(os.Stderr, "  -ns (no-sort)\tDo not sort variables alphabetically\n")
 		fmt.Fprintf(os.Stderr, "  -e (export)\tAdd 'export' prefix to variables\n")
+		fmt.Fprintf(os.Stderr, "  -urls (url-only)\tInclude only variables with HTTP/HTTPS URL values\n")
 		fmt.Fprintf(os.Stderr, "  -h (help)\tShow this help message\n")
 
 		fmt.Fprintf(os.Stderr, "\nFor more information, visit: https://github.com/webb1es/dotenvify\n")
@@ -297,7 +315,7 @@ func main() {
 		}
 
 		// Process Azure DevOps variables
-		processAzureDevOpsVariables(org, proj, *varGroup, *outputFilePath, *noLower, *noSort, *useExport)
+		processAzureDevOpsVariables(org, proj, *varGroup, *outputFilePath, *noLower, *noSort, *useExport, *urlOnly)
 		return
 	}
 
@@ -365,7 +383,7 @@ func main() {
 		}
 	}
 
-	if alreadyInCorrectFormat && len(lines) > 0 {
+	if alreadyInCorrectFormat && len(lines) > 0 && !*urlOnly && !*noLower {
 		msg("success", fmt.Sprintf("✨ File '%s' is already in the expected format!", sourceFile))
 		if sourceFile != outputFile {
 			// If output file is different, copy the source file to the output file
@@ -466,5 +484,5 @@ func main() {
 	}
 
 	// Process variables
-	ProcessVariables(variables, outputFile, *noLower, *noSort, *useExport)
+	ProcessVariables(variables, outputFile, *noLower, *noSort, *useExport, *urlOnly)
 }

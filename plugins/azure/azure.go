@@ -167,7 +167,7 @@ func ParseURL(url string) (string, string, error) {
 }
 
 // GetVariables gets variables from Azure DevOps
-func GetVariables(org, project, groupName string, msgFunc func(string, string)) (map[string]string, error) {
+func GetVariables(org, project, groupNames string, msgFunc func(string, string)) (map[string]string, error) {
 	// Validate inputs
 	if strings.TrimSpace(org) == "" {
 		return nil, fmt.Errorf("organization name is required")
@@ -175,26 +175,51 @@ func GetVariables(org, project, groupName string, msgFunc func(string, string)) 
 	if strings.TrimSpace(project) == "" {
 		return nil, fmt.Errorf("project name is required")
 	}
-	if strings.TrimSpace(groupName) == "" {
-		return nil, fmt.Errorf("variable group name is required")
+	if strings.TrimSpace(groupNames) == "" {
+		return nil, fmt.Errorf("variable group name(s) required")
 	}
 
 	// Create Azure DevOps client
 	client := NewClient(org, project)
 
-	// Get variable group
-	msgFunc("info", fmt.Sprintf("🔍 Fetching variable group '%s' from Azure DevOps...", groupName))
-	group, err := client.GetVariableGroupByName(groupName)
-	if err != nil {
-		return nil, fmt.Errorf("Failed to fetch variable group: %v", err)
+	// Parse group names (support comma-separated values)
+	groupList := strings.Split(groupNames, ",")
+	for i := range groupList {
+		groupList[i] = strings.TrimSpace(groupList[i])
 	}
 
-	// Process variables
+	// Process variables from all groups
 	variables := make(map[string]string)
-	msgFunc("info", fmt.Sprintf("🧩 Processing variables from group '%s'...", groupName))
 
-	for key, variable := range group.Variables {
-		variables[key] = variable.Value
+	for _, groupName := range groupList {
+		if groupName == "" {
+			continue
+		}
+
+		// Get variable group
+		msgFunc("info", fmt.Sprintf("🔍 Fetching variable group '%s' from Azure DevOps...", groupName))
+		group, err := client.GetVariableGroupByName(groupName)
+		if err != nil {
+			return nil, fmt.Errorf("Failed to fetch variable group '%s': %v", groupName, err)
+		}
+
+		// Process variables from this group
+		msgFunc("info", fmt.Sprintf("🧩 Processing variables from group '%s'...", groupName))
+
+		for key, variable := range group.Variables {
+			// Check for duplicate keys across groups
+			if existingValue, exists := variables[key]; exists {
+				msgFunc("warning", fmt.Sprintf("⚠️ Variable '%s' found in multiple groups - using value from '%s'", key, groupName))
+				if existingValue != variable.Value {
+					msgFunc("warning", fmt.Sprintf("⚠️ Values differ: previous='%s', current='%s'", existingValue, variable.Value))
+				}
+			}
+			variables[key] = variable.Value
+		}
+	}
+
+	if len(groupList) > 1 {
+		msgFunc("success", fmt.Sprintf("✅ Successfully processed %d variable groups", len(groupList)))
 	}
 
 	return variables, nil

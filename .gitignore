@@ -22,6 +22,7 @@
 *.out
 /vendor/
 /dist/
+dotenvify
 
 # OS specific files
 .DS_Store
