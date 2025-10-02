@@ -21,6 +21,7 @@ try {
   // Update package.json version to match the release
   const packageJsonPath = path.join(__dirname, '..', 'package.json');
   const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+  const packageName = packageJson.name;
   packageJson.version = npmVersion;
   
   fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2) + '\n');
@@ -35,6 +36,18 @@ try {
   
   // Configure npm registry authentication
   execSync(`npm config set //registry.npmjs.org/:_authToken=${npmToken}`, { stdio: 'inherit' });
+
+  // Idempotency: if the version already exists in the registry, skip publish successfully
+  try {
+    const viewCmd = `npm view ${packageName}@${npmVersion} version`;
+    const existing = execSync(viewCmd, { stdio: ['ignore', 'pipe', 'pipe'] }).toString().trim();
+    if (existing === npmVersion) {
+      console.log(`✅ ${packageName}@${npmVersion} already exists on npm. Skipping publish.`);
+      process.exit(0);
+    }
+  } catch (_) {
+    // If npm view fails, we assume the version does not exist yet and proceed.
+  }
   
   console.log(`🚀 Proceeding with npm publish for version ${npmVersion}`);
   
@@ -57,11 +70,12 @@ try {
   console.log('📦 Publishing to npm...');
   try {
     execSync('npm publish --access public', { stdio: 'inherit' });
-    console.log(`✅ Successfully published @webbies.dev/dotenvify@${npmVersion} to npm`);
-    console.log('🎉 Package is now available for installation via: npm install -g @webbies.dev/dotenvify');
+    console.log(`✅ Successfully published ${packageName}@${npmVersion} to npm`);
+    console.log(`🎉 Package is now available for installation via: npm install -g ${packageName}`);
   } catch (error) {
     // Check if it's a 409 conflict (version already exists)
-    if (error.message.includes('409') || error.message.includes('Conflict')) {
+    const errOut = (error && (error.stderr?.toString() || error.stdout?.toString() || error.message)) || '';
+    if (errOut.includes('E409') || errOut.includes('409') || errOut.includes('Conflict')) {
       console.log(`✅ Version ${npmVersion} already published to npm (409 conflict - this is expected for subsequent artifact runs)`);
       console.log('📦 npm package is up to date');
       // Exit successfully for 409 conflicts
