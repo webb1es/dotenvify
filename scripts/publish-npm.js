@@ -26,6 +26,19 @@ try {
   fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2) + '\n');
   console.log(`Updated package.json version to ${npmVersion}`);
   
+  // Check if this version already exists on npm
+  try {
+    const checkResult = execSync(`npm view @webbies.dev/dotenvify@${npmVersion} version 2>/dev/null`, { encoding: 'utf8' });
+    if (checkResult.trim() === npmVersion) {
+      console.log(`✅ Version ${npmVersion} already exists on npm - skipping publish (this is expected behavior)`);
+      console.log('📦 npm package is up to date');
+      process.exit(0);
+    }
+  } catch (error) {
+    // Version doesn't exist, proceed with publish
+    console.log(`🔍 Version ${npmVersion} not found on npm - proceeding with publish`);
+  }
+  
   // Set npm authentication
   const npmToken = process.env.NPM_TOKEN;
   if (!npmToken) {
@@ -52,10 +65,11 @@ try {
   console.log(`Found ${binFiles.length} binary files:`, binFiles);
   
   // Publish to npm
-  console.log('Publishing to npm...');
+  console.log('📦 Publishing to npm...');
   execSync('npm publish --access public', { stdio: 'inherit' });
   
-  console.log(`Successfully published @webbies.dev/dotenvify@${npmVersion} to npm`);
+  console.log(`✅ Successfully published @webbies.dev/dotenvify@${npmVersion} to npm`);
+  console.log('🎉 Package is now available for installation via: npm install -g @webbies.dev/dotenvify');
   
 } catch (error) {
   console.error('Failed to publish npm package:', error.message);
