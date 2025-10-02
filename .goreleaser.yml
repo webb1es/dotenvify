@@ -144,7 +144,7 @@ scoops:
     description: "Convert key-value pairs to environment variables"
     license: "MIT"
 
-# NPM package publishing - use filter to run only for one artifact
+# NPM package publishing
 publishers:
   - name: npm
     cmd: node scripts/publish-npm.js
@@ -152,5 +152,3 @@ publishers:
       - NPM_TOKEN={{ .Env.NPM_TOKEN }}
       - RELEASE_VERSION={{ .Version }}
       - RELEASE_TAG={{ .Tag }}
-    filter:
-      filename: "*linux_amd64*"

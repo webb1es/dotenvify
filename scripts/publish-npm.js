@@ -55,10 +55,22 @@ try {
   
   // Publish to npm
   console.log('📦 Publishing to npm...');
-  execSync('npm publish --access public', { stdio: 'inherit' });
-  
-  console.log(`✅ Successfully published @webbies.dev/dotenvify@${npmVersion} to npm`);
-  console.log('🎉 Package is now available for installation via: npm install -g @webbies.dev/dotenvify');
+  try {
+    execSync('npm publish --access public', { stdio: 'inherit' });
+    console.log(`✅ Successfully published @webbies.dev/dotenvify@${npmVersion} to npm`);
+    console.log('🎉 Package is now available for installation via: npm install -g @webbies.dev/dotenvify');
+  } catch (error) {
+    // Check if it's a 409 conflict (version already exists)
+    if (error.message.includes('409') || error.message.includes('Conflict')) {
+      console.log(`✅ Version ${npmVersion} already published to npm (409 conflict - this is expected for subsequent artifact runs)`);
+      console.log('📦 npm package is up to date');
+      // Exit successfully for 409 conflicts
+      process.exit(0);
+    } else {
+      // Re-throw other errors
+      throw error;
+    }
+  }
   
 } catch (error) {
   console.error('Failed to publish npm package:', error.message);
