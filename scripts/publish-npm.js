@@ -69,7 +69,9 @@ try {
   // Publish to npm
   console.log('📦 Publishing to npm...');
   try {
-    execSync('npm publish --access public', { stdio: 'inherit' });
+    const publishOutput = execSync('npm publish --access public', { stdio: ['ignore', 'pipe', 'pipe'] }).toString();
+    // Echo npm publish output for visibility in CI logs
+    if (publishOutput) process.stdout.write(publishOutput);
     console.log(`✅ Successfully published ${packageName}@${npmVersion} to npm`);
     console.log(`🎉 Package is now available for installation via: npm install -g ${packageName}`);
   } catch (error) {
