@@ -1,14 +1,11 @@
 # 🧙‍♂️ DotEnvify
 
-> Because copying and pasting environment variables shouldn't be your midnight cardio 🏃‍♂️💨
+> Convert key-value pairs to environment variables with zero hassle
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Go Report Card](https://goreportcard.com/badge/github.com/webb1es/dotenvify)](https://goreportcard.com/report/github.com/webb1es/dotenvify)
 
-## 🤦‍♂️ The Problem
-
-Your team lead drops this in the chat:
-
+**Transform this:**
 ```
 API_KEY
 a1b2c3d4e5f6g7h8i9j0
@@ -16,8 +13,7 @@ DATABASE_URL
 postgres://user:password@localhost:5432/db
 ```
 
-And you need:
-
+**Into this:**
 ```
 export API_KEY="a1b2c3d4e5f6g7h8i9j0"
 export DATABASE_URL="postgres://user:password@localhost:5432/db"
@@ -27,31 +23,32 @@ After doing this manually one too many times, I rage-coded this tool. You're wel
 
 ## 🚀 Installation
 
-### 🍺 Homebrew (macOS and Linux)
+### npm (Recommended)
+```bash
+npm install -g @webbies.dev/dotenvify
+```
 
+### Homebrew (macOS/Linux)
 ```bash
 brew install webb1es/tap/dotenvify
 ```
 
-### 🪣 Scoop (Windows)
-
+### Scoop (Windows)
 ```bash
 scoop bucket add webb1es https://github.com/webb1es/scoop-bucket.git
 scoop install dotenvify
 ```
 
 <details>
-<summary>📦 Other Installation Methods</summary>
+<summary>📦 Other Methods</summary>
 
 #### Direct Download
-Download the latest release from the [GitHub Releases page](https://github.com/webb1es/dotenvify/releases).
+Download from [GitHub Releases](https://github.com/webb1es/dotenvify/releases)
 
 #### Build from Source
 ```bash
 git clone https://github.com/webb1es/dotenvify.git
-cd dotenvify
-go build -o dotenvify dotenvify.go
-sudo mv dotenvify /usr/local/bin/
+cd dotenvify && go build
 ```
 </details>
 
@@ -70,29 +67,27 @@ dotenvify your-vars.txt custom-output.env
 dotenvify -nl your-vars.txt
 ```
 
-### 🚀 Azure DevOps Mode
+### Azure DevOps Mode
 
-Fetch variables directly from your Azure DevOps variable groups:
+Fetch variables directly from Azure DevOps variable groups:
 
 ```bash
-# First, make sure you're logged in
+# Login to Azure CLI first
 az login
 
-# Using environment variable for default URL
+# Set default organization (optional)
 export DOTENVIFY_DEFAULT_ORG_URL="https://dev.azure.com/your-org/your-project"
-dotenvify -az -g "your-variable-group"
+dotenvify -azure -group "your-variable-group"
 
-# Using custom project URL
-dotenvify -az -u "https://dev.azure.com/your-org/your-project" -g "your-variable-group"
-
-# Save to a specific file
-dotenvify -az -g "your-variable-group" -out "custom-output.env"
-
-# Ignore variables with lowercase keys
-dotenvify -az -g "your-variable-group" -nl
+# Or specify URL directly
+dotenvify -azure -url "https://dev.azure.com/your-org/your-project" -group "your-variable-group"
 ```
 
-> **Note:** You can set a default Azure DevOps URL using the `DOTENVIFY_DEFAULT_ORG_URL` environment variable. You can override this with the `-u` or `-url` flag.
+**Options:**
+- `-out file.env` - Custom output file
+- `-nl` - Ignore lowercase variables  
+- `-export` - Add 'export' prefix
+- `-urls` - Only URL values
 
 <details>
 <summary>🔒 Security & Authentication Details</summary>
@@ -105,41 +100,30 @@ DotEnvify uses your existing Azure CLI authentication:
 Just make sure you're logged in with `az login` before running the tool.
 </details>
 
-## ✨ Key Features
+## ✨ Features
 
-- ⚡ **Fast**: Written in Go for blazing speed
-- 🔄 **Azure Integration**: Fetch variables directly from Azure DevOps
-- 🔒 **Secure Auth**: Uses your existing Azure CLI credentials
-- 🧹 **Smart Parsing**: Skips empty lines automatically
-- 🔍 **Format Detection**: Recognizes when files are already in the expected format
-- 🔤 **Case Control**: Option to ignore lowercase variables with `-nl`
-- 👻 **Zero Dependencies**: No package nightmares
+- ⚡ **Fast**: Written in Go
+- 🔄 **Azure DevOps**: Direct variable group integration  
+- 🔒 **Secure**: Uses existing Azure CLI auth
+- 🧹 **Smart**: Auto-detects input formats
+- 🔤 **Flexible**: Multiple output options
+- 📦 **Easy Install**: npm, Homebrew, Scoop
 
-## 📝 Input Format
+## 📝 Supported Formats
 
-DotEnvify now supports multiple input formats:
-
-```
-# Traditional format (key and value on separate lines)
+```bash
+# Key-value on separate lines
 KEY1
 value1
-KEY2
-value2
 
-# KEY=VALUE format
+# KEY=VALUE format  
 KEY1=value1
-KEY2=value2
 
-# KEY="VALUE" format with quotes
-KEY1="value1"
-KEY2="value1 with spaces"
+# KEY="VALUE" with quotes
+KEY1="value with spaces"
 
-# KEY VALUE format (on same line)
+# KEY VALUE on same line
 KEY1 value1
-KEY2 value2
-
-# Multiple KEY VALUE pairs on one line
-KEY1 value1 KEY2 value2
 ```
 
 Lines starting with `#` are treated as comments and ignored. The tool is smart enough to try different parsing strategies if one fails, making it robust against unfamiliar formats.

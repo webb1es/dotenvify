@@ -10,6 +10,12 @@ const packageJson = require('../package.json');
 const version = packageJson.version;
 
 console.log(`Building npm package for dotenvify v${version}`);
+console.log('Environment variables:', {
+  CI: process.env.CI,
+  GITHUB_ACTIONS: process.env.GITHUB_ACTIONS,
+  NODE_ENV: process.env.NODE_ENV,
+  PWD: process.env.PWD || process.cwd()
+});
 
 // Create bin directory if it doesn't exist
 const binDir = path.join(__dirname, '..', 'bin');
@@ -17,38 +23,28 @@ if (!fs.existsSync(binDir)) {
   fs.mkdirSync(binDir, { recursive: true });
 }
 
-// Check if we're in a CI environment (binaries should be provided by GoReleaser)
-if (process.env.CI || process.env.GITHUB_ACTIONS) {
+// Always assume CI environment when called by GoReleaser (dist directory exists)
+const distDir = path.join(__dirname, '..', 'dist');
+const isCI = process.env.CI || process.env.GITHUB_ACTIONS || fs.existsSync(distDir);
+
+if (isCI) {
   console.log('CI environment detected - binaries should be provided by GoReleaser');
+  console.log('Dist directory exists:', fs.existsSync(distDir));
   
-  // Look for binaries in multiple possible locations
-  const possibleDirs = [
-    path.join(__dirname, '..', 'dist'),
-    path.join(process.cwd(), 'dist'),
-    process.cwd()
-  ];
-  
-  let distDir = null;
-  for (const dir of possibleDirs) {
-    if (fs.existsSync(dir)) {
-      const files = fs.readdirSync(dir);
-      if (files.some(f => f.includes('dotenvify_'))) {
-        distDir = dir;
-        break;
-      }
-    }
-  }
-  
-  if (distDir) {
+  if (fs.existsSync(distDir)) {
     const files = fs.readdirSync(distDir);
     console.log('Available files in dist:', files);
+    
+    let foundBinaries = false;
     
     // Copy individual binaries from subdirectories
     files.forEach(file => {
       const filePath = path.join(distDir, file);
-      if (fs.statSync(filePath).isDirectory() && file.startsWith('dotenvify_')) {
-        // This is a binary directory, look for the actual binary inside
+      if (fs.existsSync(filePath) && fs.statSync(filePath).isDirectory() && file.startsWith('dotenvify_')) {
+        console.log(`Checking directory: ${file}`);
         const binaryFiles = fs.readdirSync(filePath);
+        console.log(`Files in ${file}:`, binaryFiles);
+        
         binaryFiles.forEach(binaryFile => {
           if (binaryFile === 'dotenvify' || binaryFile === 'dotenvify.exe') {
             const srcPath = path.join(filePath, binaryFile);
@@ -57,12 +53,23 @@ if (process.env.CI || process.env.GITHUB_ACTIONS) {
             fs.copyFileSync(srcPath, destPath);
             fs.chmodSync(destPath, '755');
             console.log(`Copied binary: ${file} -> ${destPath}`);
+            foundBinaries = true;
           }
         });
       }
     });
+    
+    if (!foundBinaries) {
+      console.error('No binary files found in dist subdirectories');
+      console.log('Current working directory:', process.cwd());
+      console.log('Script directory:', __dirname);
+      process.exit(1);
+    }
   } else {
-    console.error('No dist directory with binaries found');
+    console.error('Dist directory not found');
+    console.log('Looked for dist at:', distDir);
+    console.log('Current working directory:', process.cwd());
+    console.log('Available files in cwd:', fs.readdirSync(process.cwd()));
     process.exit(1);
   }
 } else {
