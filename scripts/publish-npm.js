@@ -15,31 +15,32 @@ if (!version || !tag) {
 console.log(`Publishing npm package version ${version} (${tag})`);
 
 try {
+  // Remove 'v' prefix from version if present
+  const npmVersion = version.startsWith('v') ? version.slice(1) : version;
+  
+  // Check for publish lock file to prevent multiple simultaneous publishes
+  const lockFile = path.join(__dirname, '..', `.npm-publish-${npmVersion}.lock`);
+  
+  if (fs.existsSync(lockFile)) {
+    const lockContent = fs.readFileSync(lockFile, 'utf8');
+    console.log(`✅ Found publish lock file - version ${npmVersion} already published by ${lockContent}`);
+    console.log('📦 npm package is up to date (skipping duplicate publish)');
+    process.exit(0);
+  }
+  
+  // Create lock file
+  fs.writeFileSync(lockFile, `${new Date().toISOString()} - ${process.env.GITHUB_RUN_ID || 'local'}`);
+  console.log(`🔒 Created publish lock file for version ${npmVersion}`);
+  
   // Update package.json version to match the release
   const packageJsonPath = path.join(__dirname, '..', 'package.json');
   const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
-  
-  // Remove 'v' prefix from version if present
-  const npmVersion = version.startsWith('v') ? version.slice(1) : version;
   packageJson.version = npmVersion;
   
   fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2) + '\n');
   console.log(`Updated package.json version to ${npmVersion}`);
   
-  // Check if this version already exists on npm
-  try {
-    const checkResult = execSync(`npm view @webbies.dev/dotenvify@${npmVersion} version 2>/dev/null`, { encoding: 'utf8' });
-    if (checkResult.trim() === npmVersion) {
-      console.log(`✅ Version ${npmVersion} already exists on npm - skipping publish (this is expected behavior)`);
-      console.log('📦 npm package is up to date');
-      process.exit(0);
-    }
-  } catch (error) {
-    // Version doesn't exist, proceed with publish
-    console.log(`🔍 Version ${npmVersion} not found on npm - proceeding with publish`);
-  }
-  
-  // Set npm authentication
+  // Set npm authentication first (needed for npm view to work properly)
   const npmToken = process.env.NPM_TOKEN;
   if (!npmToken) {
     console.error('NPM_TOKEN environment variable is required');
@@ -48,6 +49,8 @@ try {
   
   // Configure npm registry authentication
   execSync(`npm config set //registry.npmjs.org/:_authToken=${npmToken}`, { stdio: 'inherit' });
+  
+  console.log(`🚀 Proceeding with npm publish for version ${npmVersion}`);
   
   // Build the package (copies binaries to bin directory)
   console.log('Building npm package...');

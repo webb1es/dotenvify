@@ -24,6 +24,11 @@
 /dist/
 dotenvify
 
+# npm publishing
+/bin/
+*.lock
+.npm-publish-*.lock
+
 # OS specific files
 .DS_Store
 Thumbs.db
