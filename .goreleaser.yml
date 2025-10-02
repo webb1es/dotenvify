@@ -144,11 +144,13 @@ scoops:
     description: "Convert key-value pairs to environment variables"
     license: "MIT"
 
-# NPM package publishing - run once after all artifacts are built
-after:
-  hooks:
-    - cmd: node scripts/publish-npm.js
-      env:
-        - NPM_TOKEN={{ .Env.NPM_TOKEN }}
-        - RELEASE_VERSION={{ .Version }}
-        - RELEASE_TAG={{ .Tag }}
+# NPM package publishing - use filter to run only for one artifact
+publishers:
+  - name: npm
+    cmd: node scripts/publish-npm.js
+    env:
+      - NPM_TOKEN={{ .Env.NPM_TOKEN }}
+      - RELEASE_VERSION={{ .Version }}
+      - RELEASE_TAG={{ .Tag }}
+    filter:
+      filename: "*linux_amd64*"
