@@ -143,3 +143,12 @@ scoops:
     homepage: "https://github.com/webb1es/dotenvify"
     description: "Convert key-value pairs to environment variables"
     license: "MIT"
+
+# NPM package publishing
+publishers:
+  - name: npm
+    cmd: node scripts/publish-npm.js
+    env:
+      - NPM_TOKEN={{ .Env.NPM_TOKEN }}
+      - RELEASE_VERSION={{ .Version }}
+      - RELEASE_TAG={{ .Tag }}

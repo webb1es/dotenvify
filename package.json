@@ -1,0 +1,45 @@
+{
+  "name": "@webbies.dev/dotenvify",
+  "version": "1.0.0",
+  "description": "A utility to convert environment variables from various sources into different formats",
+  "main": "bin/dotenvify.js",
+  "bin": {
+    "dotenvify": "bin/dotenvify.js"
+  },
+  "scripts": {
+    "build": "node scripts/build.js",
+    "prepack": "npm run build",
+    "test": "node bin/dotenvify.js --help"
+  },
+  "keywords": [
+    "dotenv",
+    "environment",
+    "variables",
+    "azure",
+    "devops",
+    "cli"
+  ],
+  "author": "Webster Muchefa",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webb1es/dotenvify.git"
+  },
+  "files": [
+    "bin/",
+    "LICENSE",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=12"
+  },
+  "os": [
+    "darwin",
+    "linux",
+    "win32"
+  ],
+  "cpu": [
+    "x64",
+    "arm64"
+  ]
+}

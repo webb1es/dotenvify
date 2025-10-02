@@ -78,7 +78,8 @@ Fetch variables directly from your Azure DevOps variable groups:
 # First, make sure you're logged in
 az login
 
-# Using default URL (https://dev.azure.com/MTN-South-Africa/MyMTN%20NextGen)
+# Using environment variable for default URL
+export DOTENVIFY_DEFAULT_ORG_URL="https://dev.azure.com/your-org/your-project"
 dotenvify -az -g "your-variable-group"
 
 # Using custom project URL
@@ -91,7 +92,7 @@ dotenvify -az -g "your-variable-group" -out "custom-output.env"
 dotenvify -az -g "your-variable-group" -nl
 ```
 
-> **Note:** By default, the tool uses `https://dev.azure.com/MTN-South-Africa/MyMTN%20NextGen` as the Azure DevOps URL. You can override this with the `-u` or `-url` flag.
+> **Note:** You can set a default Azure DevOps URL using the `DOTENVIFY_DEFAULT_ORG_URL` environment variable. You can override this with the `-u` or `-url` flag.
 
 <details>
 <summary>🔒 Security & Authentication Details</summary>

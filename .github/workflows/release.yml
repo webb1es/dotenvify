@@ -27,6 +27,12 @@ jobs:
         with:
           go-version: '1.21'
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          registry-url: 'https://registry.npmjs.org'
+
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v5
         with:
@@ -44,3 +50,8 @@ jobs:
           # This should be a personal access token with 'repo' scope
           # Add this token as a repository secret in your GitHub repository settings
           SCOOP_BUCKET_TOKEN: ${{ secrets.SCOOP_BUCKET_TOKEN }}
+
+          # NPM_TOKEN is needed to publish to npm registry
+          # This should be an automation token from your npm account
+          # Add this token as a repository secret in your GitHub repository settings
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
