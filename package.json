@@ -7,7 +7,6 @@
     "dotenvify": "bin/dotenvify.js"
   },
   "scripts": {
-    "build": "node scripts/build.js",
     "test": "node bin/dotenvify.js --help"
   },
   "keywords": [

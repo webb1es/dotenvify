@@ -96,26 +96,24 @@ release:
   footer: |
     ## Installation
 
-    ### ⭐ Recommended: Package Managers ⭐
-    We strongly recommend using package managers for installation as they provide:
-    - Automatic updates when new versions are released
-    - Easier installation without manual downloading and extracting
-    - Proper system integration and path configuration
-    - Simplified uninstallation process
+    ### npm (Recommended)
+    ```bash
+    npm install -g @webbies.dev/dotenvify
+    ```
 
-    #### Homebrew (macOS and Linux)
+    ### Homebrew (macOS/Linux)
     ```bash
     brew install webb1es/tap/dotenvify
     ```
 
-    #### Scoop (Windows)
+    ### Scoop (Windows)
     ```bash
     scoop bucket add webb1es https://github.com/webb1es/scoop-bucket
     scoop install dotenvify
     ```
 
-    ### Alternative: Manual Installation
-    If package managers are not an option for your environment, you can download the appropriate binary for your platform from the assets below. Note that you'll need to manually extract the archive and place the binary in your PATH.
+    ### Manual Installation
+    Download the appropriate binary for your platform from the assets below.
 
     ## Thank You
     Thanks to all contributors who made this release possible!
@@ -144,11 +142,3 @@ scoops:
     description: "Convert key-value pairs to environment variables"
     license: "MIT"
 
-# NPM package publishing
-publishers:
-  - name: npm
-    cmd: node scripts/publish-npm.js
-    env:
-      - NPM_TOKEN={{ .Env.NPM_TOKEN }}
-      - RELEASE_VERSION={{ .Version }}
-      - RELEASE_TAG={{ .Tag }}

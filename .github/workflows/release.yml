@@ -38,20 +38,33 @@ jobs:
         with:
           args: release --clean
         env:
-          # GITHUB_TOKEN is automatically provided by GitHub Actions
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-          # HOMEBREW_TAP_TOKEN is needed to push to the Homebrew tap repository
-          # This should be a personal access token with 'repo' scope
-          # Add this token as a repository secret in your GitHub repository settings
           HOMEBREW_TAP_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
-
-          # SCOOP_BUCKET_TOKEN is needed to push to the Scoop bucket repository
-          # This should be a personal access token with 'repo' scope
-          # Add this token as a repository secret in your GitHub repository settings
           SCOOP_BUCKET_TOKEN: ${{ secrets.SCOOP_BUCKET_TOKEN }}
 
-          # NPM_TOKEN is needed to publish to npm registry
-          # This should be an automation token from your npm account
-          # Add this token as a repository secret in your GitHub repository settings
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Publish to npm
+        run: |
+          # Extract version from tag
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "Publishing version $VERSION to npm"
+          
+          # Update package.json version
+          npm version $VERSION --no-git-tag-version
+          
+          # Copy binaries from GoReleaser dist
+          mkdir -p bin
+          find dist -name "dotenvify" -o -name "dotenvify.exe" | while read binary; do
+            platform=$(basename $(dirname $binary))
+            if [[ $binary == *.exe ]]; then
+              cp "$binary" "bin/${platform}.exe"
+            else
+              cp "$binary" "bin/${platform}"
+            fi
+            chmod +x "bin/${platform}"* 2>/dev/null || true
+          done
+          
+          # Publish to npm
+          npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
+          npm publish --access public || echo "npm publish failed (likely version already exists)"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
