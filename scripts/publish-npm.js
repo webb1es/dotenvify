@@ -18,20 +18,6 @@ try {
   // Remove 'v' prefix from version if present
   const npmVersion = version.startsWith('v') ? version.slice(1) : version;
   
-  // Check for publish lock file to prevent multiple simultaneous publishes
-  const lockFile = path.join(__dirname, '..', `.npm-publish-${npmVersion}.lock`);
-  
-  if (fs.existsSync(lockFile)) {
-    const lockContent = fs.readFileSync(lockFile, 'utf8');
-    console.log(`✅ Found publish lock file - version ${npmVersion} already published by ${lockContent}`);
-    console.log('📦 npm package is up to date (skipping duplicate publish)');
-    process.exit(0);
-  }
-  
-  // Create lock file
-  fs.writeFileSync(lockFile, `${new Date().toISOString()} - ${process.env.GITHUB_RUN_ID || 'local'}`);
-  console.log(`🔒 Created publish lock file for version ${npmVersion}`);
-  
   // Update package.json version to match the release
   const packageJsonPath = path.join(__dirname, '..', 'package.json');
   const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
