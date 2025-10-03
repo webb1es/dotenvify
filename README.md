@@ -23,27 +23,12 @@ After doing this manually one too many times, I rage-coded this tool. You're wel
 
 ## 🚀 Installation
 
-### npm (Recommended)
 ```bash
 npm install -g @webbies.dev/dotenvify
 ```
 
-### Homebrew (macOS/Linux)
-```bash
-brew install webb1es/tap/dotenvify
-```
-
-### Scoop (Windows)
-```bash
-scoop bucket add webb1es https://github.com/webb1es/scoop-bucket.git
-scoop install dotenvify
-```
-
 <details>
-<summary>📦 Other Methods</summary>
-
-#### Direct Download
-Download from [GitHub Releases](https://github.com/webb1es/dotenvify/releases)
+<summary>📦 Alternative Methods</summary>
 
 #### Build from Source
 ```bash
@@ -107,7 +92,7 @@ Just make sure you're logged in with `az login` before running the tool.
 - 🔒 **Secure**: Uses existing Azure CLI auth
 - 🧹 **Smart**: Auto-detects input formats
 - 🔤 **Flexible**: Multiple output options
-- 📦 **Easy Install**: npm, Homebrew, Scoop
+- 📦 **Easy Install**: npm
 
 ## 📝 Supported Formats
 
