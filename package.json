@@ -2,12 +2,11 @@
   "name": "@webbies.dev/dotenvify",
   "version": "1.0.0",
   "description": "A utility to convert environment variables from various sources into different formats",
-  "main": "bin/dotenvify.js",
   "bin": {
-    "dotenvify": "bin/dotenvify.js"
+    "dotenvify": "./dotenvify"
   },
   "scripts": {
-    "test": "node bin/dotenvify.js --help"
+    "test": "./dotenvify --help"
   },
   "keywords": [
     "dotenv",
@@ -24,20 +23,9 @@
     "url": "https://github.com/webb1es/dotenvify.git"
   },
   "files": [
-    "bin/",
-    "LICENSE",
-    "README.md"
+    "dotenvify"
   ],
   "engines": {
     "node": ">=12"
-  },
-  "os": [
-    "darwin",
-    "linux",
-    "win32"
-  ],
-  "cpu": [
-    "x64",
-    "arm64"
-  ]
+  }
 }

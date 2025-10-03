@@ -1,12 +1,10 @@
-# This is a GoReleaser configuration file for dotenvify
-# Documentation: https://goreleaser.com
-
 before:
   hooks:
     - go mod tidy
 
 builds:
-  - env:
+  - id: dotenvify
+    env:
       - CGO_ENABLED=0
     goos:
       - linux
@@ -24,6 +22,7 @@ builds:
       - -X main.commit={{.Commit}}
       - -X main.date={{.Date}}
     main: .
+    binary: dotenvify
 
 archives:
   - format: tar.gz
@@ -49,30 +48,15 @@ changelog:
     - title: '🐛 Bug Fixes'
       regexp: '^fix'
       order: 1
-    - title: '⚡ Performance Improvements'
-      regexp: '^perf'
-      order: 2
     - title: '♻️ Refactoring'
       regexp: '^refactor'
-      order: 3
+      order: 2
     - title: '📚 Documentation'
       regexp: '^docs'
-      order: 4
-    - title: '✅ Tests'
-      regexp: '^test'
-      order: 5
+      order: 3
     - title: '🏗️ Build System'
       regexp: '^build'
-      order: 6
-    - title: '👷 CI'
-      regexp: '^ci'
-      order: 7
-    - title: '🧹 Chore'
-      regexp: '^chore'
-      order: 8
-    - title: '💄 Style'
-      regexp: '^style'
-      order: 9
+      order: 4
   filters:
     exclude:
       - '^chore:'
@@ -89,56 +73,10 @@ release:
   header: |
     # DotEnvify {{.Version}} Release
 
-    ## Summary
-    This release of DotEnvify brings new features and improvements to help you manage environment variables more efficiently.
-
-    <!-- You can edit this section manually before each release to provide a human-readable summary -->
+    This release brings new features and improvements for managing environment variables.
   footer: |
     ## Installation
 
-    ### npm (Recommended)
     ```bash
     npm install -g @webbies.dev/dotenvify
     ```
-
-    ### Homebrew (macOS/Linux)
-    ```bash
-    brew install webb1es/tap/dotenvify
-    ```
-
-    ### Scoop (Windows)
-    ```bash
-    scoop bucket add webb1es https://github.com/webb1es/scoop-bucket
-    scoop install dotenvify
-    ```
-
-    ### Manual Installation
-    Download the appropriate binary for your platform from the assets below.
-
-    ## Thank You
-    Thanks to all contributors who made this release possible!
-
-brews:
-  - name: dotenvify
-    repository:
-      owner: webb1es
-      name: homebrew-tap
-      token: "{{ .Env.HOMEBREW_TAP_TOKEN }}"
-    homepage: "https://github.com/webb1es/dotenvify"
-    description: "Convert key-value pairs to environment variables"
-    license: "MIT"
-    install: |
-      bin.install "dotenvify"
-    test: |
-      system "#{bin}/dotenvify", "-h"
-
-scoops:
-  - name: dotenvify
-    repository:
-      owner: webb1es
-      name: scoop-bucket
-      token: "{{ .Env.SCOOP_BUCKET_TOKEN }}"
-    homepage: "https://github.com/webb1es/dotenvify"
-    description: "Convert key-value pairs to environment variables"
-    license: "MIT"
-
