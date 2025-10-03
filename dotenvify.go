@@ -124,8 +124,8 @@ func writeVariablesToFile(variables map[string]string, outputFile string, noLowe
 	for _, key := range keys {
 		value := variables[key]
 
-		// Check if the value is a URL and not already quoted
-		if isURL(value) && !isQuoted(value) {
+		// Check if the value needs quoting (URLs or values with spaces) and not already quoted
+		if (isURL(value) || strings.Contains(value, " ")) && !isQuoted(value) {
 			value = fmt.Sprintf("\"%s\"", value)
 		}
 
