@@ -49,11 +49,12 @@ jobs:
           VERSION=${GITHUB_REF#refs/tags/v}
           echo "Publishing version $VERSION to npm"
 
+          # Ensure latest npm for OIDC support
+          npm install -g npm@latest
+
           # Update package.json version
           npm version $VERSION --no-git-tag-version
 
           # Publish to npm using OIDC
           # The postinstall script will download the binary from the GitHub release we just created
           npm publish --provenance --access public || echo "npm publish failed (likely version already exists)"
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
