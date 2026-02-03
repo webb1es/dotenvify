@@ -12,6 +12,7 @@ on:
 
 permissions:
   contents: write  # Needed to create GitHub releases
+  id-token: write  # Needed for npm OIDC trusted publishing
 
 jobs:
   release:
@@ -30,8 +31,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
-          registry-url: 'https://registry.npmjs.org'
+          node-version: '20'
 
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v5
@@ -47,10 +47,13 @@ jobs:
           # Extract version from tag
           VERSION=${GITHUB_REF#refs/tags/v}
           echo "Publishing version $VERSION to npm"
-          
+
+          # Ensure latest npm for OIDC support
+          npm install -g npm@latest
+
           # Update package.json version
           npm version $VERSION --no-git-tag-version
-          
+
           # Copy binaries from GoReleaser dist
           mkdir -p bin
           find dist -name "dotenvify" -o -name "dotenvify.exe" | while read binary; do
@@ -62,9 +65,6 @@ jobs:
             fi
             chmod +x "bin/${platform}"* 2>/dev/null || true
           done
-          
-          # Publish to npm
-          npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
-          npm publish --access public || echo "npm publish failed (likely version already exists)"
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+          # Publish to npm using OIDC
+          npm publish --provenance --access public || echo "npm publish failed (likely version already exists)"
