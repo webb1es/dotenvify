@@ -48,6 +48,9 @@ dotenvify your-vars.txt
 # Save to a specific file
 dotenvify your-vars.txt custom-output.env
 
+# Overwrite existing .env without backup
+dotenvify -f your-vars.txt
+
 # Ignore variables with lowercase keys
 dotenvify -nl your-vars.txt
 ```
@@ -70,9 +73,10 @@ dotenvify -azure -url "https://dev.azure.com/your-org/your-project" -group "your
 
 **Options:**
 - `-out file.env` - Custom output file
-- `-nl` - Ignore lowercase variables  
+- `-nl` - Ignore lowercase variables
 - `-export` - Add 'export' prefix
 - `-urls` - Only URL values
+- `-f` - Overwrite output file (default: backup existing file)
 
 <details>
 <summary>🔒 Security & Authentication Details</summary>
@@ -88,10 +92,11 @@ Just make sure you're logged in with `az login` before running the tool.
 ## ✨ Features
 
 - ⚡ **Fast**: Written in Go
-- 🔄 **Azure DevOps**: Direct variable group integration  
+- 🔄 **Azure DevOps**: Direct variable group integration
 - 🔒 **Secure**: Uses existing Azure CLI auth
 - 🧹 **Smart**: Auto-detects input formats
 - 🔤 **Flexible**: Multiple output options
+- 💾 **Safe**: Auto-backup with incremental counters
 - 📦 **Easy Install**: npm
 
 ## 📝 Supported Formats

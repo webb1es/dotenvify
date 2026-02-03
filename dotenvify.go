@@ -92,8 +92,37 @@ func isQuoted(s string) bool {
 		(strings.HasPrefix(s, "'") && strings.HasSuffix(s, "'"))
 }
 
+// backupFile creates a backup of an existing file with an incremental counter
+func backupFile(filePath string) error {
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		return nil
+	}
+
+	counter := 1
+	var backupPath string
+	for {
+		backupPath = fmt.Sprintf("%s.backup.%d", filePath, counter)
+		if _, err := os.Stat(backupPath); os.IsNotExist(err) {
+			break
+		}
+		counter++
+	}
+
+	content, err := os.ReadFile(filePath)
+	if err != nil {
+		return fmt.Errorf("failed to read file for backup: %v", err)
+	}
+
+	if err := os.WriteFile(backupPath, content, 0600); err != nil {
+		return fmt.Errorf("failed to create backup file: %v", err)
+	}
+
+	msg("info", fmt.Sprintf("💾 Backed up existing file to '%s'", backupPath))
+	return nil
+}
+
 // WriteVariablesToFile writes variables to a file, optionally with export prefix
-func writeVariablesToFile(variables map[string]string, outputFile string, noLower bool, noSort bool, useExport bool, urlOnly bool) error {
+func writeVariablesToFile(variables map[string]string, outputFile string, noLower bool, noSort bool, useExport bool, urlOnly bool, overwrite bool) error {
 	var outputLines []string
 	variableCount := 0
 	skippedCount := 0
@@ -144,6 +173,13 @@ func writeVariablesToFile(variables map[string]string, outputFile string, noLowe
 		}
 	}
 
+	// Handle existing file
+	if !overwrite {
+		if err := backupFile(outputFile); err != nil {
+			return err
+		}
+	}
+
 	// Write the output file
 	msg("info", fmt.Sprintf("💾 Writing %d variables to '%s'...", variableCount, outputFile))
 	// Use more restrictive file permissions (0600) for files containing sensitive data
@@ -159,16 +195,16 @@ func writeVariablesToFile(variables map[string]string, outputFile string, noLowe
 }
 
 // ProcessVariables processes variables from a source and writes them to a file
-func ProcessVariables(variables map[string]string, outputFile string, noLower bool, noSort bool, useExport bool, urlOnly bool) {
+func ProcessVariables(variables map[string]string, outputFile string, noLower bool, noSort bool, useExport bool, urlOnly bool, overwrite bool) {
 	// Write variables to file
-	err := writeVariablesToFile(variables, outputFile, noLower, noSort, useExport, urlOnly)
+	err := writeVariablesToFile(variables, outputFile, noLower, noSort, useExport, urlOnly, overwrite)
 	if err != nil {
 		exitOnError(err, "Failed to write variables to file")
 	}
 }
 
 // Process variables from Azure DevOps
-func processAzureDevOpsVariables(org, project, groupName, outputFile string, noLower bool, noSort bool, useExport bool, urlOnly bool) {
+func processAzureDevOpsVariables(org, project, groupName, outputFile string, noLower bool, noSort bool, useExport bool, urlOnly bool, overwrite bool) {
 	// Process variables using the Azure plugin
 	variables, err := azure.GetVariables(org, project, groupName, msg)
 	if err != nil {
@@ -192,7 +228,7 @@ func processAzureDevOpsVariables(org, project, groupName, outputFile string, noL
 	}
 
 	// Process variables
-	ProcessVariables(variables, outputFile, noLower, noSort, useExport, urlOnly)
+	ProcessVariables(variables, outputFile, noLower, noSort, useExport, urlOnly, overwrite)
 }
 
 func main() {
@@ -230,6 +266,9 @@ func main() {
 	urlOnly := flag.Bool("url-only", false, "Include only variables with HTTP/HTTPS URL values")
 	flag.BoolVar(urlOnly, "urls", false, "Include only variables with HTTP/HTTPS URL values (shorthand)")
 
+	overwrite := flag.Bool("overwrite", false, "Overwrite output file if it exists")
+	flag.BoolVar(overwrite, "f", false, "Overwrite output file if it exists (shorthand)")
+
 	// Set custom usage function
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "🧙‍♂️ DotEnvify - Convert key-value pairs to environment variables\n\n")
@@ -250,6 +289,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "  -ns (no-sort)\tDo not sort variables alphabetically\n")
 		fmt.Fprintf(os.Stderr, "  -e (export)\tAdd 'export' prefix to variables\n")
 		fmt.Fprintf(os.Stderr, "  -urls (url-only)\tInclude only variables with HTTP/HTTPS URL values\n")
+		fmt.Fprintf(os.Stderr, "  -f (overwrite)\tOverwrite output file if it exists\n")
 		fmt.Fprintf(os.Stderr, "  -h (help)\tShow this help message\n")
 
 		fmt.Fprintf(os.Stderr, "\nFor more information, visit: https://github.com/webb1es/dotenvify\n")
@@ -318,7 +358,7 @@ func main() {
 		}
 
 		// Process Azure DevOps variables
-		processAzureDevOpsVariables(org, proj, *varGroup, *outputFilePath, *noLower, *noSort, *useExport, *urlOnly)
+		processAzureDevOpsVariables(org, proj, *varGroup, *outputFilePath, *noLower, *noSort, *useExport, *urlOnly, *overwrite)
 		return
 	}
 
@@ -487,5 +527,5 @@ func main() {
 	}
 
 	// Process variables
-	ProcessVariables(variables, outputFile, *noLower, *noSort, *useExport, *urlOnly)
+	ProcessVariables(variables, outputFile, *noLower, *noSort, *useExport, *urlOnly, *overwrite)
 }
