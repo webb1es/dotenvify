@@ -1,0 +1,30 @@
+#!/usr/bin/env node
+
+const { spawn } = require('child_process');
+const path = require('path');
+const fs = require('fs');
+
+const isWindows = process.platform === 'win32';
+const binaryName = isWindows ? 'dotenvify.exe' : 'dotenvify';
+const binaryPath = path.join(__dirname, binaryName);
+
+if (!fs.existsSync(binaryPath)) {
+  console.error('dotenvify binary not found. Try reinstalling:');
+  console.error('  npm uninstall -g @webbies.dev/dotenvify');
+  console.error('  npm install -g @webbies.dev/dotenvify');
+  process.exit(1);
+}
+
+const child = spawn(binaryPath, process.argv.slice(2), {
+  stdio: 'inherit',
+  windowsHide: true,
+});
+
+child.on('error', (err) => {
+  console.error('Failed to execute dotenvify:', err.message);
+  process.exit(1);
+});
+
+child.on('close', (code) => {
+  process.exit(code || 0);
+});

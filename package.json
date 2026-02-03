@@ -3,10 +3,11 @@
   "version": "1.0.0",
   "description": "A utility to convert environment variables from various sources into different formats",
   "bin": {
-    "dotenvify": "./dotenvify"
+    "dotenvify": "./bin/dotenvify"
   },
   "scripts": {
-    "test": "./dotenvify --help"
+    "postinstall": "node scripts/install.js",
+    "test": "node bin/dotenvify --help"
   },
   "keywords": [
     "dotenv",
@@ -23,9 +24,19 @@
     "url": "https://github.com/webb1es/dotenvify.git"
   },
   "files": [
-    "dotenvify"
+    "bin/dotenvify",
+    "scripts/install.js"
+  ],
+  "os": [
+    "darwin",
+    "linux",
+    "win32"
+  ],
+  "cpu": [
+    "x64",
+    "arm64"
   ],
   "engines": {
-    "node": ">=12"
+    "node": ">=14"
   }
 }

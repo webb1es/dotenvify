@@ -22,10 +22,11 @@
 *.out
 /vendor/
 /dist/
-dotenvify
+/dotenvify
 
-# npm publishing
-/bin/
+# npm publishing - ignore downloaded binaries but keep the wrapper script
+/bin/dotenvify.exe
+/.tmp/
 
 # OS specific files
 .DS_Store
