@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"context"
 	"flag"
 	"fmt"
 	"os"
@@ -9,6 +10,7 @@ import (
 	"strings"
 
 	"dotenvify/plugins/azure"
+	"github.com/creativeprojects/go-selfupdate"
 )
 
 // Version information (populated by ldflags during build)
@@ -203,6 +205,46 @@ func ProcessVariables(variables map[string]string, outputFile string, noLower bo
 	}
 }
 
+// handleUpdate handles both checking and performing updates
+func handleUpdate(performUpdate bool) error {
+	latest, found, err := selfupdate.DetectLatest(context.Background(), selfupdate.ParseSlug("webb1es/dotenvify"))
+	if err != nil {
+		return fmt.Errorf("failed to check for updates: %v", err)
+	}
+	if !found {
+		return fmt.Errorf("no releases found")
+	}
+
+	if version == "dev" {
+		msg("warning", "⚠️ Running development version")
+		msg("info", fmt.Sprintf("Latest available version: %s", latest.Version()))
+		return nil
+	}
+
+	if latest.LessOrEqual(version) {
+		msg("success", fmt.Sprintf("✨ Already up to date (version %s)", version))
+		return nil
+	}
+
+	msg("info", fmt.Sprintf("📦 New version available: %s → %s", version, latest.Version()))
+	if !performUpdate {
+		msg("info", "Run 'dotenvify -update' to update")
+		return nil
+	}
+
+	exe, err := selfupdate.ExecutablePath()
+	if err != nil {
+		return fmt.Errorf("failed to get executable path: %v", err)
+	}
+
+	if err := selfupdate.UpdateTo(context.Background(), latest.AssetURL, latest.AssetName, exe); err != nil {
+		return fmt.Errorf("update failed: %v", err)
+	}
+
+	msg("success", fmt.Sprintf("✨ Successfully updated to version %s", latest.Version()))
+	return nil
+}
+
 // Process variables from Azure DevOps
 func processAzureDevOpsVariables(org, project, groupName, outputFile string, noLower bool, noSort bool, useExport bool, urlOnly bool, overwrite bool) {
 	// Process variables using the Azure plugin
@@ -235,6 +277,9 @@ func main() {
 	// Define command line flags
 	versionFlag := flag.Bool("version", false, "Show version information")
 	flag.BoolVar(versionFlag, "v", false, "Show version information (shorthand)")
+
+	updateFlag := flag.Bool("update", false, "Update dotenvify to the latest version")
+	checkUpdateFlag := flag.Bool("check-update", false, "Check if a new version is available")
 
 	azureMode := flag.Bool("azure", false, "Enable Azure DevOps mode")
 	flag.BoolVar(azureMode, "az", false, "Enable Azure DevOps mode (shorthand)")
@@ -278,8 +323,10 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Options:\n")
 
 		// Custom flag printing to combine short and long forms
-		fmt.Fprintf(os.Stderr, "  -v (version)\tShow version information\n")
-		fmt.Fprintf(os.Stderr, "  -az (azure)\tEnable Azure DevOps mode\n")
+		fmt.Fprintf(os.Stderr, "  -v (version)\t\tShow version information\n")
+		fmt.Fprintf(os.Stderr, "  -update\t\tUpdate dotenvify to the latest version\n")
+		fmt.Fprintf(os.Stderr, "  -check-update\t\tCheck if a new version is available\n")
+		fmt.Fprintf(os.Stderr, "  -az (azure)\t\tEnable Azure DevOps mode\n")
 		fmt.Fprintf(os.Stderr, "  -u (url)\tAzure DevOps project URL (or set DOTENVIFY_DEFAULT_ORG_URL env var)\n")
 		fmt.Fprintf(os.Stderr, "  -o (org)\tAzure DevOps organization name (inferred from URL if not provided)\n")
 		fmt.Fprintf(os.Stderr, "  -p (project)\tAzure DevOps project name (inferred from URL if not provided)\n")
@@ -303,6 +350,12 @@ func main() {
 		fmt.Printf("dotenvify version: %s\n", version)
 		fmt.Printf("commit: %s\n", commit)
 		fmt.Printf("build date: %s\n", date)
+		os.Exit(0)
+	}
+
+	// Handle update flags
+	if *updateFlag || *checkUpdateFlag {
+		exitOnError(handleUpdate(*updateFlag), "Update check failed")
 		os.Exit(0)
 	}
 

@@ -37,6 +37,26 @@ cd dotenvify && go build
 ```
 </details>
 
+## 🔄 Updating
+
+Keep dotenvify up to date with the latest features and fixes:
+
+### Self-Update (Recommended)
+```bash
+# Check for available updates
+dotenvify -check-update
+
+# Update to the latest version
+dotenvify -update
+```
+
+### Via npm
+```bash
+npm update -g @webbies.dev/dotenvify
+```
+
+The self-update feature automatically downloads and installs the latest release from GitHub, making it easy to stay current regardless of how you installed dotenvify.
+
 ## 🔮 Usage
 
 ### Basic File Mode
@@ -98,6 +118,7 @@ Just make sure you're logged in with `az login` before running the tool.
 - 🔤 **Flexible**: Multiple output options
 - 💾 **Safe**: Auto-backup with incremental counters
 - 📦 **Easy Install**: npm
+- 🔄 **Self-Updating**: Built-in update mechanism
 
 ## 📝 Supported Formats
 
