@@ -94,6 +94,58 @@ func isQuoted(s string) bool {
 		(strings.HasPrefix(s, "'") && strings.HasSuffix(s, "'"))
 }
 
+// readExistingVariables reads variables from an existing .env file
+func readExistingVariables(filePath string) (map[string]string, error) {
+	variables := make(map[string]string)
+
+	// Check if file exists
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		return variables, nil // Return empty map if file doesn't exist
+	}
+
+	file, err := os.Open(filePath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to open file: %v", err)
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := strings.TrimSpace(scanner.Text())
+
+		// Skip empty lines and comments
+		if line == "" || strings.HasPrefix(line, "#") {
+			continue
+		}
+
+		// Remove "export " prefix if present
+		line = strings.TrimPrefix(line, "export ")
+
+		// Parse KEY=VALUE format
+		if strings.Contains(line, "=") {
+			parts := strings.SplitN(line, "=", 2)
+			key := strings.TrimSpace(parts[0])
+			value := strings.TrimSpace(parts[1])
+
+			// Remove quotes if present
+			if (strings.HasPrefix(value, "\"") && strings.HasSuffix(value, "\"")) ||
+				(strings.HasPrefix(value, "'") && strings.HasSuffix(value, "'")) {
+				value = value[1 : len(value)-1]
+			}
+
+			if key != "" {
+				variables[key] = value
+			}
+		}
+	}
+
+	if err := scanner.Err(); err != nil {
+		return nil, fmt.Errorf("error reading file: %v", err)
+	}
+
+	return variables, nil
+}
+
 // backupFile creates a backup of an existing file with an incremental counter
 func backupFile(filePath string) error {
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
@@ -124,10 +176,48 @@ func backupFile(filePath string) error {
 }
 
 // WriteVariablesToFile writes variables to a file, optionally with export prefix
-func writeVariablesToFile(variables map[string]string, outputFile string, noLower bool, noSort bool, useExport bool, urlOnly bool, overwrite bool) error {
+func writeVariablesToFile(variables map[string]string, outputFile string, noLower bool, noSort bool, useExport bool, urlOnly bool, overwrite bool, preserveVars string) error {
 	var outputLines []string
 	variableCount := 0
 	skippedCount := 0
+	preservedCount := 0
+
+	// Parse preserve list and read existing variables BEFORE backup
+	preserveList := make(map[string]bool)
+	if preserveVars != "" {
+		for _, varName := range strings.Split(preserveVars, ",") {
+			varName = strings.TrimSpace(varName)
+			if varName != "" {
+				preserveList[varName] = true
+			}
+		}
+	}
+
+	// Read existing variables if preserve list is provided (BEFORE backup)
+	var existingVars map[string]string
+	if len(preserveList) > 0 {
+		var err error
+		existingVars, err = readExistingVariables(outputFile)
+		if err != nil {
+			return fmt.Errorf("failed to read existing variables: %v", err)
+		}
+
+		// Replace new values with existing ones for preserved variables
+		for varName := range preserveList {
+			if existingValue, exists := existingVars[varName]; exists {
+				variables[varName] = existingValue
+				preservedCount++
+			}
+			// If variable doesn't exist in the file, it will be written with the new value
+		}
+	}
+
+	// Handle existing file backup AFTER reading preserved values
+	if !overwrite {
+		if err := backupFile(outputFile); err != nil {
+			return err
+		}
+	}
 
 	// Collect the keys
 	var keys []string
@@ -175,11 +265,8 @@ func writeVariablesToFile(variables map[string]string, outputFile string, noLowe
 		}
 	}
 
-	// Handle existing file
-	if !overwrite {
-		if err := backupFile(outputFile); err != nil {
-			return err
-		}
+	if preservedCount > 0 {
+		msg("info", fmt.Sprintf("🔒 Preserved %d existing variables", preservedCount))
 	}
 
 	// Write the output file
@@ -197,9 +284,9 @@ func writeVariablesToFile(variables map[string]string, outputFile string, noLowe
 }
 
 // ProcessVariables processes variables from a source and writes them to a file
-func ProcessVariables(variables map[string]string, outputFile string, noLower bool, noSort bool, useExport bool, urlOnly bool, overwrite bool) {
+func ProcessVariables(variables map[string]string, outputFile string, noLower bool, noSort bool, useExport bool, urlOnly bool, overwrite bool, preserveVars string) {
 	// Write variables to file
-	err := writeVariablesToFile(variables, outputFile, noLower, noSort, useExport, urlOnly, overwrite)
+	err := writeVariablesToFile(variables, outputFile, noLower, noSort, useExport, urlOnly, overwrite, preserveVars)
 	if err != nil {
 		exitOnError(err, "Failed to write variables to file")
 	}
@@ -246,7 +333,7 @@ func handleUpdate(performUpdate bool) error {
 }
 
 // Process variables from Azure DevOps
-func processAzureDevOpsVariables(org, project, groupName, outputFile string, noLower bool, noSort bool, useExport bool, urlOnly bool, overwrite bool) {
+func processAzureDevOpsVariables(org, project, groupName, outputFile string, noLower bool, noSort bool, useExport bool, urlOnly bool, overwrite bool, preserveVars string) {
 	// Process variables using the Azure plugin
 	variables, err := azure.GetVariables(org, project, groupName, msg)
 	if err != nil {
@@ -270,7 +357,7 @@ func processAzureDevOpsVariables(org, project, groupName, outputFile string, noL
 	}
 
 	// Process variables
-	ProcessVariables(variables, outputFile, noLower, noSort, useExport, urlOnly, overwrite)
+	ProcessVariables(variables, outputFile, noLower, noSort, useExport, urlOnly, overwrite, preserveVars)
 }
 
 func main() {
@@ -314,6 +401,9 @@ func main() {
 	overwrite := flag.Bool("overwrite", false, "Overwrite output file if it exists")
 	flag.BoolVar(overwrite, "f", false, "Overwrite output file if it exists (shorthand)")
 
+	preserve := flag.String("preserve", "", "Comma-separated list of variables to preserve (keep unchanged if they exist)")
+	flag.StringVar(preserve, "k", "", "Comma-separated list of variables to preserve (shorthand)")
+
 	// Set custom usage function
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "🧙‍♂️ DotEnvify - Convert key-value pairs to environment variables\n\n")
@@ -337,6 +427,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "  -e (export)\tAdd 'export' prefix to variables\n")
 		fmt.Fprintf(os.Stderr, "  -urls (url-only)\tInclude only variables with HTTP/HTTPS URL values\n")
 		fmt.Fprintf(os.Stderr, "  -f (overwrite)\tOverwrite output file if it exists\n")
+		fmt.Fprintf(os.Stderr, "  -k (preserve)\tComma-separated list of variables to preserve (keep unchanged)\n")
 		fmt.Fprintf(os.Stderr, "  -h (help)\tShow this help message\n")
 
 		fmt.Fprintf(os.Stderr, "\nFor more information, visit: https://github.com/webb1es/dotenvify\n")
@@ -411,7 +502,7 @@ func main() {
 		}
 
 		// Process Azure DevOps variables
-		processAzureDevOpsVariables(org, proj, *varGroup, *outputFilePath, *noLower, *noSort, *useExport, *urlOnly, *overwrite)
+		processAzureDevOpsVariables(org, proj, *varGroup, *outputFilePath, *noLower, *noSort, *useExport, *urlOnly, *overwrite, *preserve)
 		return
 	}
 
@@ -580,5 +671,5 @@ func main() {
 	}
 
 	// Process variables
-	ProcessVariables(variables, outputFile, *noLower, *noSort, *useExport, *urlOnly, *overwrite)
+	ProcessVariables(variables, outputFile, *noLower, *noSort, *useExport, *urlOnly, *overwrite, *preserve)
 }

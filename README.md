@@ -71,6 +71,10 @@ dotenvify your-vars.txt custom-output.env
 # Overwrite existing .env without backup
 dotenvify -f your-vars.txt
 
+# Preserve specific variables (keep their existing values)
+# Note: Flags must come before file arguments
+dotenvify -preserve "DATABASE_URL,API_KEY" your-vars.txt
+
 # Ignore variables with lowercase keys
 dotenvify -nl your-vars.txt
 ```
@@ -93,6 +97,7 @@ dotenvify -azure -url "https://dev.azure.com/your-org/your-project" -group "your
 
 **Options:**
 - `-out file.env` - Custom output file
+- `-preserve "VAR1,VAR2"` or `-k` - Keep existing values for specified variables
 - `-nl` - Ignore lowercase variables
 - `-export` - Add 'export' prefix
 - `-urls` - Only URL values
@@ -117,6 +122,7 @@ Just make sure you're logged in with `az login` before running the tool.
 - 🧹 **Smart**: Auto-detects input formats
 - 🔤 **Flexible**: Multiple output options
 - 💾 **Safe**: Auto-backup with incremental counters
+- 🛡️ **Preserve**: Keep existing values for specific variables
 - 📦 **Easy Install**: npm
 - 🔄 **Self-Updating**: Built-in update mechanism
 
