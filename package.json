@@ -7,7 +7,12 @@
   },
   "scripts": {
     "postinstall": "node scripts/install.js",
-    "test": "node bin/dotenvify --help"
+    "test": "go test ./... -cover",
+    "build": "go build -o bin/dotenvify",
+    "preversion": "npm test",
+    "version": "git add -A",
+    "postversion": "git push && git push --tags",
+    "prepublishOnly": "npm test"
   },
   "keywords": [
     "dotenv",
@@ -25,7 +30,9 @@
   },
   "files": [
     "bin/dotenvify",
-    "scripts/install.js"
+    "scripts/install.js",
+    "README.md",
+    "LICENSE"
   ],
   "os": [
     "darwin",
