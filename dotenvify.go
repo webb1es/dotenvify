@@ -366,7 +366,10 @@ func main() {
 	flag.BoolVar(versionFlag, "v", false, "Show version information (shorthand)")
 
 	updateFlag := flag.Bool("update", false, "Update dotenvify to the latest version")
+	flag.BoolVar(updateFlag, "up", false, "Update dotenvify to the latest version (shorthand)")
+
 	checkUpdateFlag := flag.Bool("check-update", false, "Check if a new version is available")
+	flag.BoolVar(checkUpdateFlag, "cu", false, "Check if a new version is available (shorthand)")
 
 	azureMode := flag.Bool("azure", false, "Enable Azure DevOps mode")
 	flag.BoolVar(azureMode, "az", false, "Enable Azure DevOps mode (shorthand)")
@@ -414,8 +417,8 @@ func main() {
 
 		// Custom flag printing to combine short and long forms
 		fmt.Fprintf(os.Stderr, "  -v (version)\t\tShow version information\n")
-		fmt.Fprintf(os.Stderr, "  -update\t\tUpdate dotenvify to the latest version\n")
-		fmt.Fprintf(os.Stderr, "  -check-update\t\tCheck if a new version is available\n")
+		fmt.Fprintf(os.Stderr, "  -up (update)\t\tUpdate dotenvify to the latest version\n")
+		fmt.Fprintf(os.Stderr, "  -cu (check-update)\tCheck if a new version is available\n")
 		fmt.Fprintf(os.Stderr, "  -az (azure)\t\tEnable Azure DevOps mode\n")
 		fmt.Fprintf(os.Stderr, "  -u (url)\tAzure DevOps project URL (or set DOTENVIFY_DEFAULT_ORG_URL env var)\n")
 		fmt.Fprintf(os.Stderr, "  -o (org)\tAzure DevOps organization name (inferred from URL if not provided)\n")
