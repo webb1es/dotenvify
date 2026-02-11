@@ -104,16 +104,8 @@ dotenvify -azure -group "your-variable-group"
 
 **Option B: Specify organization directly**
 ```bash
-dotenvify -azure -url "https://dev.azure.com/your-org/your-project" -group "your-variable-group"
+dotenvify -azure -org "https://dev.azure.com/your-org/your-project" -group "your-variable-group"
 ```
-
-**Options:**
-- `-out file.env` - Custom output file
-- `-preserve "VAR1,VAR2"` or `-k` - Keep existing values for specified variables
-- `-nl` - Ignore lowercase variables
-- `-export` - Add 'export' prefix
-- `-urls` - Only URL values
-- `-f` - Overwrite output file (default: backup existing file)
 
 <details>
 <summary>🔒 Security & Authentication Details</summary>
@@ -125,6 +117,42 @@ DotEnvify uses your existing Azure CLI authentication:
 
 Just make sure you're logged in with `az login` before running the tool.
 </details>
+
+## 📋 Command Line Options
+
+### General Options
+| Option | Shorthand | Description |
+|--------|-----------|-------------|
+| `-version` | `-v` | Show version information |
+| `-update` | `-up` | Update dotenvify to the latest version |
+| `-check-update` | `-cu` | Check if a new version is available |
+| `-help` | `-h` | Show help message |
+
+### Azure DevOps Options
+| Option | Shorthand | Description |
+|--------|-----------|-------------|
+| `-azure` | `-az` | Enable Azure DevOps mode |
+| `-org <url>` | `-o <url>` | Azure DevOps organization URL (e.g., `https://dev.azure.com/org/project`)<br>Alternative: Set `DOTENVIFY_DEFAULT_ORG_URL` environment variable |
+| `-group <name>` | `-g <name>` | Variable group name(s) - comma-separated for multiple groups |
+
+### Output Options
+| Option | Shorthand | Description |
+|--------|-----------|-------------|
+| `-output <file>` | `-out <file>` | Output file path (default: `.env`) |
+| `-export` | `-e` | Add `export` prefix to all variables |
+| `-overwrite` | `-f` | Overwrite output file without creating backup |
+
+### Filtering Options
+| Option | Shorthand | Description |
+|--------|-----------|-------------|
+| `-no-lower` | `-nl` | Ignore variables with lowercase keys |
+| `-url-only` | `-urls` | Include only variables with HTTP/HTTPS URL values |
+| `-preserve <vars>` | `-k <vars>` | Comma-separated list of variables to preserve (keep existing values) |
+
+### Sorting Options
+| Option | Shorthand | Description |
+|--------|-----------|-------------|
+| `-no-sort` | `-ns` | Do not sort variables alphabetically (maintain original order) |
 
 ## ✨ Features
 

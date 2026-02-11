@@ -374,14 +374,8 @@ func main() {
 	azureMode := flag.Bool("azure", false, "Enable Azure DevOps mode")
 	flag.BoolVar(azureMode, "az", false, "Enable Azure DevOps mode (shorthand)")
 
-	projectURL := flag.String("url", "", "Azure DevOps project URL")
-	flag.StringVar(projectURL, "u", "", "Azure DevOps project URL (shorthand)")
-
-	organization := flag.String("org", "", "Azure DevOps organization name (inferred from URL if not provided)")
-	flag.StringVar(organization, "o", "", "Azure DevOps organization name (shorthand)")
-
-	project := flag.String("project", "", "Azure DevOps project name (inferred from URL if not provided)")
-	flag.StringVar(project, "p", "", "Azure DevOps project name (shorthand)")
+	organization := flag.String("org", "", "Azure DevOps organization URL (e.g., https://dev.azure.com/org/project)")
+	flag.StringVar(organization, "o", "", "Azure DevOps organization URL (shorthand)")
 
 	varGroup := flag.String("group", "", "Azure DevOps variable group name (required)")
 	flag.StringVar(varGroup, "g", "", "Azure DevOps variable group name (shorthand)")
@@ -420,9 +414,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "  -up (update)\t\tUpdate dotenvify to the latest version\n")
 		fmt.Fprintf(os.Stderr, "  -cu (check-update)\tCheck if a new version is available\n")
 		fmt.Fprintf(os.Stderr, "  -az (azure)\t\tEnable Azure DevOps mode\n")
-		fmt.Fprintf(os.Stderr, "  -u (url)\tAzure DevOps project URL (or set DOTENVIFY_DEFAULT_ORG_URL env var)\n")
-		fmt.Fprintf(os.Stderr, "  -o (org)\tAzure DevOps organization name (inferred from URL if not provided)\n")
-		fmt.Fprintf(os.Stderr, "  -p (project)\tAzure DevOps project name (inferred from URL if not provided)\n")
+		fmt.Fprintf(os.Stderr, "  -o (org)\tAzure DevOps organization URL (or set DOTENVIFY_DEFAULT_ORG_URL env var)\n")
 		fmt.Fprintf(os.Stderr, "  -g (group)\tAzure DevOps variable group name(s) - comma-separated for multiple groups\n")
 		fmt.Fprintf(os.Stderr, "  -out (output)\tOutput file path (default: .env)\n")
 		fmt.Fprintf(os.Stderr, "  -nl (no-lower)\tIgnore variables with lowercase keys\n")
@@ -455,39 +447,38 @@ func main() {
 
 	// Check if we're in Azure DevOps mode
 	if *azureMode {
-		org := *organization
-		proj := *project
-		url := *projectURL
+		var org, proj string
+		orgURL := *organization
 
-		// If URL is provided, parse it to get org and project
-		if url != "" {
+		// If org URL is provided, parse it to get org and project
+		if orgURL != "" {
 			var err error
-			org, proj, err = azure.ParseURL(url)
+			org, proj, err = azure.ParseURL(orgURL)
 			if err != nil {
 				exitOnError(err, "Failed to parse Azure DevOps URL")
 			}
 			msg("info", fmt.Sprintf("🔗 Using Azure DevOps organization: %s, project: %s", org, proj))
-		} else if org == "" || proj == "" {
+		} else {
 			// Check for default URL from environment variable
 			defaultURL := os.Getenv("DOTENVIFY_DEFAULT_ORG_URL")
 			if defaultURL == "" {
-				msg("error", "Azure DevOps URL is required")
+				msg("error", "Azure DevOps organization URL is required")
 				msg("info", "Please provide URL using one of the following methods:")
-				msg("info", "  1. CLI flag: -url or -u")
+				msg("info", "  1. CLI flag: -org or -o")
 				msg("info", "  2. Environment variable: DOTENVIFY_DEFAULT_ORG_URL")
 				msg("info", "  3. Interactive input (prompted below)")
 
-				url = readUserInput("Enter your Azure DevOps project URL (e.g., https://dev.azure.com/org/project): ")
-				if url == "" {
+				orgURL = readUserInput("Enter your Azure DevOps project URL (e.g., https://dev.azure.com/org/project): ")
+				if orgURL == "" {
 					exitOnError(fmt.Errorf("no URL provided"), "Azure DevOps URL is required")
 				}
 			} else {
-				url = defaultURL
+				orgURL = defaultURL
 				msg("info", fmt.Sprintf("🔗 Using default Azure DevOps URL from DOTENVIFY_DEFAULT_ORG_URL: %s", defaultURL))
 			}
 
 			var err error
-			org, proj, err = azure.ParseURL(url)
+			org, proj, err = azure.ParseURL(orgURL)
 			if err != nil {
 				exitOnError(err, "Failed to parse Azure DevOps URL")
 			}
