@@ -52,8 +52,11 @@ jobs:
           # Ensure latest npm for OIDC support
           npm install -g npm@latest
 
-          # Update package.json version
-          npm version $VERSION --no-git-tag-version
+          # Update package.json version (skip git operations since we're in detached HEAD)
+          npm version $VERSION --no-git-tag-version --allow-same-version
+
+          # Run tests before publishing
+          npm test
 
           # Publish to npm using OIDC
           # The postinstall script will download the binary from the GitHub release we just created

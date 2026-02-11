@@ -11,8 +11,7 @@
     "build": "go build -o bin/dotenvify",
     "preversion": "npm test",
     "version": "git add -A",
-    "postversion": "git push && git push --tags",
-    "prepublishOnly": "npm test"
+    "postversion": "git push && git push --tags"
   },
   "keywords": [
     "dotenv",
