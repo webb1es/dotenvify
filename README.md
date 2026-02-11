@@ -24,7 +24,7 @@ After doing this manually one too many times, I rage-coded this tool. You're wel
 ## 🚀 Installation
 
 ```bash
-npm install -g @webbies.dev/dotenvify
+npm install -g "@webbies.dev/dotenvify"
 ```
 
 <details>
@@ -52,7 +52,7 @@ dotenvify -update
 
 ### Via npm
 ```bash
-npm update -g @webbies.dev/dotenvify
+npm update -g "@webbies.dev/dotenvify"
 ```
 
 The self-update feature automatically downloads and installs the latest release from GitHub, making it easy to stay current regardless of how you installed dotenvify.
@@ -83,15 +83,25 @@ dotenvify -nl your-vars.txt
 
 Fetch variables directly from Azure DevOps variable groups:
 
+#### Step 1: Login to Azure CLI
 ```bash
-# Login to Azure CLI first
 az login
+```
 
-# Set default organization (optional)
+#### Step 2: Fetch variables
+
+**Option A: Using default organization (recommended)**
+```bash
+# Set default organization (run once)
 export DOTENVIFY_DEFAULT_ORG_URL="https://dev.azure.com/your-org/your-project"
+```
+```bash
+# Fetch variables from a group
 dotenvify -azure -group "your-variable-group"
+```
 
-# Or specify URL directly
+**Option B: Specify organization directly**
+```bash
 dotenvify -azure -url "https://dev.azure.com/your-org/your-project" -group "your-variable-group"
 ```
 
