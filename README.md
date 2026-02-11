@@ -27,6 +27,8 @@ After doing this manually one too many times, I rage-coded this tool. You're wel
 npm install -g "@webbies.dev/dotenvify"
 ```
 
+**Windows PowerShell users:** If you get an execution policy error when running the tool, use Command Prompt (cmd.exe) instead, or run `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser` in PowerShell as Administrator.
+
 <details>
 <summary>📦 Alternative Methods</summary>
 
