@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DotEnvify — Azure DevOps Variables to .env in One Click | JetBrains Plugin</title>
+    <meta name="description" content="DotEnvify is a JetBrains plugin that pulls environment variables from Azure DevOps Variable Groups and converts them into properly formatted .env files — without leaving your IDE." />
+    <meta name="keywords" content="JetBrains plugin, env file, Azure DevOps, environment variables, dotenv, IntelliJ, GoLand, WebStorm, PyCharm" />
+    <meta name="author" content="Webster Muchefa / Webbies" />
+    <link rel="canonical" href="https://dotenvify.webbies.dev" />
+
+    <meta property="og:title" content="DotEnvify — Azure DevOps Variables to .env in One Click" />
+    <meta property="og:description" content="A JetBrains plugin that pulls, formats, and manages your environment variables — without leaving your IDE." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://dotenvify.webbies.dev" />
+    <meta property="og:image" content="https://dotenvify.webbies.dev/og-image.png" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="DotEnvify — Azure DevOps Variables to .env in One Click" />
+    <meta name="twitter:description" content="A JetBrains plugin that pulls, formats, and manages your environment variables — without leaving your IDE." />
+    <meta name="twitter:image" content="https://dotenvify.webbies.dev/og-image.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet" />
+
+    <script>
+      (function() {
+        var theme = localStorage.getItem('dotenvify-theme');
+        if (theme === 'light') {
+          document.documentElement.classList.remove('dark');
+        } else if (theme === 'dark') {
+          document.documentElement.classList.add('dark');
+        } else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+          document.documentElement.classList.remove('dark');
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

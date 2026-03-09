@@ -1,0 +1,107 @@
+<idea-plugin>
+    <id>dev.webbies.dotenvify</id>
+    <name>DotEnvify</name>
+    <vendor email="hello@webbies.dev" url="https://webbies.dev">Webbies</vendor>
+
+    <description><![CDATA[
+    Pull environment variables from Azure DevOps Variable Groups directly into your .env file — no CLI, no portal copy-paste.
+
+    <h3>Azure DevOps Integration</h3>
+    <ul>
+        <li>Fetch variables from Azure DevOps Variable Groups with one click</li>
+        <li>Secure OAuth sign-in (Device Code Flow) — no tokens in config files</li>
+        <li>Live preview with format options before writing</li>
+        <li>Smart merge when .env already exists — per-key conflict resolution</li>
+        <li>Organization URL saved globally, variable group saved per project</li>
+    </ul>
+
+    <h3>Convert &amp; Format</h3>
+    <ul>
+        <li>Parse multiple input formats (KEY=VALUE, KEY VALUE, line pairs, quoted values)</li>
+        <li>Smart quoting for URLs and values with spaces</li>
+        <li>Optional <code>export</code> prefix, alphabetical sorting, filters</li>
+        <li>Incremental backups before overwriting</li>
+        <li>Drag-and-drop file support, clipboard paste</li>
+    </ul>
+
+    <h3>Diagnostics</h3>
+    <ul>
+        <li>Detect missing env keys (referenced in code but not in .env)</li>
+        <li>Detect unused keys (in .env but never referenced)</li>
+        <li>Click to navigate to source file — supports JS, Python, Go, Java, Kotlin, Ruby, PHP, Rust, C#, YAML</li>
+        <li>Auto-watch: re-run diagnostics when .env changes</li>
+    </ul>
+    ]]></description>
+
+    <change-notes><![CDATA[
+    <h3>0.1.0</h3>
+    <ul>
+        <li>Initial release</li>
+        <li>Multi-format .env parser and formatter</li>
+        <li>Convert selection and file actions with live preview</li>
+        <li>Tool window with Convert, Azure DevOps, and Diagnostics tabs</li>
+        <li>Azure DevOps variable group fetch via Device Code OAuth</li>
+        <li>Multi-language env key diagnostics with clickable navigation</li>
+        <li>Merge preview with selective per-key conflict resolution</li>
+        <li>Global and per-project settings</li>
+    </ul>
+    ]]></change-notes>
+
+    <depends>com.intellij.modules.platform</depends>
+
+    <actions>
+        <group id="DotEnvify.EditorPopupMenu" text="DotEnvify" popup="true">
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+            <action id="DotEnvify.ConvertSelection"
+                    class="dev.webbies.dotenvify.actions.ConvertSelectionAction"
+                    text="Convert Selection to .env"
+                    description="Convert selected key-value text to .env format">
+                <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt E"/>
+            </action>
+        </group>
+
+        <group id="DotEnvify.ProjectViewPopupMenu" text="DotEnvify" popup="true">
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
+            <action id="DotEnvify.ConvertFile"
+                    class="dev.webbies.dotenvify.actions.ConvertFileAction"
+                    text="Convert File to .env"
+                    description="Parse this file and convert to .env format">
+                <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt shift E"/>
+            </action>
+        </group>
+
+        <group id="DotEnvify.ToolsMenu" text="DotEnvify" popup="true">
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+            <reference ref="DotEnvify.ConvertSelection"/>
+            <reference ref="DotEnvify.ConvertFile"/>
+        </group>
+    </actions>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <toolWindow id="DotEnvify"
+                    anchor="bottom"
+                    factoryClass="dev.webbies.dotenvify.ui.DotEnvifyToolWindowFactory"
+                    icon="AllIcons.FileTypes.Properties"
+                    secondary="false"/>
+
+        <applicationService serviceImplementation="dev.webbies.dotenvify.settings.DotEnvifySettings"/>
+        <projectService serviceImplementation="dev.webbies.dotenvify.settings.DotEnvifyProjectSettings"/>
+        <projectService serviceImplementation="dev.webbies.dotenvify.diagnostics.EnvFileWatcher"/>
+
+        <applicationConfigurable
+                parentId="tools"
+                instance="dev.webbies.dotenvify.settings.DotEnvifySettingsConfigurable"
+                id="dev.webbies.dotenvify.settings.global"
+                displayName="DotEnvify"/>
+
+        <projectConfigurable
+                parentId="dev.webbies.dotenvify.settings.global"
+                instance="dev.webbies.dotenvify.settings.DotEnvifyProjectSettingsConfigurable"
+                id="dev.webbies.dotenvify.settings.project"
+                displayName="Project Settings"/>
+
+        <notificationGroup id="DotEnvify.Notifications"
+                           displayType="BALLOON"
+                           toolWindowId="DotEnvify"/>
+    </extensions>
+</idea-plugin>

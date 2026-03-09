@@ -4,13 +4,13 @@ Convert messy environment variables into clean, standardized `.env` files.
 
 ## Packages
 
-| Package | Description | Status |
-|---------|-------------|--------|
-| [`@dotenvify/core`](./packages/core) | Shared TypeScript library — parser, formatter, IO | In progress |
-| [`dotenvify` CLI](./cli) | Command-line tool (replaces Go version) | In progress |
-| [JetBrains Plugin](./plugins/jetbrains) | IntelliJ/WebStorm plugin | Functional |
-| [VS Code Extension](./plugins/vscode) | VS Code extension | Planned |
-| [Landing Page](./site) | Unified product site | In progress |
+| Package                                 | Description                                       | Status      |
+|-----------------------------------------|---------------------------------------------------|-------------|
+| [`@dotenvify/core`](./packages/core)    | Shared TypeScript library — parser, formatter, IO | In progress |
+| [`dotenvify` CLI](./cli)                | Command-line tool (replaces Go version)           | In progress |
+| [JetBrains Plugin](./plugins/jetbrains) | IntelliJ/WebStorm plugin                          | Functional  |
+| [VS Code Extension](./plugins/vscode)   | VS Code extension                                 | Planned     |
+| [Landing Page](./site)                  | Unified product site                              | In progress |
 
 ## Getting Started
 
