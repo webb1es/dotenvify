@@ -10,7 +10,7 @@ Convert messy environment variables into clean, standardized `.env` files.
 | [`dotenvify` CLI](./cli)                | Command-line tool (replaces Go version)           | In progress |
 | [JetBrains Plugin](./plugins/jetbrains) | IntelliJ/WebStorm plugin                          | Functional  |
 | [VS Code Extension](./plugins/vscode)   | VS Code extension                                 | Planned     |
-| [Landing Page](./site)                  | Unified product site                              | In progress |
+| [Landing Page](./landing)               | Unified product site                              | In progress |
 
 ## Getting Started
 
@@ -24,8 +24,8 @@ npm run build
 # Run tests
 npm run test
 
-# Dev mode (site)
-npm run dev:site
+# Dev mode (landing page)
+npm run dev:landing
 ```
 
 ## Structure
@@ -37,7 +37,7 @@ dotenvify/
 ├── plugins/
 │   ├── jetbrains/       # Kotlin — Gradle build (independent)
 │   └── vscode/          # VS Code extension
-├── site/                # Unified landing page
+├── landing/             # Unified landing page
 └── docs/                # Shared docs & assets
 ```
 

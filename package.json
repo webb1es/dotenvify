@@ -5,13 +5,13 @@
     "packages/*",
     "cli",
     "plugins/vscode",
-    "site"
+    "landing"
   ],
   "scripts": {
     "build": "turbo run build",
     "test": "turbo run test",
     "lint": "turbo run lint",
-    "dev:site": "npm run dev --workspace=site",
+    "dev:landing": "npm run dev --workspace=landing",
     "dev:cli": "npm run dev --workspace=cli"
   },
   "devDependencies": {
