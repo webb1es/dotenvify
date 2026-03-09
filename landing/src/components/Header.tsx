@@ -4,9 +4,7 @@ import ThemeToggle from "./ThemeToggle";
 const Header = () => (
   <header className="fixed top-0 left-0 right-0 z-50 h-12 flex items-center justify-between px-4 lg:px-6 bg-background/80 backdrop-blur-xl border-b border-border">
     <a href="/" className="flex items-center gap-2" aria-label="DotEnvify home">
-      <div className="w-6 h-6 rounded bg-gradient-to-br from-jb-blue to-jb-purple flex items-center justify-center">
-        <span className="text-[10px] font-bold text-white leading-none">.e</span>
-      </div>
+      <img src="/logo.gif" alt="DotEnvify logo" className="w-8 h-8" />
       <span className="font-semibold text-foreground text-sm">DotEnvify</span>
     </a>
     <div className="flex items-center gap-2">

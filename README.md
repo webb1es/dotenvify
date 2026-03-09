@@ -1,6 +1,10 @@
-# DotEnvify
+<p align="center">
+  <img src="docs/assets/logo.png" alt="DotEnvify" width="120" />
+</p>
 
-Convert messy environment variables into clean, standardized `.env` files.
+<h1 align="center">DotEnvify</h1>
+
+<p align="center">Convert messy environment variables into clean, standardized <code>.env</code> files.</p>
 
 ## Packages
 
