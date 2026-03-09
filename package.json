@@ -1,6 +1,7 @@
 {
   "name": "dotenvify",
   "private": true,
+  "packageManager": "npm@10.9.3",
   "workspaces": [
     "packages/*",
     "cli",
