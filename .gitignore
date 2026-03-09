@@ -1,1 +1,26 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+
+# Gradle (JetBrains plugin)
+.gradle/
+plugins/jetbrains/build/
+
+# IDE
 .idea
+*.iml
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+
+# Turbo
+.turbo/
