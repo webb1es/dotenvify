@@ -1,49 +1,54 @@
 <!doctype html>
-<html lang="en" class="dark">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<html class="dark" lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>DotEnvify — Environment variables, sorted</title>
-    <meta name="description" content="DotEnvify is a JetBrains plugin that pulls environment variables from Azure DevOps Variable Groups and converts them into properly formatted .env files — without leaving your IDE." />
-    <meta name="keywords" content="JetBrains plugin, env file, Azure DevOps, environment variables, dotenv, IntelliJ, GoLand, WebStorm, PyCharm" />
-    <meta name="author" content="Webster Muchefa / Webbies" />
-    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="shortcut icon" href="/favicon.ico" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    <link rel="manifest" href="/site.webmanifest" />
-    <link rel="canonical" href="https://dotenvify.webbies.dev" />
+    <meta content="DotEnvify is a JetBrains plugin that pulls environment variables from Azure DevOps Variable Groups and converts them into properly formatted .env files — without leaving your IDE."
+          name="description"/>
+    <meta content="JetBrains plugin, env file, Azure DevOps, environment variables, dotenv, IntelliJ, GoLand, WebStorm, PyCharm"
+          name="keywords"/>
+    <meta content="Webster Muchefa / Webbies" name="author"/>
+    <link href="/favicon-96x96.png" rel="icon" sizes="96x96" type="image/png"/>
+    <link href="/favicon.svg" rel="icon" type="image/svg+xml"/>
+    <link href="/favicon.ico" rel="shortcut icon"/>
+    <link href="/apple-touch-icon.png" rel="apple-touch-icon" sizes="180x180"/>
+    <link href="/site.webmanifest" rel="manifest"/>
+    <link href="https://dotenvify.webbies.dev" rel="canonical"/>
 
-    <meta property="og:title" content="DotEnvify — Azure DevOps Variables to .env in One Click" />
-    <meta property="og:description" content="A JetBrains plugin that pulls, formats, and manages your environment variables — without leaving your IDE." />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://dotenvify.webbies.dev" />
-    <meta property="og:image" content="https://dotenvify.webbies.dev/og-image.png" />
+    <meta content="DotEnvify — Azure DevOps Variables to .env in One Click" property="og:title"/>
+    <meta content="A JetBrains plugin that pulls, formats, and manages your environment variables — without leaving your IDE."
+          property="og:description"/>
+    <meta content="website" property="og:type"/>
+    <meta content="https://dotenvify.webbies.dev" property="og:url"/>
+    <meta content="https://dotenvify.webbies.dev/og-image.png" property="og:image"/>
 
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="DotEnvify — Azure DevOps Variables to .env in One Click" />
-    <meta name="twitter:description" content="A JetBrains plugin that pulls, formats, and manages your environment variables — without leaving your IDE." />
-    <meta name="twitter:image" content="https://dotenvify.webbies.dev/og-image.png" />
+    <meta content="summary_large_image" name="twitter:card"/>
+    <meta content="DotEnvify — Azure DevOps Variables to .env in One Click" name="twitter:title"/>
+    <meta content="A JetBrains plugin that pulls, formats, and manages your environment variables — without leaving your IDE."
+          name="twitter:description"/>
+    <meta content="https://dotenvify.webbies.dev/og-image.png" name="twitter:image"/>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400&display=swap"
+          rel="stylesheet"/>
 
     <script>
-      (function() {
-        var theme = localStorage.getItem('dotenvify-theme');
-        if (theme === 'light') {
-          document.documentElement.classList.remove('dark');
-        } else if (theme === 'dark') {
-          document.documentElement.classList.add('dark');
-        } else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
-          document.documentElement.classList.remove('dark');
-        }
-      })();
+        (function () {
+            var theme = localStorage.getItem('dotenvify-theme');
+            if (theme === 'light') {
+                document.documentElement.classList.remove('dark');
+            } else if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+            } else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+                document.documentElement.classList.remove('dark');
+            }
+        })();
     </script>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+</head>
+<body>
+<div id="root"></div>
+<script src="/src/main.tsx" type="module"></script>
+</body>
 </html>
