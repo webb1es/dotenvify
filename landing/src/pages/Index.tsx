@@ -1,75 +1,78 @@
-import { Cloud, ClipboardPaste, Search } from "lucide-react";
+import { Terminal, Puzzle, Code2 } from "lucide-react";
 import Header from "@/components/Header";
-import HeroSection from "@/components/HeroSection";
-import FeatureCard from "@/components/FeatureCard";
-import CodeTransform from "@/components/CodeTransform";
-import IdeLogos from "@/components/IdeLogos";
+import HeroCell from "@/components/HeroCell";
+import LiveDemo from "@/components/LiveDemo";
+import ProductCard from "@/components/ProductCard";
+import FormatsCell from "@/components/FormatsCell";
+import FeaturesCell from "@/components/FeaturesCell";
 import Footer from "@/components/Footer";
 
-const Index = () => {
-  return (
-    <>
-      <a
-        href="#main-content"
-        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-lg"
-      >
-        Skip to main content
-      </a>
-      <div className="flex flex-col min-h-[100dvh] xl:h-[100dvh] xl:overflow-hidden">
-        <Header />
+const Index = () => (
+  <>
+    <a
+      href="#main-content"
+      className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-lg"
+    >
+      Skip to main content
+    </a>
 
-        <main id="main-content" className="flex-1 flex flex-col pt-12">
-          {/* Hero */}
-          <div className="flex-shrink-0">
-            <HeroSection />
+    <div className="min-h-[100dvh] flex flex-col">
+      <Header />
+
+      <main id="main-content" className="flex-1 px-3 lg:px-4 pb-3 lg:pb-4">
+        <div className="max-w-6xl mx-auto grid gap-3 grid-cols-1 lg:grid-cols-12 auto-rows-auto">
+
+          {/* Row 1: Hero + Demo */}
+          <div className="lg:col-span-4 lg:row-span-2 min-h-[280px]">
+            <HeroCell />
+          </div>
+          <div className="lg:col-span-8 lg:row-span-2 min-h-[280px] lg:min-h-[400px]">
+            <LiveDemo />
           </div>
 
-          {/* Main content grid */}
-          <div className="flex-1 min-h-0 px-4 lg:px-6 grid grid-cols-1 lg:grid-cols-[2fr_3fr] gap-3 pb-2">
-            {/* Left: Feature cards */}
-            <div className="flex flex-col gap-3">
-              <FeatureCard
-                icon={<Cloud className="w-4 h-4" />}
-                title="Azure DevOps Integration"
-                description="Fetch variables from Azure DevOps Variable Groups with one click. Secure OAuth via Device Code Flow. Smart merge when .env already exists — per-key conflict resolution."
-              />
-              <FeatureCard
-                icon={<ClipboardPaste className="w-4 h-4" />}
-                title="Paste & Format"
-                description="Parse any input — KEY=VALUE, quoted, space-separated, line pairs. Smart quoting, alphabetical sorting, export prefix. Live preview as you type."
-              />
-              <div className="lg:hidden">
-                <FeatureCard
-                  icon={<Search className="w-4 h-4" />}
-                  title="Diagnostics"
-                  description="Detect missing and unused env keys across your codebase. Supports JS, Python, Go, Java, Kotlin, Ruby, PHP, Rust, C#, YAML. Click to navigate."
-                />
-              </div>
-            </div>
-
-            {/* Right: Code transform */}
-            <div className="min-h-0 hidden md:flex flex-col">
-              <CodeTransform />
-            </div>
+          {/* Row 2: Products */}
+          <div className="lg:col-span-4">
+            <ProductCard
+              name="CLI"
+              icon={<Terminal className="w-4 h-4" />}
+              description="Pipe-friendly. Scriptable. Convert any messy input into a clean .env from the terminal."
+              installCmd="npx dotenvify input.txt -o .env"
+              href="https://github.com/webb1es/dotenvify"
+              ctaLabel="view source"
+            />
+          </div>
+          <div className="lg:col-span-4">
+            <ProductCard
+              name="JetBrains"
+              icon={<Puzzle className="w-4 h-4" />}
+              description="Pull Azure DevOps variables, paste & format, diagnostics — without leaving your IDE."
+              href="https://plugins.jetbrains.com/plugin/dev.webbies.dotenvify"
+              ctaLabel="get plugin"
+              badges={["IntelliJ", "GoLand", "WebStorm", "PyCharm", "Rider"]}
+            />
+          </div>
+          <div className="lg:col-span-4">
+            <ProductCard
+              name="VS Code"
+              icon={<Code2 className="w-4 h-4" />}
+              description="Same powerful features, coming to Visual Studio Code. Parser, formatter, diagnostics — all built on @dotenvify/core."
+              comingSoon
+            />
           </div>
 
-          {/* Bottom row */}
-          <div className="flex-shrink-0 px-4 lg:px-6 pb-1 grid grid-cols-1 lg:grid-cols-[2fr_3fr] gap-3 items-end">
-            <div className="hidden lg:block">
-              <FeatureCard
-                icon={<Search className="w-4 h-4" />}
-                title="Diagnostics"
-                description="Detect missing and unused env keys across your codebase. Supports JS, Python, Go, Java, Kotlin, Ruby, PHP, Rust, C#, YAML. Click to navigate."
-              />
-            </div>
-            <IdeLogos />
+          {/* Row 3: Formats + Features */}
+          <div className="lg:col-span-5">
+            <FormatsCell />
           </div>
-        </main>
+          <div className="lg:col-span-7">
+            <FeaturesCell />
+          </div>
+        </div>
+      </main>
 
-        <Footer />
-      </div>
-    </>
-  );
-};
+      <Footer />
+    </div>
+  </>
+);
 
 export default Index;

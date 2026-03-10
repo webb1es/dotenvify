@@ -16,6 +16,7 @@ export default {
       fontFamily: {
         sans: ["Inter", "system-ui", "sans-serif"],
         mono: ["JetBrains Mono", "monospace"],
+        display: ["JetBrains Mono", "monospace"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -51,23 +52,14 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        sidebar: {
-          DEFAULT: "hsl(var(--sidebar-background))",
-          foreground: "hsl(var(--sidebar-foreground))",
-          primary: "hsl(var(--sidebar-primary))",
-          "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
-          accent: "hsl(var(--sidebar-accent))",
-          "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
-          border: "hsl(var(--sidebar-border))",
-          ring: "hsl(var(--sidebar-ring))",
-        },
-        jb: {
-          blue: "#087CFA",
-          purple: "#510EB2",
-          pink: "#FF318C",
-          green: "#21D789",
-          surface: "hsl(var(--jb-surface))",
-          "surface-border": "hsl(var(--jb-surface-border))",
+        de: {
+          purple: "#a78bfa",
+          cyan: "#22d3ee",
+          green: "#34d399",
+          orange: "#fbbf24",
+          pink: "#f472b6",
+          surface: "hsl(var(--de-surface))",
+          "surface-border": "hsl(var(--de-surface-border))",
         },
       },
       borderRadius: {
