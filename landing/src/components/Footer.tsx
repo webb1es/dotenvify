@@ -1,24 +1,30 @@
-import { Link } from "react-router-dom";
+import { Github } from "lucide-react";
+
+const CURRENT_YEAR = new Date().getFullYear();
+const BUILD_DATE = "2026-03-10";
 
 const Footer = () => (
-  <footer className="flex items-center justify-center px-4 py-3 text-[11px] font-mono text-muted-foreground gap-x-2 gap-y-1 flex-wrap">
-    <span>MIT</span>
-    <span aria-hidden="true">·</span>
-    <a href="https://webbies.dev" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded">
-      webbies.dev
-    </a>
-    <span aria-hidden="true">·</span>
-    <a href="mailto:dotenvify@webbies.dev" className="hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded">
-      dotenvify@webbies.dev
-    </a>
-    <span aria-hidden="true">·</span>
-    <Link to="/terms" className="hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded">
-      terms
-    </Link>
-    <span aria-hidden="true">·</span>
-    <Link to="/privacy" className="hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded">
-      privacy
-    </Link>
+  <footer className="flex items-center justify-between px-4 lg:px-6 py-3 text-[11px] font-mono text-muted-foreground">
+    <div className="flex items-center gap-2">
+      <span>&copy; {CURRENT_YEAR} webbies.dev</span>
+      <span aria-hidden="true">&middot;</span>
+      <span>MIT</span>
+    </div>
+
+    <div className="flex items-center gap-2">
+      <span className="hidden sm:inline">updated {BUILD_DATE}</span>
+      <span className="hidden sm:inline" aria-hidden="true">&middot;</span>
+      <a
+        href="https://github.com/webb1es/dotenvify"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex items-center gap-1 hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
+        aria-label="View on GitHub"
+      >
+        <Github className="w-3 h-3" />
+        <span className="hidden sm:inline">source</span>
+      </a>
+    </div>
   </footer>
 );
 

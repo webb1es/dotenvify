@@ -1,7 +1,7 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { parseDotEnv, formatDotEnv } from "@dotenvify/core/browser";
 import type { FormatOptions } from "@dotenvify/core/browser";
-import { Copy, Check } from "lucide-react";
+import { Copy, Check, ArrowDownAZ, FileOutput, CaseLower, Link } from "lucide-react";
 
 const PLACEHOLDER = `API_KEY abc123
 DATABASE_URL="postgres://localhost:5432/db"
@@ -50,21 +50,22 @@ const LiveDemo = () => {
       <div className="flex items-center justify-between px-3 py-2 border-b border-de-surface-border">
         <div className="flex items-center gap-1.5 overflow-x-auto" role="group" aria-label="Format options">
           {([
-            ["sort", "sort"],
-            ["export", "export"],
-            ["noLower", "skip lowercase"],
-            ["urlOnly", "urls only"],
-          ] as [keyof FormatOptions, string][]).map(([key, label]) => (
+            ["sort", "sort", <ArrowDownAZ key="sort-icon" className="w-3 h-3" />],
+            ["export", "export", <FileOutput key="export-icon" className="w-3 h-3" />],
+            ["noLower", "skip lowercase", <CaseLower key="lower-icon" className="w-3 h-3" />],
+            ["urlOnly", "urls only", <Link key="url-icon" className="w-3 h-3" />],
+          ] as [keyof FormatOptions, string, React.ReactNode][]).map(([key, label, icon]) => (
             <button
               key={key}
               onClick={() => toggle(key)}
               aria-pressed={!!options[key]}
-              className={`flex-shrink-0 h-6 px-2 rounded font-mono text-[10px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+              className={`flex-shrink-0 inline-flex items-center gap-1 h-6 px-2 rounded font-mono text-[10px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
                 options[key]
                   ? "bg-primary/15 text-primary border border-primary/30"
                   : "text-muted-foreground hover:text-foreground border border-transparent"
               }`}
             >
+              {icon}
               {label}
             </button>
           ))}
