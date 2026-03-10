@@ -2,7 +2,7 @@
 
 # DotEnvify
 
-Convert messy key-value pairs into clean, standardized `.env` files. Zero hassle.
+Convert messy key-value pairs into clean, standardized `.env` files.
 
 <a href="https://www.npmjs.com/package/@webbies.dev/dotenvify"><img src="https://img.shields.io/npm/v/@webbies.dev/dotenvify.svg" alt="npm" /></a>&nbsp;
 <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT" /></a>&nbsp;
