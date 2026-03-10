@@ -4,7 +4,7 @@
   "description": "Convert messy environment variables into clean .env files",
   "type": "module",
   "bin": {
-    "dotenvify": "./bin/dotenvify.js"
+    "dotenvify": "bin/dotenvify.js"
   },
   "files": [
     "bin/",
