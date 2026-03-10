@@ -2,7 +2,7 @@
 
 # DotEnvify
 
-Convert messy key-value pairs into clean, standardized `.env` files — with zero hassle.
+Convert messy key-value pairs into clean, standardized `.env` files. Zero hassle.
 
 <a href="https://www.npmjs.com/package/@webbies.dev/dotenvify"><img src="https://img.shields.io/npm/v/@webbies.dev/dotenvify.svg" alt="npm" /></a>&nbsp;
 <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT" /></a>&nbsp;
@@ -97,7 +97,7 @@ dotenvify vars.txt --url-only --skip-lower
 
 ## Supported Formats
 
-DotEnvify auto-detects and handles all of these — even mixed in the same file:
+DotEnvify auto-detects and handles all of these, even mixed in the same file:
 
 ```bash
 # KEY=VALUE
@@ -121,7 +121,7 @@ Lines starting with `#` are treated as comments and ignored.
 
 ## IDE Plugins
 
-Prefer working in your editor? DotEnvify has IDE plugins with features beyond the CLI — including Azure DevOps integration, paste-and-format, and real-time `.env` diagnostics.
+Prefer working in your editor? DotEnvify has IDE plugins with features beyond the CLI: Azure DevOps integration, paste-and-format, and real-time `.env` diagnostics.
 
 | | Plugin | Highlights |
 |---|---|---|
@@ -139,7 +139,7 @@ v1.0 is a full rewrite in TypeScript. **If you're upgrading, read this.**
 | **Runtime** | Pre-built Go binary | Requires Node.js 18+ |
 | **Install** | Binary via postinstall script | Standard `npm install` |
 | **Command** | `dotenvify -azure -group "Vars"` | `dotenvify vars.txt -o .env` |
-| **Azure DevOps** | Built into CLI (`-azure` flag) | **Removed** — use the [JetBrains plugin](https://plugins.jetbrains.com/plugin/dev.webbies.dotenvify) |
+| **Azure DevOps** | Built into CLI (`-azure` flag) | **Removed.** Use the [JetBrains plugin](https://plugins.jetbrains.com/plugin/dev.webbies.dotenvify) |
 | **Self-update** | Built-in (`-update`) | `npm update -g @webbies.dev/dotenvify` |
 | **Parsing** | Same formats supported | Same formats supported |
 
@@ -158,4 +158,4 @@ v1.0 is a full rewrite in TypeScript. **If you're upgrading, read this.**
 
 ## License
 
-MIT — Go wild, make millions, just don't blame us when it formats your grocery list.
+MIT. Go wild, make millions, just don't blame us when it formats your grocery list.

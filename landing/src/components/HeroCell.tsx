@@ -21,7 +21,7 @@ const HeroCell = () => (
 
       <p className="mt-3 text-sm text-muted-foreground leading-relaxed max-w-xs">
         CLI, JetBrains plugin, or right here in the browser.
-        Parses KEY=VALUE, exports, line-pairs, quoted strings — any mix.
+        Parses KEY=VALUE, exports, line-pairs, quoted strings. Any mix.
       </p>
     </div>
 

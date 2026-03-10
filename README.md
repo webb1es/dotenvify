@@ -2,7 +2,7 @@
 
 # DotEnvify
 
-Convert messy key-value pairs into clean, standardized `.env` files — with zero hassle.
+Convert messy key-value pairs into clean, standardized `.env` files. Zero hassle.
 
 <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT" /></a>&nbsp;
 <a href="https://www.npmjs.com/package/@webbies.dev/dotenvify"><img src="https://img.shields.io/npm/v/@webbies.dev/dotenvify.svg" alt="npm version" /></a>&nbsp;
@@ -51,7 +51,7 @@ dotenvify vars.txt --export
 
 | | Feature | Description |
 |---|---|---|
-| **Auto-Detect** | Smart Parsing | Handles `KEY=VALUE`, `KEY VALUE`, key-on-separate-lines, quoted values, `export` prefixes — even mixed together |
+| **Auto-Detect** | Smart Parsing | Handles `KEY=VALUE`, `KEY VALUE`, key-on-separate-lines, quoted values, `export` prefixes, even mixed together |
 | **Backup** | Safe by Default | Automatic backups with incremental counters before any overwrite |
 | **Lock** | Preserve Mode | Keep existing values for specific variables when regenerating `.env` files |
 | **Filter** | Flexible Filtering | Skip lowercase keys, filter to URLs only, sort alphabetically or keep original order |
@@ -59,7 +59,7 @@ dotenvify vars.txt --export
 
 ## Supported Input Formats
 
-DotEnvify auto-detects and parses all of these — even when mixed in the same file:
+DotEnvify auto-detects and parses all of these, even when mixed in the same file:
 
 ```bash
 # KEY=VALUE
@@ -115,21 +115,21 @@ dotenvify vars.txt -o .env.local --export --skip-sort
 
 ## IDE Plugins
 
-Use DotEnvify directly in your editor — with features the CLI can't offer, like Azure DevOps integration, paste-and-format, and real-time diagnostics.
+Use DotEnvify directly in your editor. Get features the CLI can't offer: Azure DevOps integration, paste-and-format, and real-time diagnostics.
 
 | Plugin | Highlights | Status |
 |---|---|---|
 | <a href="https://plugins.jetbrains.com/plugin/dev.webbies.dotenvify"><img src="https://img.shields.io/badge/JetBrains-IntelliJ_%2F_WebStorm_%2F_GoLand_%2F_PyCharm_%2F_Rider-000000?style=flat-square&logo=jetbrains&logoColor=white" alt="JetBrains" /></a> | Azure DevOps variable groups, paste & format, `.env` diagnostics | <img src="https://img.shields.io/badge/available-brightgreen?style=flat-square" alt="Available" /> |
-| <a href="./plugins/vscode"><img src="https://img.shields.io/badge/VS_Code-Extension-007ACC?style=flat-square&logo=visualstudiocode&logoColor=white" alt="VS Code" /></a> | Parser, formatter, diagnostics — built on @dotenvify/core | <img src="https://img.shields.io/badge/coming_soon-lightgrey?style=flat-square" alt="Coming soon" /> |
+| <a href="./plugins/vscode"><img src="https://img.shields.io/badge/VS_Code-Extension-007ACC?style=flat-square&logo=visualstudiocode&logoColor=white" alt="VS Code" /></a> | Parser, formatter, diagnostics. Built on @dotenvify/core | <img src="https://img.shields.io/badge/coming_soon-lightgrey?style=flat-square" alt="Coming soon" /> |
 
-> **Migrating from v0.x?** Azure DevOps support has moved from the CLI to the [JetBrains plugin](https://plugins.jetbrains.com/plugin/dev.webbies.dotenvify) — a better fit with richer IDE integration. See the [CLI README](./cli#upgrading-from-v0x-go-version) for the full migration guide.
+> **Migrating from v0.x?** Azure DevOps support has moved from the CLI to the [JetBrains plugin](https://plugins.jetbrains.com/plugin/dev.webbies.dotenvify) for a better experience with full IDE integration. See the [CLI README](./cli#upgrading-from-v0x-go-version) for the full migration guide.
 
 ## Ecosystem
 
 | Package | Description |
 |---|---|
 | <a href="./cli"><img src="https://img.shields.io/badge/CLI-Command--line_tool-4A154B?style=flat-square&logo=windowsterminal&logoColor=white" alt="CLI" /></a> | File conversion, scripting, CI/CD pipelines |
-| <a href="./packages/core"><img src="https://img.shields.io/badge/@dotenvify/core-Shared_library-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="Core" /></a> | Parser, formatter, IO — powers CLI and plugins |
+| <a href="./packages/core"><img src="https://img.shields.io/badge/@dotenvify/core-Shared_library-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="Core" /></a> | Parser, formatter, IO. Powers CLI and plugins |
 | <a href="./landing"><img src="https://img.shields.io/badge/Landing_Page-Product_site-FF6F61?style=flat-square&logo=vercel&logoColor=white" alt="Landing" /></a> | Live demo and docs |
 
 ## Development
@@ -146,10 +146,10 @@ npm run dev:landing  # Dev mode (landing page)
 
 ```
 dotenvify/
-├── packages/core/       # @dotenvify/core — shared TS library
+├── packages/core/       # @dotenvify/core (shared TS library)
 ├── cli/                 # CLI tool (Commander.js)
 ├── plugins/
-│   ├── jetbrains/       # Kotlin — Gradle build
+│   ├── jetbrains/       # Kotlin, Gradle build
 │   └── vscode/          # VS Code extension
 ├── landing/             # Product landing page
 └── docs/                # Shared docs & assets
