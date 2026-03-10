@@ -1,9 +1,9 @@
 package dev.webbies.dotenvify.ui
 
+import com.intellij.openapi.project.Project
 import dev.webbies.dotenvify.core.FormatOptions
 import dev.webbies.dotenvify.settings.DotEnvifyProjectSettings
 import dev.webbies.dotenvify.settings.DotEnvifySettings
-import com.intellij.openapi.project.Project
 import javax.swing.*
 
 /**

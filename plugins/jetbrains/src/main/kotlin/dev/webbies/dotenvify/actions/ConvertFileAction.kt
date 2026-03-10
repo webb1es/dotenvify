@@ -24,7 +24,11 @@ class ConvertFileAction : AnAction() {
         val parseResult = DotEnvParser.parse(content)
 
         if (parseResult.entries.isEmpty()) {
-            EnvFileApplicator.notify(project, "No key-value pairs found in '${virtualFile.name}'.", NotificationType.WARNING)
+            EnvFileApplicator.notify(
+                project,
+                "No key-value pairs found in '${virtualFile.name}'.",
+                NotificationType.WARNING
+            )
             return
         }
 

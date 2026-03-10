@@ -30,7 +30,7 @@ Works across IntelliJ IDEA, GoLand, WebStorm, PyCharm, Rider, CLion, and more.
 ### Editor Actions
 
 - **Convert Selection** — select text, right-click > DotEnvify > Convert Selection to .env
-  - Keyboard shortcut: `Ctrl+Alt+E`
+    - Keyboard shortcut: `Ctrl+Alt+E`
 - **Convert File** — right-click a file in Project view > DotEnvify > Convert File to .env
 - **Generate .env.example** — right-click a `.env` file > DotEnvify > Generate .env.example
 
@@ -40,7 +40,7 @@ All actions are also available under the **Tools > DotEnvify** menu.
 
 - **Global defaults**: Settings > Tools > DotEnvify
 - **Per-project overrides**: Settings > Tools > DotEnvify > Project Settings
-  - Toggle "Use global defaults" to switch between global and project-specific options
+    - Toggle "Use global defaults" to switch between global and project-specific options
 
 ## Supported Input Formats
 

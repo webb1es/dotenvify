@@ -38,11 +38,11 @@ class DotEnvifySettingsConfigurable : Configurable {
     override fun isModified(): Boolean {
         val s = DotEnvifySettings.getInstance().state
         return exportCheckbox.isSelected != s.exportPrefix ||
-            sortCheckbox.isSelected != s.sort ||
-            noLowerCheckbox.isSelected != s.ignoreLowercase ||
-            urlOnlyCheckbox.isSelected != s.urlOnly ||
-            outputPathField.text != s.defaultOutputPath ||
-            azureOrgUrlField.text != s.azureOrgUrl
+                sortCheckbox.isSelected != s.sort ||
+                noLowerCheckbox.isSelected != s.ignoreLowercase ||
+                urlOnlyCheckbox.isSelected != s.urlOnly ||
+                outputPathField.text != s.defaultOutputPath ||
+                azureOrgUrlField.text != s.azureOrgUrl
     }
 
     override fun apply() {

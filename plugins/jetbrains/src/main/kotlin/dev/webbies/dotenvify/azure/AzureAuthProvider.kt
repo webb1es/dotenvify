@@ -1,11 +1,11 @@
 package dev.webbies.dotenvify.azure
 
+import com.google.gson.Gson
+import com.google.gson.JsonObject
 import com.intellij.credentialStore.CredentialAttributes
 import com.intellij.credentialStore.Credentials
 import com.intellij.credentialStore.generateServiceName
 import com.intellij.ide.passwordSafe.PasswordSafe
-import com.google.gson.Gson
-import com.google.gson.JsonObject
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
@@ -39,7 +39,8 @@ object AzureAuthProvider {
         return DeviceCodeResponse(
             deviceCode = json.str("device_code") ?: error("Missing device_code"),
             userCode = json.str("user_code") ?: error("Missing user_code"),
-            verificationUri = json.str("verification_uri") ?: json.str("verification_url") ?: "https://microsoft.com/devicelogin",
+            verificationUri = json.str("verification_uri") ?: json.str("verification_url")
+            ?: "https://microsoft.com/devicelogin",
             expiresIn = json.int("expires_in") ?: 900,
             interval = json.int("interval") ?: 5,
             message = json.str("message") ?: "Enter the code at the verification URL",
@@ -48,7 +49,8 @@ object AzureAuthProvider {
 
     /** Returns null if still pending, throws on error/expiry. */
     fun pollForToken(deviceCode: String): TokenResponse? {
-        val body = "grant_type=urn:ietf:params:oauth:grant-type:device_code&client_id=$CLIENT_ID&device_code=$deviceCode"
+        val body =
+            "grant_type=urn:ietf:params:oauth:grant-type:device_code&client_id=$CLIENT_ID&device_code=$deviceCode"
         val response = httpClient.send(
             formPost(TOKEN_URL, body),
             HttpResponse.BodyHandlers.ofString(),
@@ -90,7 +92,8 @@ object AzureAuthProvider {
     }
 
     private fun refreshToken(refreshToken: String): String? {
-        val body = "grant_type=refresh_token&client_id=$CLIENT_ID&refresh_token=$refreshToken&scope=$AZURE_DEVOPS_SCOPE offline_access"
+        val body =
+            "grant_type=refresh_token&client_id=$CLIENT_ID&refresh_token=$refreshToken&scope=$AZURE_DEVOPS_SCOPE offline_access"
         val response = try {
             httpClient.send(formPost(TOKEN_URL, body), HttpResponse.BodyHandlers.ofString())
         } catch (_: Exception) {
@@ -102,11 +105,13 @@ object AzureAuthProvider {
         if (json.str("error") != null) return null
 
         val accessToken = json.str("access_token") ?: return null
-        saveToken(StoredToken(
-            accessToken = accessToken,
-            refreshToken = json.str("refresh_token") ?: refreshToken,
-            expiresAt = Instant.now().plusSeconds((json.int("expires_in") ?: 3600).toLong()).epochSecond,
-        ))
+        saveToken(
+            StoredToken(
+                accessToken = accessToken,
+                refreshToken = json.str("refresh_token") ?: refreshToken,
+                expiresAt = Instant.now().plusSeconds((json.int("expires_in") ?: 3600).toLong()).epochSecond,
+            )
+        )
         return accessToken
     }
 
@@ -136,7 +141,11 @@ object AzureAuthProvider {
 
     private fun loadToken(): StoredToken? {
         val json = PasswordSafe.instance.get(credentialAttributes())?.getPasswordAsString() ?: return null
-        return try { gson.fromJson(json, StoredToken::class.java) } catch (_: Exception) { null }
+        return try {
+            gson.fromJson(json, StoredToken::class.java)
+        } catch (_: Exception) {
+            null
+        }
     }
 
     private fun credentialAttributes() = CredentialAttributes(

@@ -1,5 +1,6 @@
 package dev.webbies.dotenvify.actions
 
+import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -12,13 +13,13 @@ import com.intellij.ui.components.JBTextArea
 import dev.webbies.dotenvify.core.DotEnvFormatter
 import dev.webbies.dotenvify.core.DotEnvParser
 import dev.webbies.dotenvify.core.FormatOptions
+import dev.webbies.dotenvify.ui.EnvFileApplicator
 import dev.webbies.dotenvify.ui.FormatOptionsPanel
 import dev.webbies.dotenvify.ui.MONO_FONT
-import dev.webbies.dotenvify.ui.EnvFileApplicator
-import com.intellij.notification.NotificationType
 import java.awt.BorderLayout
 import java.awt.Dimension
-import javax.swing.*
+import javax.swing.JComponent
+import javax.swing.JPanel
 
 class ConvertSelectionAction : AnAction() {
 
@@ -88,5 +89,7 @@ class PreviewDialog(
 
     fun getFormattedOutput(): String = formatter(optionsPanel.options())
 
-    private fun updatePreview() { previewArea.text = getFormattedOutput() }
+    private fun updatePreview() {
+        previewArea.text = getFormattedOutput()
+    }
 }

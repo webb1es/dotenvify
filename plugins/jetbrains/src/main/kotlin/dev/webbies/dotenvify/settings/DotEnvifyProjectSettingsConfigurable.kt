@@ -51,13 +51,13 @@ class DotEnvifyProjectSettingsConfigurable(private val project: Project) : Confi
     override fun isModified(): Boolean {
         val s = DotEnvifyProjectSettings.getInstance(project).state
         return useGlobalCheckbox.isSelected != s.useGlobalDefaults ||
-            exportCheckbox.isSelected != s.exportPrefix ||
-            sortCheckbox.isSelected != s.sort ||
-            noLowerCheckbox.isSelected != s.ignoreLowercase ||
-            urlOnlyCheckbox.isSelected != s.urlOnly ||
-            outputPathField.text != s.outputPath ||
-            preserveKeysField.text != s.preserveKeys ||
-            azureGroupNameField.text != s.azureGroupName
+                exportCheckbox.isSelected != s.exportPrefix ||
+                sortCheckbox.isSelected != s.sort ||
+                noLowerCheckbox.isSelected != s.ignoreLowercase ||
+                urlOnlyCheckbox.isSelected != s.urlOnly ||
+                outputPathField.text != s.outputPath ||
+                preserveKeysField.text != s.preserveKeys ||
+                azureGroupNameField.text != s.azureGroupName
     }
 
     override fun apply() {

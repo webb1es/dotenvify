@@ -72,7 +72,7 @@ object DotEnvParser {
     fun unquote(value: String): String {
         if (value.length >= 2 &&
             ((value.startsWith('"') && value.endsWith('"')) ||
-                (value.startsWith('\'') && value.endsWith('\'')))
+                    (value.startsWith('\'') && value.endsWith('\'')))
         ) {
             return value.substring(1, value.length - 1)
         }

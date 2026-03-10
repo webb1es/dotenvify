@@ -1,6 +1,6 @@
 package dev.webbies.dotenvify.azure
 
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class AzureModelsTest {

@@ -1,6 +1,7 @@
 package dev.webbies.dotenvify.diagnostics
 
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
@@ -20,10 +21,12 @@ class EnvDiagnosticsTest {
     @Test
     fun `detects missing keys`() {
         writeFile(".env", "API_URL=https://example.com\n")
-        writeFile("app.js", """
+        writeFile(
+            "app.js", """
             const url = process.env.API_URL;
             const key = process.env.SECRET_KEY;
-        """.trimIndent())
+        """.trimIndent()
+        )
 
         val result = EnvDiagnostics.analyze(tmpDir.root.toPath(), tmpDir.root.toPath().resolve(".env"))
 
@@ -34,9 +37,11 @@ class EnvDiagnosticsTest {
     @Test
     fun `detects unused keys`() {
         writeFile(".env", "API_URL=https://example.com\nUNUSED_KEY=value\n")
-        writeFile("app.js", """
+        writeFile(
+            "app.js", """
             const url = process.env.API_URL;
-        """.trimIndent())
+        """.trimIndent()
+        )
 
         val result = EnvDiagnostics.analyze(tmpDir.root.toPath(), tmpDir.root.toPath().resolve(".env"))
 
@@ -47,10 +52,12 @@ class EnvDiagnosticsTest {
     @Test
     fun `no issues when everything matches`() {
         writeFile(".env", "API_URL=https://example.com\nDB_HOST=localhost\n")
-        writeFile("app.js", """
+        writeFile(
+            "app.js", """
             const url = process.env.API_URL;
             const db = process.env.DB_HOST;
-        """.trimIndent())
+        """.trimIndent()
+        )
 
         val result = EnvDiagnostics.analyze(tmpDir.root.toPath(), tmpDir.root.toPath().resolve(".env"))
 
@@ -61,9 +68,11 @@ class EnvDiagnosticsTest {
     @Test
     fun `missing keys include reference details`() {
         writeFile(".env", "EXISTING=value\n")
-        writeFile("src/app.js", """
+        writeFile(
+            "src/app.js", """
             const a = process.env.MISSING_KEY;
-        """.trimIndent())
+        """.trimIndent()
+        )
 
         val result = EnvDiagnostics.analyze(tmpDir.root.toPath(), tmpDir.root.toPath().resolve(".env"))
 

@@ -1,1 +1,1 @@
-rootProject.name = "dotenvify-plugin-jetbrains"
+rootProject.name = "jetbrains"

@@ -134,59 +134,78 @@ class DiagnosticsPanel(private val project: Project) : JPanel(BorderLayout()) {
         scanButton.isEnabled = false
         statusLabel.text = "Scanning..."
 
-        ProgressManager.getInstance().run(object : Task.Backgroundable(project, "Scanning project for env references...", true) {
-            override fun run(indicator: ProgressIndicator) {
-                try {
-                    indicator.text = "Scanning source files..."
-                    val result = EnvDiagnostics.analyze(projectRoot, envFile)
-                    ApplicationManager.getApplication().invokeLater {
-                        displayResult(result, projectRoot)
-                        scanButton.isEnabled = true
-                    }
-                } catch (e: java.io.IOException) {
-                    ApplicationManager.getApplication().invokeLater {
-                        listModel.clear()
-                        listModel.addElement(DiagnosticItem("Scan failed: ${e.message}", null, isHeader = true))
-                        statusLabel.text = "Error"
-                        scanButton.isEnabled = true
-                    }
-                } catch (e: SecurityException) {
-                    ApplicationManager.getApplication().invokeLater {
-                        listModel.clear()
-                        listModel.addElement(DiagnosticItem("Permission denied: ${e.message}", null, isHeader = true))
-                        statusLabel.text = "Error"
-                        scanButton.isEnabled = true
+        ProgressManager.getInstance()
+            .run(object : Task.Backgroundable(project, "Scanning project for env references...", true) {
+                override fun run(indicator: ProgressIndicator) {
+                    try {
+                        indicator.text = "Scanning source files..."
+                        val result = EnvDiagnostics.analyze(projectRoot, envFile)
+                        ApplicationManager.getApplication().invokeLater {
+                            displayResult(result, projectRoot)
+                            scanButton.isEnabled = true
+                        }
+                    } catch (e: java.io.IOException) {
+                        ApplicationManager.getApplication().invokeLater {
+                            listModel.clear()
+                            listModel.addElement(DiagnosticItem("Scan failed: ${e.message}", null, isHeader = true))
+                            statusLabel.text = "Error"
+                            scanButton.isEnabled = true
+                        }
+                    } catch (e: SecurityException) {
+                        ApplicationManager.getApplication().invokeLater {
+                            listModel.clear()
+                            listModel.addElement(
+                                DiagnosticItem(
+                                    "Permission denied: ${e.message}",
+                                    null,
+                                    isHeader = true
+                                )
+                            )
+                            statusLabel.text = "Error"
+                            scanButton.isEnabled = true
+                        }
                     }
                 }
-            }
-        })
+            })
     }
 
     private fun displayResult(result: EnvDiagnostics.DiagnosticResult, projectRoot: Path) {
         listModel.clear()
 
-        listModel.addElement(DiagnosticItem(
-            "Keys in .env: ${result.envKeys.size} | Keys referenced in code: ${result.referencedKeys.size}",
-            null, isHeader = true
-        ))
+        listModel.addElement(
+            DiagnosticItem(
+                "Keys in .env: ${result.envKeys.size} | Keys referenced in code: ${result.referencedKeys.size}",
+                null, isHeader = true
+            )
+        )
 
         if (result.missingKeys.isNotEmpty()) {
             listModel.addElement(DiagnosticItem("", null)) // spacer
-            listModel.addElement(DiagnosticItem("MISSING FROM .env (${result.missingKeys.size})", null, isHeader = true))
+            listModel.addElement(
+                DiagnosticItem(
+                    "MISSING FROM .env (${result.missingKeys.size})",
+                    null,
+                    isHeader = true
+                )
+            )
             for (missing in result.missingKeys) {
                 for (ref in missing.references.take(3)) {
                     val relPath = projectRoot.relativize(ref.file)
-                    listModel.addElement(DiagnosticItem(
-                        "${missing.key}",
-                        "$relPath:${ref.line}  ${ref.snippet}",
-                        file = ref.file,
-                        line = ref.line,
-                    ))
+                    listModel.addElement(
+                        DiagnosticItem(
+                            "${missing.key}",
+                            "$relPath:${ref.line}  ${ref.snippet}",
+                            file = ref.file,
+                            line = ref.line,
+                        )
+                    )
                 }
                 if (missing.references.size > 3) {
-                    listModel.addElement(DiagnosticItem(
-                        "  ... and ${missing.references.size - 3} more references", null
-                    ))
+                    listModel.addElement(
+                        DiagnosticItem(
+                            "  ... and ${missing.references.size - 3} more references", null
+                        )
+                    )
                 }
             }
         } else {
@@ -201,7 +220,12 @@ class DiagnosticsPanel(private val project: Project) : JPanel(BorderLayout()) {
                 listModel.addElement(DiagnosticItem(it, "Defined in .env but not referenced in code"))
             }
             listModel.addElement(DiagnosticItem("", null))
-            listModel.addElement(DiagnosticItem("Note: Some keys may be used via dynamic access not detectable by static analysis.", null))
+            listModel.addElement(
+                DiagnosticItem(
+                    "Note: Some keys may be used via dynamic access not detectable by static analysis.",
+                    null
+                )
+            )
         } else {
             listModel.addElement(DiagnosticItem("", null))
             listModel.addElement(DiagnosticItem("No unused keys — all .env keys are referenced in code.", null))

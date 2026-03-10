@@ -33,8 +33,8 @@ object DotEnvFormatter {
 
     fun isQuoted(value: String): Boolean =
         value.length >= 2 &&
-            ((value.startsWith('"') && value.endsWith('"')) ||
-                (value.startsWith('\'') && value.endsWith('\'')))
+                ((value.startsWith('"') && value.endsWith('"')) ||
+                        (value.startsWith('\'') && value.endsWith('\'')))
 
     private fun smartQuote(value: String): String {
         if (isQuoted(value)) return value

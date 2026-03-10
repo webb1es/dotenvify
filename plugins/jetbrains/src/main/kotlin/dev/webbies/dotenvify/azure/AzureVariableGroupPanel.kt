@@ -141,7 +141,7 @@ class AzureVariableGroupPanel(private val project: Project) : JPanel(BorderLayou
         // Row 0: Azure DevOps URL (full width)
         gbc.gridx = 0; gbc.gridy = 0
         gbc.anchor = GridBagConstraints.WEST; gbc.fill = GridBagConstraints.NONE
-        gbc.insets = Insets(0, 0, 4, 8); gbc.weightx = 0.0
+        gbc.insets = JBUI.insets(0, 0, 4, 8); gbc.weightx = 0.0
         panel.add(JLabel("Azure DevOps URL:"), gbc)
 
         gbc.gridx = 1; gbc.gridwidth = 3
@@ -151,7 +151,7 @@ class AzureVariableGroupPanel(private val project: Project) : JPanel(BorderLayou
         // Row 1: Variable Group + Auth
         gbc.gridx = 0; gbc.gridy = 1; gbc.gridwidth = 1
         gbc.fill = GridBagConstraints.NONE; gbc.weightx = 0.0
-        gbc.insets = Insets(0, 0, 0, 8)
+        gbc.insets = JBUI.insetsRight(8)
         panel.add(JLabel("Variable Group:"), gbc)
 
         gbc.gridx = 1; gbc.gridwidth = 1
@@ -160,7 +160,7 @@ class AzureVariableGroupPanel(private val project: Project) : JPanel(BorderLayou
 
         gbc.gridx = 2; gbc.gridwidth = 1
         gbc.fill = GridBagConstraints.NONE; gbc.weightx = 0.0
-        gbc.insets = Insets(0, 16, 0, 0)
+        gbc.insets = JBUI.insetsLeft(16)
         val authRow = JPanel(FlowLayout(FlowLayout.LEFT, 4, 0)).apply {
             add(authStatusIcon)
             add(authStatusLabel)
@@ -250,7 +250,9 @@ class AzureVariableGroupPanel(private val project: Project) : JPanel(BorderLayou
                 val interval = (deviceCode.interval * 1000L).coerceAtLeast(5000)
 
                 while (System.currentTimeMillis() < deadline) {
-                    if (indicator.isCanceled) { resetSignInButton(); return }
+                    if (indicator.isCanceled) {
+                        resetSignInButton(); return
+                    }
                     Thread.sleep(interval)
                     indicator.text = "Waiting for browser sign-in..."
                     try {
@@ -300,52 +302,54 @@ class AzureVariableGroupPanel(private val project: Project) : JPanel(BorderLayou
 
         fetchButton.isEnabled = false
 
-        ProgressManager.getInstance().run(object : Task.Backgroundable(project, "Fetching variables from Azure DevOps...", true) {
-            override fun run(indicator: ProgressIndicator) {
-                try {
-                    val accessToken = AzureAuthProvider.getAccessToken()
-                        ?: throw RuntimeException("Not authenticated. Please sign in first.")
-                    val (org, proj) = AzureConnection.parseUrl(orgUrl)
-                    if (proj == null) throw IllegalArgumentException("URL must include the project, e.g. https://dev.azure.com/myorg/myproject")
+        ProgressManager.getInstance()
+            .run(object : Task.Backgroundable(project, "Fetching variables from Azure DevOps...", true) {
+                override fun run(indicator: ProgressIndicator) {
+                    try {
+                        val accessToken = AzureAuthProvider.getAccessToken()
+                            ?: throw RuntimeException("Not authenticated. Please sign in first.")
+                        val (org, proj) = AzureConnection.parseUrl(orgUrl)
+                        if (proj == null) throw IllegalArgumentException("URL must include the project, e.g. https://dev.azure.com/myorg/myproject")
 
-                    indicator.text = "Fetching '$groupName'..."
-                    val result = AzureDevOpsClient(org, proj).fetchVariables(groupName, accessToken)
-                    val entries = result.variables.map { (k, v) -> EnvEntry(k, v) }
+                        indicator.text = "Fetching '$groupName'..."
+                        val result = AzureDevOpsClient(org, proj).fetchVariables(groupName, accessToken)
+                        val entries = result.variables.map { (k, v) -> EnvEntry(k, v) }
 
-                    ApplicationManager.getApplication().invokeLater {
-                        fetchedEntries = entries
-                        groupInfoLabel.text = if (result.groupDescription.isNotEmpty()) {
-                            "${result.groupName} — ${result.groupDescription}"
-                        } else {
-                            result.groupName
+                        ApplicationManager.getApplication().invokeLater {
+                            fetchedEntries = entries
+                            groupInfoLabel.text = if (result.groupDescription.isNotEmpty()) {
+                                "${result.groupName} — ${result.groupDescription}"
+                            } else {
+                                result.groupName
+                            }
+                            refreshPreview()
+
+                            if (result.warnings.isNotEmpty()) {
+                                val warningText = result.warnings.joinToString("\n")
+                                EnvFileApplicator.notify(project, warningText, NotificationType.WARNING)
+                            }
+
+                            applyButton.isEnabled = entries.isNotEmpty()
+                            fetchButton.isEnabled = true
                         }
-                        refreshPreview()
-
-                        if (result.warnings.isNotEmpty()) {
-                            val warningText = result.warnings.joinToString("\n")
-                            EnvFileApplicator.notify(project, warningText, NotificationType.WARNING)
-                        }
-
-                        applyButton.isEnabled = entries.isNotEmpty()
-                        fetchButton.isEnabled = true
+                    } catch (e: IllegalArgumentException) {
+                        showError("Invalid input: ${e.message}")
+                        enableFetch()
+                    } catch (e: ConnectException) {
+                        showError("Cannot reach Azure DevOps. Check your network and URL.")
+                        enableFetch()
+                    } catch (e: HttpTimeoutException) {
+                        showError("Request timed out. Try again.")
+                        enableFetch()
+                    } catch (e: RuntimeException) {
+                        val rootCause = generateSequence<Throwable>(e) { it.cause }.last()
+                        val detail =
+                            if (rootCause !== e) "${e.message} (${rootCause.javaClass.simpleName}: ${rootCause.message})" else e.message
+                        showError("Fetch failed: $detail")
+                        enableFetch()
                     }
-                } catch (e: IllegalArgumentException) {
-                    showError("Invalid input: ${e.message}")
-                    enableFetch()
-                } catch (e: ConnectException) {
-                    showError("Cannot reach Azure DevOps. Check your network and URL.")
-                    enableFetch()
-                } catch (e: HttpTimeoutException) {
-                    showError("Request timed out. Try again.")
-                    enableFetch()
-                } catch (e: RuntimeException) {
-                    val rootCause = generateSequence<Throwable>(e) { it.cause }.last()
-                    val detail = if (rootCause !== e) "${e.message} (${rootCause.javaClass.simpleName}: ${rootCause.message})" else e.message
-                    showError("Fetch failed: $detail")
-                    enableFetch()
                 }
-            }
-        })
+            })
     }
 
     private fun refreshPreview() {
@@ -432,8 +436,10 @@ private class DeviceCodeDialog(
             add(copyButton, BorderLayout.EAST)
         }
 
-        val hint = JLabel("<html><i>Click 'Open Browser' to navigate to the Microsoft sign-in page,<br>" +
-                "then paste the code above when prompted.</i></html>").apply {
+        val hint = JLabel(
+            "<html><i>Click 'Open Browser' to navigate to the Microsoft sign-in page,<br>" +
+                    "then paste the code above when prompted.</i></html>"
+        ).apply {
             foreground = JBColor.GRAY
         }
 

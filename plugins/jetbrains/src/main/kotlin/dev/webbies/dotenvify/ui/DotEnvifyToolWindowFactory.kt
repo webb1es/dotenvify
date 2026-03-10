@@ -17,9 +17,10 @@ class DotEnvifyToolWindowFactory : ToolWindowFactory {
         val azureTab = contentFactory.createContent(AzureVariableGroupPanel(project), "Azure DevOps", false).apply {
             icon = AllIcons.Providers.Azure
         }
-        val convertTab = contentFactory.createContent(DotEnvifyToolWindowPanel(project), "Paste & Format", false).apply {
-            icon = AllIcons.Actions.RealIntentionBulb
-        }
+        val convertTab =
+            contentFactory.createContent(DotEnvifyToolWindowPanel(project), "Paste & Format", false).apply {
+                icon = AllIcons.Actions.RealIntentionBulb
+            }
         val diagnosticsTab = contentFactory.createContent(DiagnosticsPanel(project), "Diagnostics", false).apply {
             icon = AllIcons.Actions.Find
         }

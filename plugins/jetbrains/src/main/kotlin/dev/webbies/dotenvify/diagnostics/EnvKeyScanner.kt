@@ -6,7 +6,6 @@ import java.nio.file.Path
 import kotlin.io.path.extension
 import kotlin.io.path.fileSize
 import kotlin.io.path.isRegularFile
-import kotlin.streams.toList
 
 /** Scans source files for environment variable references across multiple languages. */
 object EnvKeyScanner {
@@ -103,12 +102,12 @@ object EnvKeyScanner {
         if (!Files.isDirectory(root)) return emptyList()
         return Files.walk(root).filter { path ->
             path.isRegularFile() &&
-                path.extension in SOURCE_EXTENSIONS &&
-                path.fileSize() <= MAX_FILE_SIZE &&
-                SKIP_DIRS.none { dir ->
-                    val rel = root.relativize(path).toString()
-                    rel.startsWith("$dir/") || rel.startsWith("$dir\\")
-                }
+                    path.extension in SOURCE_EXTENSIONS &&
+                    path.fileSize() <= MAX_FILE_SIZE &&
+                    SKIP_DIRS.none { dir ->
+                        val rel = root.relativize(path).toString()
+                        rel.startsWith("$dir/") || rel.startsWith("$dir\\")
+                    }
         }.toList()
     }
 }

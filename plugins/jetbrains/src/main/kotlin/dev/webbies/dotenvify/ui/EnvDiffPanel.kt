@@ -2,6 +2,7 @@ package dev.webbies.dotenvify.ui
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
+import com.intellij.ui.Gray
 import com.intellij.ui.JBColor
 import com.intellij.ui.components.JBScrollPane
 import dev.webbies.dotenvify.core.DotEnvParser
@@ -56,8 +57,8 @@ class EnvDiffDialog(
 
         val summaryLabel = JLabel(
             "Existing .env: ${existingEntries.size} keys | $sourceName: ${incomingEntries.size} keys  —  " +
-                "+ ${counts[Status.ADDED]} new  ~ ${counts[Status.CHANGED]} changed  " +
-                "- ${counts[Status.REMOVED]} kept  = ${counts[Status.UNCHANGED]} unchanged"
+                    "+ ${counts[Status.ADDED]} new  ~ ${counts[Status.CHANGED]} changed  " +
+                    "- ${counts[Status.REMOVED]} kept  = ${counts[Status.UNCHANGED]} unchanged"
         )
 
         val tableModel = object : AbstractTableModel() {
@@ -105,9 +106,10 @@ class EnvDiffDialog(
             columnModel.getColumn(4).preferredWidth = 90
         }
 
-        val helpLabel = JLabel("Tip: Toggle 'Use Incoming' checkboxes on changed keys to pick which value to keep.").apply {
-            border = BorderFactory.createEmptyBorder(8, 0, 0, 0)
-        }
+        val helpLabel =
+            JLabel("Tip: Toggle 'Use Incoming' checkboxes on changed keys to pick which value to keep.").apply {
+                border = BorderFactory.createEmptyBorder(8, 0, 0, 0)
+            }
 
         return JPanel(BorderLayout(0, 8)).apply {
             add(summaryLabel, BorderLayout.NORTH)
@@ -122,12 +124,14 @@ class EnvDiffDialog(
         return (existingMap.keys + incomingMap.keys).sorted().map { key ->
             val e = existingMap[key]
             val i = incomingMap[key]
-            MergeRow(key, e, i, when {
-                e == null -> Status.ADDED
-                i == null -> Status.REMOVED
-                DotEnvParser.unquote(e) != DotEnvParser.unquote(i) -> Status.CHANGED
-                else -> Status.UNCHANGED
-            })
+            MergeRow(
+                key, e, i, when {
+                    e == null -> Status.ADDED
+                    i == null -> Status.REMOVED
+                    DotEnvParser.unquote(e) != DotEnvParser.unquote(i) -> Status.CHANGED
+                    else -> Status.UNCHANGED
+                }
+            )
         }.toMutableList()
     }
 
@@ -141,7 +145,7 @@ class EnvDiffDialog(
                 foreground = when (value) {
                     "ADDED" -> JBColor(java.awt.Color(0, 128, 0), java.awt.Color(80, 200, 80))
                     "CHANGED" -> JBColor(java.awt.Color(200, 150, 0), java.awt.Color(220, 180, 50))
-                    "REMOVED" -> JBColor(java.awt.Color(128, 128, 128), java.awt.Color(160, 160, 160))
+                    "REMOVED" -> JBColor(java.awt.Gray._128, java.awt.Gray._160)
                     else -> table.foreground
                 }
             }

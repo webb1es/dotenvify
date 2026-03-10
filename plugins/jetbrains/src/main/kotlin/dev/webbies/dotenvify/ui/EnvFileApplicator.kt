@@ -4,7 +4,10 @@ import com.intellij.notification.NotificationGroupManager
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
-import dev.webbies.dotenvify.core.*
+import dev.webbies.dotenvify.core.DotEnvFormatter
+import dev.webbies.dotenvify.core.DotEnvIO
+import dev.webbies.dotenvify.core.EnvEntry
+import dev.webbies.dotenvify.core.FormatOptions
 import java.nio.file.Path
 
 /**
