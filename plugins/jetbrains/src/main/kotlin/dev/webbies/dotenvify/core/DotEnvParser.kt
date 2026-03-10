@@ -26,6 +26,7 @@ object DotEnvParser {
             val line = lines[i]
             val stripped = line.removePrefix("export ").trimStart()
 
+            // Format: KEY=VALUE or export KEY=VALUE
             if (stripped.contains('=')) {
                 val eqIdx = stripped.indexOf('=')
                 val key = stripped.substring(0, eqIdx).trim()
@@ -38,12 +39,14 @@ object DotEnvParser {
 
             val parts = line.split(WHITESPACE)
 
+            // Format: KEY VALUE (space-separated pair)
             if (parts.size == 2) {
                 entries.add(EnvEntry(parts[0], unquote(parts[1])))
                 i++
                 continue
             }
 
+            // Format: KEY1 VAL1 KEY2 VAL2 ... (multiple space-separated pairs on one line)
             if (parts.size >= 4 && parts.size % 2 == 0) {
                 for (j in parts.indices step 2) {
                     if (parts[j].isNotEmpty()) entries.add(EnvEntry(parts[j], unquote(parts[j + 1])))
@@ -52,6 +55,7 @@ object DotEnvParser {
                 continue
             }
 
+            // Format: line pair (KEY on this line, VALUE on the next)
             if (i + 1 < lines.size) {
                 entries.add(EnvEntry(line, unquote(lines[i + 1])))
                 i += 2

@@ -145,7 +145,7 @@ class EnvDiffDialog(
                 foreground = when (value) {
                     "ADDED" -> JBColor(java.awt.Color(0, 128, 0), java.awt.Color(80, 200, 80))
                     "CHANGED" -> JBColor(java.awt.Color(200, 150, 0), java.awt.Color(220, 180, 50))
-                    "REMOVED" -> JBColor(java.awt.Gray._128, java.awt.Gray._160)
+                    "REMOVED" -> JBColor(Gray._128, Gray._160)
                     else -> table.foreground
                 }
             }

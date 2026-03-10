@@ -12,11 +12,17 @@ import com.intellij.openapi.components.Storage
 class DotEnvifySettings : PersistentStateComponent<DotEnvifySettings.State> {
 
     data class State(
+        /** Prefix each output line with `export`. */
         var exportPrefix: Boolean = false,
+        /** Sort keys alphabetically. */
         var sort: Boolean = true,
+        /** Exclude keys containing lowercase letters. */
         var ignoreLowercase: Boolean = true,
+        /** Only include entries whose values are URLs. */
         var urlOnly: Boolean = false,
+        /** Default file path for .env output. */
         var defaultOutputPath: String = ".env",
+        /** Persisted Azure DevOps organization URL for re-use across sessions. */
         var azureOrgUrl: String = "",
     )
 

@@ -1,5 +1,6 @@
 package dev.webbies.dotenvify.azure
 
+/** An Azure DevOps Variable Group containing named variables. */
 data class VariableGroup(
     val id: Int,
     val name: String,
@@ -7,23 +8,30 @@ data class VariableGroup(
     val description: String = "",
 )
 
+/** A single variable from an Azure DevOps Variable Group. */
 data class Variable(
     val value: String,
+    /** Secret variables are masked in Azure and cannot be read via API. */
     val isSecret: Boolean = false,
 )
 
+/** Response from the Azure AD Device Code Flow initiation endpoint. */
 data class DeviceCodeResponse(
     val deviceCode: String,
     val userCode: String,
     val verificationUri: String,
+    /** Seconds until the device code expires. */
     val expiresIn: Int,
+    /** Minimum seconds to wait between poll attempts. */
     val interval: Int,
     val message: String,
 )
 
+/** OAuth token response from Azure AD. */
 data class TokenResponse(
     val accessToken: String,
     val refreshToken: String,
+    /** Seconds until the access token expires. */
     val expiresIn: Int,
     val tokenType: String,
 )

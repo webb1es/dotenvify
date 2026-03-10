@@ -21,7 +21,7 @@ class EnvFileWatcher(private val project: Project) : Disposable {
     }
 
     private val listeners = CopyOnWriteArrayList<EnvChangeListener>()
-    private var watching = false
+    @Volatile private var watching = false
 
     fun addListener(listener: EnvChangeListener) {
         listeners.add(listener)

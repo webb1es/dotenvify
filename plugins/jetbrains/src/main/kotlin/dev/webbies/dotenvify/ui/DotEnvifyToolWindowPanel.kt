@@ -57,6 +57,7 @@ class DotEnvifyToolWindowPanel(private val project: Project) : JPanel(BorderLayo
     }
 
     private var currentEntries: List<EnvEntry> = emptyList()
+    /** 200ms debounce to avoid re-parsing on every keystroke */
     private val debounceTimer = Timer(200) { updatePreview() }.apply { isRepeats = false }
 
     private val watcherListener = EnvFileWatcher.EnvChangeListener {
@@ -207,7 +208,17 @@ class DotEnvifyToolWindowPanel(private val project: Project) : JPanel(BorderLayo
                         @Suppress("UNCHECKED_CAST")
                         val files = transferable.getTransferData(DataFlavor.javaFileListFlavor) as List<java.io.File>
                         val file = files.firstOrNull() ?: return
-                        inputArea.text = Files.readString(file.toPath())
+                        val path = file.toPath()
+
+                        // Reject files over 10MB to prevent OOM
+                        val size = Files.size(path)
+                        if (size > MAX_DROP_FILE_SIZE) {
+                            statusLabel.text = "File too large (${size / 1_048_576}MB). Max 5MB."
+                            dtde.dropComplete(false)
+                            return
+                        }
+
+                        inputArea.text = Files.readString(path)
                     } else if (transferable.isDataFlavorSupported(DataFlavor.stringFlavor)) {
                         inputArea.text = transferable.getTransferData(DataFlavor.stringFlavor) as String
                     }
@@ -216,8 +227,16 @@ class DotEnvifyToolWindowPanel(private val project: Project) : JPanel(BorderLayo
                     dtde.dropComplete(false)
                 } catch (_: java.awt.datatransfer.UnsupportedFlavorException) {
                     dtde.dropComplete(false)
+                } catch (_: java.nio.charset.MalformedInputException) {
+                    statusLabel.text = "File is not valid UTF-8 text"
+                    dtde.dropComplete(false)
                 }
             }
         })
+    }
+
+    companion object {
+        /** 5MB cap on drag-and-drop file reads */
+        private const val MAX_DROP_FILE_SIZE = 5_242_880L
     }
 }

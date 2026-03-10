@@ -6,6 +6,7 @@ import com.intellij.credentialStore.CredentialAttributes
 import com.intellij.credentialStore.Credentials
 import com.intellij.credentialStore.generateServiceName
 import com.intellij.ide.passwordSafe.PasswordSafe
+import com.intellij.openapi.diagnostic.Logger
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
@@ -21,7 +22,12 @@ import java.time.Instant
  */
 object AzureAuthProvider {
 
+    private val LOG = Logger.getInstance("[DotEnvify]")
+
     private const val AZURE_DEVOPS_SCOPE = "499b84ac-1321-427f-aa17-267ca6975798/vso.variablegroups_read"
+
+    // Public client ID for Device Code Flow. Safe to distribute: authentication
+    // requires user approval at Microsoft's sign-in page, no client secret needed.
     private const val CLIENT_ID = "da9da08f-6645-413f-81e3-279e820604dc"
     private const val TENANT = "common"
     private const val TOKEN_URL = "https://login.microsoftonline.com/$TENANT/oauth2/v2.0/token"
@@ -96,7 +102,11 @@ object AzureAuthProvider {
             "grant_type=refresh_token&client_id=$CLIENT_ID&refresh_token=$refreshToken&scope=$AZURE_DEVOPS_SCOPE offline_access"
         val response = try {
             httpClient.send(formPost(TOKEN_URL, body), HttpResponse.BodyHandlers.ofString())
-        } catch (_: Exception) {
+        } catch (_: java.io.IOException) {
+            LOG.warn("Token refresh failed: network error")
+            return null
+        } catch (_: InterruptedException) {
+            Thread.currentThread().interrupt()
             return null
         }
         if (response.statusCode() != 200) return null
@@ -143,7 +153,9 @@ object AzureAuthProvider {
         val json = PasswordSafe.instance.get(credentialAttributes())?.getPasswordAsString() ?: return null
         return try {
             gson.fromJson(json, StoredToken::class.java)
-        } catch (_: Exception) {
+        } catch (_: com.google.gson.JsonSyntaxException) {
+            null
+        } catch (_: com.google.gson.JsonIOException) {
             null
         }
     }

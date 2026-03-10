@@ -12,13 +12,17 @@ import com.intellij.openapi.project.Project
 class DotEnvifyProjectSettings : PersistentStateComponent<DotEnvifyProjectSettings.State> {
 
     data class State(
+        /** When true, ignore project-level overrides and use global settings. */
         var useGlobalDefaults: Boolean = true,
         var exportPrefix: Boolean = false,
         var sort: Boolean = true,
         var ignoreLowercase: Boolean = true,
         var urlOnly: Boolean = false,
+        /** Project-specific .env output path. */
         var outputPath: String = ".env",
+        /** Comma-separated list of keys whose values should be preserved on merge. */
         var preserveKeys: String = "",
+        /** Persisted Azure DevOps variable group name for this project. */
         var azureGroupName: String = "",
     )
 
