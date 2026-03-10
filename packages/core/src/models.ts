@@ -1,16 +1,16 @@
 export interface EnvEntry {
-  key: string;
-  value: string;
+    key: string;
+    value: string;
 }
 
 export interface FormatOptions {
-  export?: boolean;
-  sort?: boolean;
-  noLower?: boolean;
-  urlOnly?: boolean;
+    export?: boolean;
+    sort?: boolean;
+    noLower?: boolean;
+    urlOnly?: boolean;
 }
 
 export interface ParseResult {
-  entries: EnvEntry[];
-  warnings: string[];
+    entries: EnvEntry[];
+    warnings: string[];
 }

@@ -1,43 +1,43 @@
-import type { EnvEntry, FormatOptions } from "./models.js";
+import type {EnvEntry, FormatOptions} from "./models.js";
 
 const URL_PREFIXES = [
-  "http://",
-  "https://",
-  "ftp://",
-  "sftp://",
-  "ssh://",
-  "git://",
-  "file://",
-  "mailto:",
-  "postgres://",
-  "mysql://",
-  "mongodb://",
-  "redis://",
+    "http://",
+    "https://",
+    "ftp://",
+    "sftp://",
+    "ssh://",
+    "git://",
+    "file://",
+    "mailto:",
+    "postgres://",
+    "mysql://",
+    "mongodb://",
+    "redis://",
 ];
 
 export function isURL(value: string): boolean {
-  return URL_PREFIXES.some((prefix) => value.startsWith(prefix));
+    return URL_PREFIXES.some((prefix) => value.startsWith(prefix));
 }
 
 export function isHTTPURL(value: string): boolean {
-  return value.startsWith("http://") || value.startsWith("https://");
+    return value.startsWith("http://") || value.startsWith("https://");
 }
 
 function isQuoted(value: string): boolean {
-  return (
-    (value.startsWith('"') && value.endsWith('"')) ||
-    (value.startsWith("'") && value.endsWith("'"))
-  );
+    return (
+        (value.startsWith('"') && value.endsWith('"')) ||
+        (value.startsWith("'") && value.endsWith("'"))
+    );
 }
 
 function isLowercase(key: string): boolean {
-  return key === key.toLowerCase() && key !== key.toUpperCase();
+    return key === key.toLowerCase() && key !== key.toUpperCase();
 }
 
 function smartQuote(value: string): string {
-  if (isQuoted(value)) return value;
-  if (isURL(value) || value.includes(" ")) return `"${value}"`;
-  return value;
+    if (isQuoted(value)) return value;
+    if (isURL(value) || value.includes(" ")) return `"${value}"`;
+    return value;
 }
 
 /**
@@ -50,29 +50,29 @@ function smartQuote(value: string): string {
  * - urlOnly: only include entries with HTTP/HTTPS URL values
  */
 export function formatDotEnv(
-  entries: EnvEntry[],
-  options: FormatOptions = {},
+    entries: EnvEntry[],
+    options: FormatOptions = {},
 ): string {
-  const { export: useExport = false, sort = true, noLower = false, urlOnly = false } = options;
+    const {export: useExport = false, sort = true, noLower = false, urlOnly = false} = options;
 
-  let filtered = entries;
+    let filtered = entries;
 
-  if (noLower) {
-    filtered = filtered.filter((e) => !isLowercase(e.key));
-  }
+    if (noLower) {
+        filtered = filtered.filter((e) => !isLowercase(e.key));
+    }
 
-  if (urlOnly) {
-    filtered = filtered.filter((e) => isHTTPURL(e.value));
-  }
+    if (urlOnly) {
+        filtered = filtered.filter((e) => isHTTPURL(e.value));
+    }
 
-  if (sort) {
-    filtered = [...filtered].sort((a, b) => a.key.localeCompare(b.key));
-  }
+    if (sort) {
+        filtered = [...filtered].sort((a, b) => a.key.localeCompare(b.key));
+    }
 
-  const lines = filtered.map((e) => {
-    const value = smartQuote(e.value);
-    return useExport ? `export ${e.key}=${value}` : `${e.key}=${value}`;
-  });
+    const lines = filtered.map((e) => {
+        const value = smartQuote(e.value);
+        return useExport ? `export ${e.key}=${value}` : `${e.key}=${value}`;
+    });
 
-  return lines.length > 0 ? lines.join("\n") + "\n" : "";
+    return lines.length > 0 ? lines.join("\n") + "\n" : "";
 }
