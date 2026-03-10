@@ -1,20 +1,52 @@
 {
-  "name": "dotenvify",
+  "name": "@webbies.dev/dotenvify",
   "version": "2.0.0",
+  "description": "Convert messy environment variables into clean .env files",
   "type": "module",
   "bin": {
     "dotenvify": "./bin/dotenvify.js"
   },
+  "files": [
+    "bin/",
+    "dist/"
+  ],
   "scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch",
-    "test": "vitest run"
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "dotenv",
+    "env",
+    "environment",
+    "variables",
+    "converter",
+    "cli",
+    "formatter",
+    "parser"
+  ],
+  "author": "webbies.dev",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/webb1es/dotenvify.git",
+    "directory": "cli"
+  },
+  "homepage": "https://github.com/webb1es/dotenvify",
+  "bugs": "https://github.com/webb1es/dotenvify/issues",
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "dependencies": {
-    "@dotenvify/core": "*",
     "commander": "^13.0.0"
   },
   "devDependencies": {
+    "@dotenvify/core": "*",
+    "tsup": "^8.5.1",
     "vitest": "^3.2.0"
   }
 }
