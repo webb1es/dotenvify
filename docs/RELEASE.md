@@ -21,8 +21,6 @@ Publishing uses [npm Trusted Publishing](https://docs.npmjs.com/generating-prove
    - Environment name: _(leave blank)_
    - Save
 
-   > This is already configured from the legacy setup. Verify it points to the correct repo (`webb1es/dotenvify`) and workflow (`release.yml`).
-
 ### GitHub
 
 1. **Verify Actions permissions**
@@ -30,9 +28,7 @@ Publishing uses [npm Trusted Publishing](https://docs.npmjs.com/generating-prove
    - Under **Workflow permissions**, ensure **Read and write permissions** is selected
    - This allows the workflow to create GitHub Releases and request OIDC tokens
 
-2. **No secrets needed**
-   - Trusted publishing uses OIDC — no `NPM_TOKEN` secret required
-   - The `id-token: write` permission in the workflow handles authentication
+2. **No secrets needed** — trusted publishing uses OIDC via `id-token: write` permission
 
 ---
 
