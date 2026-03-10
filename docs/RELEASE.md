@@ -5,12 +5,14 @@
 ### npm
 
 Configure Trusted Publisher on `@webbies.dev/dotenvify`:
+
 - **Package Settings** > **Trusted Publisher**
 - Publisher: **GitHub Actions** | Org: `webb1es` | Repo: `dotenvify` | Workflow: `release.yml`
 
 ### GitHub
 
-- [Settings > Actions > General](https://github.com/webb1es/dotenvify/settings/actions) > **Workflow permissions** > **Read and write**
+- [Settings > Actions > General](https://github.com/webb1es/dotenvify/settings/actions) > **Workflow permissions** > *
+  *Read and write**
 - No secrets needed — publishing uses OIDC
 
 ---

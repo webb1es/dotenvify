@@ -202,11 +202,17 @@ plugins/jetbrains/ (Kotlin)
   "$schema": "https://turbo.build/schema.json",
   "tasks": {
     "build": {
-      "dependsOn": ["^build"],
-      "outputs": ["dist/**"]
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        "dist/**"
+      ]
     },
     "test": {
-      "dependsOn": ["^build"]
+      "dependsOn": [
+        "^build"
+      ]
     },
     "lint": {},
     "dev": {
@@ -232,34 +238,34 @@ Each workflow only runs when its directory changes:
 # .github/workflows/core.yml
 on:
   push:
-    paths: ['packages/core/**']
+    paths: [ 'packages/core/**' ]
   pull_request:
-    paths: ['packages/core/**']
+    paths: [ 'packages/core/**' ]
 
 # .github/workflows/cli.yml
 on:
   push:
-    paths: ['cli/**', 'packages/core/**']
-    tags: ['cli-v*.*.*']
+    paths: [ 'cli/**', 'packages/core/**' ]
+    tags: [ 'cli-v*.*.*' ]
 
 # .github/workflows/jetbrains.yml
 on:
   push:
-    paths: ['plugins/jetbrains/**']
+    paths: [ 'plugins/jetbrains/**' ]
   pull_request:
-    paths: ['plugins/jetbrains/**']
+    paths: [ 'plugins/jetbrains/**' ]
 
 # .github/workflows/vscode.yml
 on:
   push:
-    paths: ['plugins/vscode/**', 'packages/core/**']
-    tags: ['vscode-v*.*.*']
+    paths: [ 'plugins/vscode/**', 'packages/core/**' ]
+    tags: [ 'vscode-v*.*.*' ]
 
 # .github/workflows/site.yml
 on:
   push:
-    branches: [main]
-    paths: ['site/**', 'packages/core/**']
+    branches: [ main ]
+    paths: [ 'site/**', 'packages/core/**' ]
 ```
 
 ### Versioning Strategy
