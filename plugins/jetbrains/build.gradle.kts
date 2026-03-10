@@ -44,6 +44,16 @@ intellijPlatform {
         }
     }
 
+    signing {
+        certificateChainFile = file("chain.crt")
+        privateKeyFile = file("private.pem")
+        password = providers.environmentVariable("PRIVATE_KEY_PASSWORD")
+    }
+
+    publishing {
+        token = providers.environmentVariable("JETBRAINS_MARKETPLACE_TOKEN")
+    }
+
     pluginVerification {
         ides {
             recommended()

@@ -4,3 +4,7 @@ build/
 .gradle/
 out/
 *.iml
+
+# Signing
+private.pem
+chain.crt
