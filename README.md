@@ -5,7 +5,7 @@
 Convert messy key-value pairs into clean, standardized `.env` files — with zero hassle.
 
 <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT" /></a>&nbsp;
-<a href="https://www.npmjs.com/package/dotenvify"><img src="https://img.shields.io/npm/v/dotenvify.svg" alt="npm version" /></a>&nbsp;
+<a href="https://www.npmjs.com/package/@webbies.dev/dotenvify"><img src="https://img.shields.io/npm/v/@webbies.dev/dotenvify.svg" alt="npm version" /></a>&nbsp;
 <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-5.8-3178C6.svg?logo=typescript&logoColor=white" alt="TypeScript" /></a>&nbsp;
 <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/Node.js-18+-339933.svg?logo=node.js&logoColor=white" alt="Node.js" /></a>&nbsp;
 <a href="https://github.com/webb1es/dotenvify/pulls"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome" /></a>
@@ -14,30 +14,37 @@ Convert messy key-value pairs into clean, standardized `.env` files — with zer
 
 After doing this manually one too many times, this tool was rage-coded into existence. You're welcome.
 
-```diff
-- API_KEY                                    + API_KEY=a1b2c3d4e5f6g7h8i9j0
-- a1b2c3d4e5f6g7h8i9j0                      + DATABASE_URL="postgres://user:pass@localhost:5432/db"
-- DATABASE_URL                               + REDIS_HOST=localhost
-- postgres://user:pass@localhost:5432/db
+**Transform this:**
+```
+API_KEY
+a1b2c3d4e5f6g7h8i9j0
+DATABASE_URL
+postgres://user:password@localhost:5432/db
+```
+
+**Into this:**
+```env
+API_KEY=a1b2c3d4e5f6g7h8i9j0
+DATABASE_URL="postgres://user:password@localhost:5432/db"
 ```
 
 ## Installation
 
 ```bash
-npm install -g dotenvify
+npm install -g @webbies.dev/dotenvify
 ```
 
 ## Quick Start
 
 ```bash
 # Convert a file to .env
-dotenvify convert vars.txt
+dotenvify vars.txt
 
 # Custom output path
-dotenvify convert vars.txt -o production.env
+dotenvify vars.txt -o production.env
 
 # Add export prefix
-dotenvify convert vars.txt --export
+dotenvify vars.txt --export
 ```
 
 ## Features
@@ -77,7 +84,7 @@ postgres://user:password@localhost:5432/db
 ## CLI Reference
 
 ```
-dotenvify convert <source> [options]
+dotenvify <source> [options]
 ```
 
 | Option | Alias | Description |
@@ -86,24 +93,24 @@ dotenvify convert <source> [options]
 | `--export` | `-e` | Add `export` prefix to all variables |
 | `--overwrite` | `-f` | Overwrite output without creating a backup |
 | `--preserve <vars>` | `-k` | Comma-separated variables to keep existing values for |
-| `--no-sort` | | Maintain original order (default: sorted alphabetically) |
-| `--no-lower` | | Skip variables with lowercase keys |
+| `--skip-sort` | | Maintain original order (default: sorted alphabetically) |
+| `--skip-lower` | | Skip variables with lowercase keys |
 | `--url-only` | | Include only variables with HTTP/HTTPS URL values |
 
 ### Examples
 
 ```bash
 # Overwrite without backup
-dotenvify convert vars.txt -f
+dotenvify vars.txt -f
 
 # Preserve DB creds when regenerating
-dotenvify convert vars.txt --preserve "DATABASE_URL,API_SECRET"
+dotenvify vars.txt --preserve "DATABASE_URL,API_SECRET"
 
 # Only extract URLs, skip lowercase keys
-dotenvify convert vars.txt --url-only --no-lower
+dotenvify vars.txt --url-only --skip-lower
 
 # Full pipeline: export-prefixed, custom output, no sorting
-dotenvify convert vars.txt -o .env.local --export --no-sort
+dotenvify vars.txt -o .env.local --export --skip-sort
 ```
 
 ## Ecosystem
