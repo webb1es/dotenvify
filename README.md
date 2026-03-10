@@ -113,17 +113,24 @@ dotenvify vars.txt --url-only --skip-lower
 dotenvify vars.txt -o .env.local --export --skip-sort
 ```
 
+## IDE Plugins
+
+Use DotEnvify directly in your editor — with features the CLI can't offer, like Azure DevOps integration, paste-and-format, and real-time diagnostics.
+
+| Plugin | Highlights | Status |
+|---|---|---|
+| <a href="https://plugins.jetbrains.com/plugin/dev.webbies.dotenvify"><img src="https://img.shields.io/badge/JetBrains-IntelliJ_%2F_WebStorm_%2F_GoLand_%2F_PyCharm_%2F_Rider-000000?style=flat-square&logo=jetbrains&logoColor=white" alt="JetBrains" /></a> | Azure DevOps variable groups, paste & format, `.env` diagnostics | <img src="https://img.shields.io/badge/available-brightgreen?style=flat-square" alt="Available" /> |
+| <a href="./plugins/vscode"><img src="https://img.shields.io/badge/VS_Code-Extension-007ACC?style=flat-square&logo=visualstudiocode&logoColor=white" alt="VS Code" /></a> | Parser, formatter, diagnostics — built on @dotenvify/core | <img src="https://img.shields.io/badge/coming_soon-lightgrey?style=flat-square" alt="Coming soon" /> |
+
+> **Migrating from v0.x?** Azure DevOps support has moved from the CLI to the [JetBrains plugin](https://plugins.jetbrains.com/plugin/dev.webbies.dotenvify) — a better fit with richer IDE integration. See the [CLI README](./cli#upgrading-from-v0x-go-version) for the full migration guide.
+
 ## Ecosystem
 
-DotEnvify is available across multiple tools and platforms:
-
-| Package | Description | Status |
-|---|---|---|
-| <a href="./cli"><img src="https://img.shields.io/badge/dotenvify_CLI-Command--line_tool-4A154B?style=flat-square&logo=windowsterminal&logoColor=white" alt="CLI" /></a> | Command-line tool | <img src="https://img.shields.io/badge/in_progress-orange?style=flat-square" alt="In progress" /> |
-| <a href="./packages/core"><img src="https://img.shields.io/badge/@dotenvify/core-Shared_TS_library-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="Core" /></a> | Parser, formatter, IO | <img src="https://img.shields.io/badge/in_progress-orange?style=flat-square" alt="In progress" /> |
-| <a href="./plugins/jetbrains"><img src="https://img.shields.io/badge/JetBrains_Plugin-IntelliJ_%2F_WebStorm-000000?style=flat-square&logo=jetbrains&logoColor=white" alt="JetBrains" /></a> | IDE plugin | <img src="https://img.shields.io/badge/functional-green?style=flat-square" alt="Functional" /> |
-| <a href="./plugins/vscode"><img src="https://img.shields.io/badge/VS_Code_Extension-Extension-007ACC?style=flat-square&logo=visualstudiocode&logoColor=white" alt="VS Code" /></a> | IDE extension | <img src="https://img.shields.io/badge/planned-lightgrey?style=flat-square" alt="Planned" /> |
-| <a href="./landing"><img src="https://img.shields.io/badge/Landing_Page-Product_site-FF6F61?style=flat-square&logo=vercel&logoColor=white" alt="Landing" /></a> | Product site | <img src="https://img.shields.io/badge/in_progress-orange?style=flat-square" alt="In progress" /> |
+| Package | Description |
+|---|---|
+| <a href="./cli"><img src="https://img.shields.io/badge/CLI-Command--line_tool-4A154B?style=flat-square&logo=windowsterminal&logoColor=white" alt="CLI" /></a> | File conversion, scripting, CI/CD pipelines |
+| <a href="./packages/core"><img src="https://img.shields.io/badge/@dotenvify/core-Shared_library-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="Core" /></a> | Parser, formatter, IO — powers CLI and plugins |
+| <a href="./landing"><img src="https://img.shields.io/badge/Landing_Page-Product_site-FF6F61?style=flat-square&logo=vercel&logoColor=white" alt="Landing" /></a> | Live demo and docs |
 
 ## Development
 

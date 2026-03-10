@@ -7,21 +7,21 @@ const HeroCell = () => (
     <div>
       {/* Comment-style label */}
       <p className="font-mono text-xs text-muted-foreground mb-4">
-        {"//"} convert messy env vars
+        {"//"} we can fix that
       </p>
 
       <h1
         className="font-display font-bold gradient-text leading-tight tracking-tight"
         style={{ fontSize: "clamp(24px, 3.5vw, 40px)" }}
       >
-        paste anything,
+        your env vars
         <br />
-        get .env
+        are a mess
       </h1>
 
       <p className="mt-3 text-sm text-muted-foreground leading-relaxed max-w-xs">
         CLI, JetBrains plugin, or right here in the browser.
-        Parse any format. Zero config.
+        Parses KEY=VALUE, exports, line-pairs, quoted strings — any mix.
       </p>
     </div>
 

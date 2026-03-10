@@ -1,18 +1,14 @@
-<p align="center">
-  <img src="https://raw.githubusercontent.com/webb1es/dotenvify/main/docs/assets/logo.png" alt="DotEnvify" width="80" />
-</p>
+<img src="https://raw.githubusercontent.com/webb1es/dotenvify/main/landing/public/logo.gif" alt="DotEnvify" width="120" align="left" />
 
-<h3 align="center">DotEnvify</h3>
+# DotEnvify
 
-<p align="center">Convert key-value pairs to environment variables with zero hassle</p>
+Convert messy key-value pairs into clean, standardized `.env` files — with zero hassle.
 
-<p align="center">
-  <a href="https://www.npmjs.com/package/@webbies.dev/dotenvify"><img src="https://img.shields.io/npm/v/@webbies.dev/dotenvify.svg" alt="npm" /></a>
-  <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT" /></a>
-  <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/Node.js-18+-339933.svg?logo=node.js&logoColor=white" alt="Node" /></a>
-</p>
+<a href="https://www.npmjs.com/package/@webbies.dev/dotenvify"><img src="https://img.shields.io/npm/v/@webbies.dev/dotenvify.svg" alt="npm" /></a>&nbsp;
+<a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT" /></a>&nbsp;
+<a href="https://nodejs.org/"><img src="https://img.shields.io/badge/Node.js-18+-339933.svg?logo=node.js&logoColor=white" alt="Node" /></a>
 
----
+<br clear="left" />
 
 **Transform this:**
 ```
@@ -123,18 +119,36 @@ postgres://user:password@localhost:5432/db
 
 Lines starting with `#` are treated as comments and ignored.
 
+## IDE Plugins
+
+Prefer working in your editor? DotEnvify has IDE plugins with features beyond the CLI — including Azure DevOps integration, paste-and-format, and real-time `.env` diagnostics.
+
+| | Plugin | Highlights |
+|---|---|---|
+| <a href="https://plugins.jetbrains.com/plugin/dev.webbies.dotenvify"><img src="https://img.shields.io/badge/JetBrains-Plugin-000000?style=flat-square&logo=jetbrains&logoColor=white" alt="JetBrains" /></a> | IntelliJ, WebStorm, GoLand, PyCharm, Rider | Azure DevOps variable groups, paste & format, diagnostics |
+| <img src="https://img.shields.io/badge/VS_Code-Coming_soon-007ACC?style=flat-square&logo=visualstudiocode&logoColor=white" alt="VS Code" /> | Visual Studio Code | Parser, formatter, diagnostics |
+
 ## Upgrading from v0.x (Go version)
 
-v1.0.0 is a full rewrite in TypeScript. What changed:
+v1.0 is a full rewrite in TypeScript. **If you're upgrading, read this.**
 
-|                        | v0.x (Go)                         | v1.x (TypeScript)                                                                            |
-|------------------------|-----------------------------------|----------------------------------------------------------------------------------------------|
-| **Runtime**            | Pre-built binary                  | Node.js 18+                                                                                  |
-| **Install**            | Binary downloaded via postinstall | Standard npm install                                                                         |
-| **Package**            | `@webbies.dev/dotenvify`          | `@webbies.dev/dotenvify` (same)                                                              |
-| **Azure DevOps**       | Built into CLI                    | Available via [JetBrains plugin](https://plugins.jetbrains.com/plugin/dev.webbies.dotenvify) |
-| **Self-update**        | Built-in                          | Use `npm update -g`                                                                          |
-| **Parsing/formatting** | Same                              | Same                                                                                         |
+### What's different
+
+| | v0.x (Go) | v1.x (TypeScript) |
+|---|---|---|
+| **Runtime** | Pre-built Go binary | Requires Node.js 18+ |
+| **Install** | Binary via postinstall script | Standard `npm install` |
+| **Command** | `dotenvify -azure -group "Vars"` | `dotenvify vars.txt -o .env` |
+| **Azure DevOps** | Built into CLI (`-azure` flag) | **Removed** — use the [JetBrains plugin](https://plugins.jetbrains.com/plugin/dev.webbies.dotenvify) |
+| **Self-update** | Built-in (`-update`) | `npm update -g @webbies.dev/dotenvify` |
+| **Parsing** | Same formats supported | Same formats supported |
+
+### Breaking changes
+
+- **Azure DevOps is no longer in the CLI.** Variable group fetching has moved to the [JetBrains plugin](https://plugins.jetbrains.com/plugin/dev.webbies.dotenvify), which provides a richer experience with IDE integration. If you relied on `-azure`, `-org`, or `-group` flags, install the plugin instead.
+- **Node.js 18+ is now required.** The Go binary is no longer distributed.
+- **Flag names changed.** `-nl` is now `--skip-lower`, `-ns` is now `--skip-sort`, `-out` is now `--output` / `-o`.
+- **No subcommand.** Usage is `dotenvify <source>` (not `dotenvify convert <source>`).
 
 ## Links
 

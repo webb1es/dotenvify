@@ -1,16 +1,16 @@
 import { Zap, Shield, FileText, GitBranch } from "lucide-react";
 
 const features = [
-  { icon: <Zap className="w-3.5 h-3.5" />, text: "Any format in, clean .env out" },
+  { icon: <Zap className="w-3.5 h-3.5" />, text: "Smart quoting for URLs and spaces" },
   { icon: <Shield className="w-3.5 h-3.5" />, text: "0600 perms, auto-backups" },
-  { icon: <FileText className="w-3.5 h-3.5" />, text: "Detect missing & unused keys" },
+  { icon: <FileText className="w-3.5 h-3.5" />, text: "Detect missing & unused keys (IDE)" },
   { icon: <GitBranch className="w-3.5 h-3.5" />, text: "Preserve vars across runs" },
 ];
 
 const FeaturesCell = () => (
   <div className="bento-cell p-4 h-full">
     <p className="font-mono text-[10px] text-muted-foreground mb-3">
-      {"// "}built different
+      {"// "}what you get
     </p>
     <div className="space-y-3">
       {features.map((f, i) => (

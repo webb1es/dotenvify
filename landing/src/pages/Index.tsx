@@ -35,9 +35,9 @@ const Index = () => (
             <ProductCard
               name="CLI"
               icon={<Terminal className="w-4 h-4" />}
-              description="Pipe-friendly. Scriptable. Convert any messy input into a clean .env from the terminal."
-              installCmd="npx dotenvify input.txt -o .env"
-              href="https://github.com/webb1es/dotenvify"
+              description="Pipe-friendly. Reads KEY=VALUE, exports, line-pairs, quoted strings — outputs a clean .env. Fits into any CI/CD pipeline."
+              installCmd="npx @webbies.dev/dotenvify input.txt -o .env"
+              href="https://www.npmjs.com/package/@webbies.dev/dotenvify"
               ctaLabel="view source"
             />
           </div>
@@ -45,7 +45,7 @@ const Index = () => (
             <ProductCard
               name="JetBrains"
               icon={<Puzzle className="w-4 h-4" />}
-              description="Pull Azure DevOps variables, paste & format, diagnostics — without leaving your IDE."
+              description="Azure DevOps variable groups, paste & format, real-time .env diagnostics — all without leaving your IDE."
               href="https://plugins.jetbrains.com/plugin/dev.webbies.dotenvify"
               ctaLabel="get plugin"
               badges={["IntelliJ", "GoLand", "WebStorm", "PyCharm", "Rider"]}
@@ -55,7 +55,7 @@ const Index = () => (
             <ProductCard
               name="VS Code"
               icon={<Code2 className="w-4 h-4" />}
-              description="Same powerful features, coming to Visual Studio Code. Parser, formatter, diagnostics — all built on @dotenvify/core."
+              description="Paste & format, diagnostics, and the same .env tooling as JetBrains — coming to VS Code."
               comingSoon
             />
           </div>
