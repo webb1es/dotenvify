@@ -125,7 +125,7 @@ class AzureVariableGroupPanel(private val project: Project) : JPanel(BorderLayou
         updateAuthState()
         persistFieldsOnChange()
 
-        // Auto-watch enabled by default — register listener immediately
+        // Auto-watch enabled by default: register listener immediately
         project.service<EnvFileWatcher>().addListener(watcherListener)
         autoWatchCheckbox.addItemListener {
             val watcher = project.service<EnvFileWatcher>()
@@ -318,7 +318,7 @@ class AzureVariableGroupPanel(private val project: Project) : JPanel(BorderLayou
                         ApplicationManager.getApplication().invokeLater {
                             fetchedEntries = entries
                             groupInfoLabel.text = if (result.groupDescription.isNotEmpty()) {
-                                "${result.groupName} — ${result.groupDescription}"
+                                "${result.groupName}: ${result.groupDescription}"
                             } else {
                                 result.groupName
                             }
@@ -399,7 +399,7 @@ private class DeviceCodeDialog(
 ) : DialogWrapper(project) {
 
     init {
-        title = "Azure DevOps — Sign In"
+        title = "Azure DevOps - Sign In"
         setOKButtonText("Open Browser")
         setCancelButtonText("Cancel")
         init()

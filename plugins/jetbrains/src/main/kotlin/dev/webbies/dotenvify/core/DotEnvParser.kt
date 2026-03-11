@@ -11,6 +11,7 @@ object DotEnvParser {
 
     private val WHITESPACE = "\\s+".toRegex()
 
+    /** Parses raw text into a [ParseResult] containing entries, warnings, and format detection. */
     fun parse(input: String): ParseResult {
         if (input.isBlank()) return ParseResult(emptyList())
 
@@ -73,6 +74,7 @@ object DotEnvParser {
         return ParseResult(entries, warnings, alreadyFormatted)
     }
 
+    /** Strips matching single or double quotes from a value, if present. */
     fun unquote(value: String): String {
         if (value.length >= 2 &&
             ((value.startsWith('"') && value.endsWith('"')) ||

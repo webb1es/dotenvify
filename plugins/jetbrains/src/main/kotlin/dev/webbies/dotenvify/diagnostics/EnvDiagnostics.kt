@@ -20,9 +20,7 @@ object EnvDiagnostics {
         val references: List<EnvKeyScanner.KeyReference>,
     )
 
-    /**
-     * Runs full diagnostics for a project.
-     */
+    /** Compares .env keys against source code references. Returns missing and unused keys. */
     fun analyze(projectRoot: Path, envFilePath: Path): DiagnosticResult {
         val envEntries = DotEnvIO.readEnvFile(envFilePath)
         val envKeys = envEntries.map { it.key }.toSet()

@@ -56,7 +56,7 @@ class EnvDiffDialog(
         val counts = Status.entries.associateWith { s -> mergeRows.count { it.status == s } }
 
         val summaryLabel = JLabel(
-            "Existing .env: ${existingEntries.size} keys | $sourceName: ${incomingEntries.size} keys  —  " +
+            "Existing .env: ${existingEntries.size} keys | $sourceName: ${incomingEntries.size} keys | " +
                     "+ ${counts[Status.ADDED]} new  ~ ${counts[Status.CHANGED]} changed  " +
                     "- ${counts[Status.REMOVED]} kept  = ${counts[Status.UNCHANGED]} unchanged"
         )

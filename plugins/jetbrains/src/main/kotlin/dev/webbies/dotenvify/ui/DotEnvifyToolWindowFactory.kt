@@ -13,7 +13,7 @@ class DotEnvifyToolWindowFactory : ToolWindowFactory {
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         val contentFactory = ContentFactory.getInstance()
 
-        // Azure first — it's the primary feature
+        // Azure first: it's the primary feature
         val azureTab = contentFactory.createContent(AzureVariableGroupPanel(project), "Azure DevOps", false).apply {
             icon = AllIcons.Providers.Azure
         }

@@ -94,7 +94,7 @@ class DiagnosticsPanel(private val project: Project) : JPanel(BorderLayout()) {
 
         scanButton.addActionListener { runDiagnostics() }
 
-        // Auto-watch enabled by default — register listener immediately
+        // Auto-watch enabled by default: register listener immediately
         project.service<EnvFileWatcher>().addListener(watcherListener)
         autoWatchCheckbox.addItemListener {
             val watcher = project.service<EnvFileWatcher>()
@@ -210,7 +210,7 @@ class DiagnosticsPanel(private val project: Project) : JPanel(BorderLayout()) {
             }
         } else {
             listModel.addElement(DiagnosticItem("", null))
-            listModel.addElement(DiagnosticItem("No missing keys — all referenced keys are defined in .env.", null))
+            listModel.addElement(DiagnosticItem("No missing keys. All referenced keys are defined in .env.", null))
         }
 
         if (result.unusedKeys.isNotEmpty()) {
@@ -228,7 +228,7 @@ class DiagnosticsPanel(private val project: Project) : JPanel(BorderLayout()) {
             )
         } else {
             listModel.addElement(DiagnosticItem("", null))
-            listModel.addElement(DiagnosticItem("No unused keys — all .env keys are referenced in code.", null))
+            listModel.addElement(DiagnosticItem("No unused keys. All .env keys are referenced in code.", null))
         }
 
         val issues = result.missingKeys.size + result.unusedKeys.size

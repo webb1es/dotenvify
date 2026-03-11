@@ -126,7 +126,7 @@ class DotEnvifyToolWindowPanel(private val project: Project) : JPanel(BorderLayo
 
         setupDragAndDrop()
 
-        // Auto-watch enabled by default — register listener immediately
+        // Auto-watch enabled by default: register listener immediately
         project.service<EnvFileWatcher>().addListener(watcherListener)
         autoWatchCheckbox.addItemListener {
             val watcher = project.service<EnvFileWatcher>()

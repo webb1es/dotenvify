@@ -12,7 +12,7 @@ object EnvKeyScanner {
 
     data class KeyReference(val key: String, val file: Path, val line: Int, val snippet: String)
 
-    /** Skip files larger than 1MB — unlikely to contain env references. */
+    /** Skip files larger than 1MB. Unlikely to contain env references. */
     private const val MAX_FILE_SIZE = 1_048_576L
 
     private val SOURCE_EXTENSIONS = setOf(
@@ -70,6 +70,7 @@ object EnvKeyScanner {
         Regex("""\${'$'}\{($KEY_PATTERN)\}"""),
     )
 
+    /** Scans all source files under [projectRoot] and returns env key references with file locations. */
     fun scanProject(projectRoot: Path): List<KeyReference> {
         val references = mutableListOf<KeyReference>()
         for (file in collectSourceFiles(projectRoot)) {
@@ -95,19 +96,22 @@ object EnvKeyScanner {
         return references
     }
 
+    /** Convenience method returning just the set of distinct key names found in source files. */
     fun scanProjectKeys(projectRoot: Path): Set<String> =
         scanProject(projectRoot).mapTo(mutableSetOf()) { it.key }
 
     private fun collectSourceFiles(root: Path): List<Path> {
         if (!Files.isDirectory(root)) return emptyList()
-        return Files.walk(root).filter { path ->
-            path.isRegularFile() &&
-                    path.extension in SOURCE_EXTENSIONS &&
-                    path.fileSize() <= MAX_FILE_SIZE &&
-                    SKIP_DIRS.none { dir ->
-                        val rel = root.relativize(path).toString()
-                        rel.startsWith("$dir/") || rel.startsWith("$dir\\")
-                    }
-        }.toList()
+        return Files.walk(root).use { stream ->
+            stream.filter { path ->
+                path.isRegularFile() &&
+                        path.extension in SOURCE_EXTENSIONS &&
+                        path.fileSize() <= MAX_FILE_SIZE &&
+                        SKIP_DIRS.none { dir ->
+                            val rel = root.relativize(path).toString()
+                            rel.startsWith("$dir/") || rel.startsWith("$dir\\")
+                        }
+            }.toList()
+        }
     }
 }

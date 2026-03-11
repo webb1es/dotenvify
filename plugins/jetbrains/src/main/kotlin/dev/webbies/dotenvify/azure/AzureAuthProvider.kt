@@ -39,6 +39,7 @@ object AzureAuthProvider {
         .connectTimeout(Duration.ofSeconds(30))
         .build()
 
+    /** Initiates the Device Code OAuth flow. Returns user code and verification URL for browser sign-in. */
     fun startDeviceCodeFlow(): DeviceCodeResponse {
         val json = post(DEVICE_CODE_URL, "client_id=$CLIENT_ID&scope=$AZURE_DEVOPS_SCOPE offline_access")
 
@@ -91,8 +92,10 @@ object AzureAuthProvider {
         return null
     }
 
+    /** Returns true if a stored token exists (may still be expired). */
     fun isAuthenticated(): Boolean = loadToken() != null
 
+    /** Clears stored tokens from JetBrains PasswordSafe. */
     fun signOut() {
         PasswordSafe.instance.set(credentialAttributes(), null)
     }

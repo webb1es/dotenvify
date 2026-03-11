@@ -8,6 +8,7 @@ object DotEnvFormatter {
         "file://", "mailto:", "postgres://", "mysql://", "mongodb://", "redis://",
     )
 
+    /** Formats entries into .env file content, applying filters and sorting from [options]. */
     fun format(entries: List<EnvEntry>, options: FormatOptions = FormatOptions()): String {
         var filtered = entries.toList()
 

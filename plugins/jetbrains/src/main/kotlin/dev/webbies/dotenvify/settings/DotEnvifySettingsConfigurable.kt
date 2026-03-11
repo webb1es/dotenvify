@@ -12,7 +12,7 @@ class DotEnvifySettingsConfigurable : Configurable {
     private val urlOnlyCheckbox = JCheckBox("URL-only values")
     private val outputPathField = JTextField(".env", 20)
     private val azureOrgUrlField = JTextField("", 30).apply {
-        toolTipText = "e.g. https://dev.azure.com/myorg/myproject — shared across all projects"
+        toolTipText = "e.g. https://dev.azure.com/myorg/myproject (shared across all projects)"
     }
 
     override fun getDisplayName(): String = "DotEnvify"

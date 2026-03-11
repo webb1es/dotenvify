@@ -72,7 +72,7 @@ class PreviewDialog(
     private val optionsPanel = FormatOptionsPanel(project)
 
     init {
-        title = "DotEnvify — Preview ($entryCount entries)"
+        title = "DotEnvify - Preview ($entryCount entries)"
         setOKButtonText("Apply")
         init()
         updatePreview()

@@ -47,6 +47,7 @@ data class AzureConnection(
         private val DEV_AZURE_REGEX = Regex("""https?://dev\.azure\.com/([^/]+)/([^/]+)""")
         private val VSTUDIO_REGEX = Regex("""https?://([^.]+)\.visualstudio\.com/([^/]+)""")
 
+        /** Extracts (organization, project) from an Azure DevOps URL. Throws on invalid format. */
         fun parseUrl(url: String): Pair<String, String?> {
             DEV_AZURE_REGEX.find(url)?.let {
                 return it.groupValues[1] to it.groupValues[2].ifEmpty { null }

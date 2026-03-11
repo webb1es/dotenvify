@@ -18,6 +18,7 @@ class AzureDevOpsClient(private val organization: String, private val project: S
 
     private val baseUrl get() = "https://dev.azure.com/$organization/$project/_apis"
 
+    /** Fetches all variable groups from the Azure DevOps project. */
     fun getVariableGroups(accessToken: String): List<VariableGroup> {
         val request = HttpRequest.newBuilder()
             .uri(URI.create("$baseUrl/distributedtask/variablegroups?api-version=7.1-preview.2"))
@@ -56,6 +57,7 @@ class AzureDevOpsClient(private val organization: String, private val project: S
         }
     }
 
+    /** Finds a variable group by exact name match. Throws if not found. */
     fun getVariableGroupByName(name: String, accessToken: String): VariableGroup {
         val groups = getVariableGroups(accessToken)
         return groups.find { it.name == name }
@@ -73,7 +75,7 @@ class AzureDevOpsClient(private val organization: String, private val project: S
 
         for ((key, variable) in group.variables) {
             if (variable.isSecret) {
-                warnings.add("'$key' is a secret — value not available via API")
+                warnings.add("'$key' is a secret. Value not available via API")
                 continue
             }
             variables[key] = variable.value
