@@ -2,6 +2,7 @@ import {useCallback, useEffect, useRef, useState} from "react";
 import type {FormatOptions} from "@dotenvify/core/browser";
 import {formatDotEnv, parseDotEnv} from "@dotenvify/core/browser";
 import {ArrowDownAZ, CaseLower, Check, Copy, FileOutput, Link} from "lucide-react";
+import {LOAD_EXAMPLE_EVENT} from "@/lib/demo";
 
 const PLACEHOLDER = `API_KEY abc123
 DATABASE_URL="postgres://localhost:5432/db"
@@ -20,7 +21,9 @@ const LiveDemo = () => {
     });
     const [output, setOutput] = useState("");
     const [copied, setCopied] = useState(false);
+    const [flashKey, setFlashKey] = useState(0);
     const timerRef = useRef<ReturnType<typeof setTimeout>>();
+    const rootRef = useRef<HTMLDivElement>(null);
 
     const process = useCallback((text: string, opts: FormatOptions) => {
         const source = text.trim() ? text : PLACEHOLDER;
@@ -34,6 +37,18 @@ const LiveDemo = () => {
         return () => clearTimeout(timerRef.current);
     }, [input, options, process]);
 
+    // "try it live" CTAs dispatch this: drop the sample into the editor, scroll
+    // the demo into view, and flash the output so the transformation reads as an event.
+    useEffect(() => {
+        const loadExample = () => {
+            setInput(PLACEHOLDER);
+            setFlashKey((k) => k + 1);
+            rootRef.current?.scrollIntoView({behavior: "smooth", block: "center"});
+        };
+        window.addEventListener(LOAD_EXAMPLE_EVENT, loadExample);
+        return () => window.removeEventListener(LOAD_EXAMPLE_EVENT, loadExample);
+    }, []);
+
     const handleCopy = async () => {
         if (!output) return;
         await navigator.clipboard.writeText(output);
@@ -45,7 +60,7 @@ const LiveDemo = () => {
         setOptions((prev) => ({...prev, [key]: !prev[key]}));
 
     return (
-        <div className="bento-cell-static flex flex-col h-full" id="demo">
+        <div ref={rootRef} className="bento-cell-static flex flex-col h-full scroll-mt-4" id="demo">
             {/* Toolbar */}
             <div className="flex items-center justify-between px-3 py-2 border-b border-de-surface-border">
                 <div className="flex items-center gap-1.5 overflow-x-auto" role="group" aria-label="Format options">
@@ -109,6 +124,7 @@ const LiveDemo = () => {
                         aria-live="polite"
                         aria-label="Formatted output"
                     >
+            <div key={flashKey} className={flashKey > 0 ? "demo-flash" : undefined}>
             {output.split("\n").map((line, i) => {
                 if (!line) return null;
                 const eqIdx = line.indexOf("=");
@@ -129,6 +145,7 @@ const LiveDemo = () => {
                     </div>
                 );
             })}
+            </div>
           </pre>
                 </div>
             </div>

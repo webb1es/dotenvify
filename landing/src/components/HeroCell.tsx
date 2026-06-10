@@ -1,4 +1,5 @@
 import {CircleDot, GitFork, Github, Play, Star, Users} from "lucide-react";
+import {LOAD_EXAMPLE_EVENT} from "@/lib/demo";
 
 const REPO = "webb1es/dotenvify";
 
@@ -29,6 +30,10 @@ const HeroCell = () => (
             <div className="flex flex-wrap gap-2">
                 <a
                     href="#demo"
+                    onClick={(e) => {
+                        e.preventDefault();
+                        window.dispatchEvent(new Event(LOAD_EXAMPLE_EVENT));
+                    }}
                     className="inline-flex items-center gap-1.5 h-9 px-5 rounded-lg bg-primary text-primary-foreground font-mono text-xs font-semibold hover:opacity-90 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                     <Play className="w-3.5 h-3.5"/>

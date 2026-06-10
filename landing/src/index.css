@@ -95,12 +95,30 @@
         @apply rounded-xl border border-de-surface-border bg-card overflow-hidden;
     }
 
+    @keyframes demo-flash {
+        0% {
+            background-color: rgba(52, 211, 153, 0.22);
+        }
+        100% {
+            background-color: transparent;
+        }
+    }
+
+    .demo-flash {
+        animation: demo-flash 1s ease-out;
+        border-radius: 0.25rem;
+    }
+
     @media (prefers-reduced-motion: reduce) {
         .bento-cell {
             transition: none;
         }
 
         .spin-hover {
+            animation: none !important;
+        }
+
+        .demo-flash {
             animation: none !important;
         }
     }
