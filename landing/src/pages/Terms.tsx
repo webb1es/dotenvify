@@ -1,7 +1,6 @@
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import LegalPage, {type LegalSection} from "@/components/LegalPage";
 
-const sections = [
+const sections: LegalSection[] = [
     {
         title: "1. acceptance",
         body: 'By using DotEnvify (the "Service"), including the CLI tool, IDE plugins, and website, you agree to these Terms of Service. If you do not agree, do not use the Service.'
@@ -16,7 +15,7 @@ const sections = [
     },
     {
         title: "4. azure devops",
-        body: "The Service may access Azure DevOps on your behalf to retrieve variable groups. You authorize this access when you authenticate through the OAuth flow. You are responsible for the security of your credentials and access tokens. The Service does not store your Azure DevOps credentials."
+        body: "The Service may access Azure DevOps on your behalf to retrieve variable groups. Authentication uses your local Azure CLI (`az`) session: you sign in with `az login`, and the plugin reuses that session to request a short-lived access token. The Azure CLI owns credential storage; the Service does not store your Azure DevOps credentials or tokens. You are responsible for the security of your local CLI session."
     },
     {
         title: "5. license",
@@ -34,36 +33,19 @@ const sections = [
         title: "8. changes",
         body: "We may update these Terms from time to time. Continued use of the Service after changes constitutes acceptance of the updated Terms."
     },
+    {
+        title: "9. contact",
+        body: (
+            <>
+                Questions? Email{" "}
+                <a href="mailto:dotenvify@webbies.dev" className="text-primary hover:underline">
+                    dotenvify@webbies.dev
+                </a>
+            </>
+        )
+    },
 ];
 
-const Terms = () => (
-    <div className="flex flex-col min-h-[100dvh]">
-        <Header/>
-        <main className="flex-1 px-4 lg:px-6 py-12">
-            <div className="max-w-2xl mx-auto">
-                <p className="font-mono text-xs text-muted-foreground mb-2">{"// "}last updated: march 9, 2026</p>
-                <h1 className="font-display text-2xl font-bold text-foreground mb-8">terms of service</h1>
-                <div className="space-y-6">
-                    {sections.map((s) => (
-                        <section key={s.title}>
-                            <h2 className="font-display text-sm font-semibold text-foreground mb-1.5">{s.title}</h2>
-                            <p className="text-sm text-muted-foreground leading-relaxed">{s.body}</p>
-                        </section>
-                    ))}
-                    <section>
-                        <h2 className="font-display text-sm font-semibold text-foreground mb-1.5">9. contact</h2>
-                        <p className="text-sm text-muted-foreground leading-relaxed">
-                            Questions? Email{" "}
-                            <a href="mailto:dotenvify@webbies.dev" className="text-primary hover:underline">
-                                dotenvify@webbies.dev
-                            </a>
-                        </p>
-                    </section>
-                </div>
-            </div>
-        </main>
-        <Footer/>
-    </div>
-);
+const Terms = () => <LegalPage title="terms of service" lastUpdated="june 10, 2026" sections={sections}/>;
 
 export default Terms;

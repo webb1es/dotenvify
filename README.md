@@ -2,21 +2,15 @@
 
 # DotEnvify
 
-Convert messy key-value pairs into clean, standardized `.env` files.
+Convert messy key-value pairs into clean, standardized `.env` files — from the CLI or your IDE.
 
-<a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT" /></a>
+<a href="https://www.npmjs.com/package/@webbies.dev/dotenvify"><img src="https://img.shields.io/npm/v/@webbies.dev/dotenvify.svg" alt="npm" /></a>
 &nbsp;
-<a href="https://www.npmjs.com/package/@webbies.dev/dotenvify"><img src="https://img.shields.io/npm/v/@webbies.dev/dotenvify.svg" alt="npm version" /></a>
+<a href="https://plugins.jetbrains.com/plugin/dev.webbies.dotenvify"><img src="https://img.shields.io/badge/JetBrains-Plugin-000000?style=flat-square&logo=jetbrains&logoColor=white" alt="JetBrains" /></a>
 &nbsp;
-<a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-5.8-3178C6.svg?logo=typescript&logoColor=white" alt="TypeScript" /></a>
-&nbsp;
-<a href="https://nodejs.org/"><img src="https://img.shields.io/badge/Node.js-18+-339933.svg?logo=node.js&logoColor=white" alt="Node.js" /></a>
-&nbsp;
-<a href="https://github.com/webb1es/dotenvify/pulls"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome" /></a>
+<a href="./LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT" /></a>
 
 <br clear="left" />
-
-After doing this manually one too many times, this tool was rage-coded into existence. You're welcome.
 
 **Transform this:**
 
@@ -34,62 +28,17 @@ API_KEY=a1b2c3d4e5f6g7h8i9j0
 DATABASE_URL="postgres://user:password@localhost:5432/db"
 ```
 
-## Installation
+## Install
 
 ```bash
 npm install -g @webbies.dev/dotenvify
+# or run without installing:
+npx @webbies.dev/dotenvify vars.txt -o .env
 ```
 
-## Quick Start
+## CLI usage
 
 ```bash
-# Convert a file to .env
-dotenvify vars.txt
-
-# Custom output path
-dotenvify vars.txt -o production.env
-
-# Add export prefix
-dotenvify vars.txt --export
-```
-
-## Features
-
-|                 | Feature            | Description                                                                                                    |
-|-----------------|--------------------|----------------------------------------------------------------------------------------------------------------|
-| **Auto-Detect** | Smart Parsing      | Handles `KEY=VALUE`, `KEY VALUE`, key-on-separate-lines, quoted values, `export` prefixes, even mixed together |
-| **Backup**      | Safe by Default    | Automatic backups with incremental counters before any overwrite                                               |
-| **Lock**        | Preserve Mode      | Keep existing values for specific variables when regenerating `.env` files                                     |
-| **Filter**      | Flexible Filtering | Skip lowercase keys, filter to URLs only, sort alphabetically or keep original order                           |
-| **Quote**       | Smart Quoting      | Automatically quotes values containing spaces or URLs                                                          |
-
-## Supported Input Formats
-
-DotEnvify auto-detects and parses all of these, even when mixed in the same file:
-
-```bash
-# KEY=VALUE
-API_KEY=a1b2c3d4e5f6g7h8i9j0
-
-# Quoted values
-SECRET="my secret value"
-
-# export prefix (stripped automatically)
-export NODE_ENV=production
-
-# Space-separated
-REDIS_HOST localhost
-
-# Key on one line, value on the next
-DATABASE_URL
-postgres://user:password@localhost:5432/db
-```
-
-> Lines starting with `#` are treated as comments and ignored.
-
-## CLI Reference
-
-```
 dotenvify <source> [options]
 ```
 
@@ -103,84 +52,72 @@ dotenvify <source> [options]
 | `--skip-lower`      |       | Skip variables with lowercase keys                       |
 | `--url-only`        |       | Include only variables with HTTP/HTTPS URL values        |
 
-### Examples
+Backups (`.env.backup.N`) are written before any overwrite unless `-f` is given.
+
+### Supported formats
+
+Auto-detected and handled, even when mixed in one file (`#` lines are ignored):
 
 ```bash
-# Overwrite without backup
-dotenvify vars.txt -f
-
-# Preserve DB creds when regenerating
-dotenvify vars.txt --preserve "DATABASE_URL,API_SECRET"
-
-# Only extract URLs, skip lowercase keys
-dotenvify vars.txt --url-only --skip-lower
-
-# Full pipeline: export-prefixed, custom output, no sorting
-dotenvify vars.txt -o .env.local --export --skip-sort
+API_KEY=a1b2c3d4e5f6g7h8i9j0          # KEY=VALUE
+SECRET="my secret value"              # quoted
+export NODE_ENV=production            # export prefix (stripped)
+REDIS_HOST localhost                  # space-separated
+DATABASE_URL                          # key on one line,
+postgres://user:pass@localhost/db     #   value on the next
 ```
 
-## IDE Plugins
+## JetBrains plugin
 
-Use DotEnvify directly in your editor. Get features the CLI can't offer: Azure DevOps integration, paste-and-format, and
-real-time diagnostics.
+Pull Azure DevOps variable groups into `.env` and format right inside the IDE
+(IntelliJ, WebStorm, GoLand, PyCharm, Rider, …). Install from the
+[JetBrains Marketplace](https://plugins.jetbrains.com/plugin/dev.webbies.dotenvify).
 
-| Plugin                                                                                                                                                                                                                                                       | Highlights                                                       | Status                                                                                               |
-|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------|------------------------------------------------------------------------------------------------------|
-| <a href="https://plugins.jetbrains.com/plugin/dev.webbies.dotenvify"><img src="https://img.shields.io/badge/JetBrains-IntelliJ_%2F_WebStorm_%2F_GoLand_%2F_PyCharm_%2F_Rider-000000?style=flat-square&logo=jetbrains&logoColor=white" alt="JetBrains" /></a> | Azure DevOps variable groups, paste & format, `.env` diagnostics | <img src="https://img.shields.io/badge/available-brightgreen?style=flat-square" alt="Available" />   |
-| <a href="./plugins/vscode"><img src="https://img.shields.io/badge/VS_Code-Extension-007ACC?style=flat-square&logo=visualstudiocode&logoColor=white" alt="VS Code" /></a>                                                                                     | Parser, formatter, diagnostics. Built on @dotenvify/core         | <img src="https://img.shields.io/badge/coming_soon-lightgrey?style=flat-square" alt="Coming soon" /> |
+- **Azure DevOps** — sign in with the local Azure CLI (`az login`); load a variable
+  group, pick which variables to apply, edit values inline, and write to a chosen
+  `.env*` file with a merge preview. Secret values are shown but skipped (Azure does
+  not expose them via API). Requires the [Azure CLI](https://aka.ms/azcli) installed.
+- **Convert** — paste or convert files/selections to `.env` with live preview.
+- **Diagnostics** — detect missing/unused keys across many languages.
 
-> **Migrating from v0.x?** Azure DevOps support has moved from the CLI to
-> the [JetBrains plugin](https://plugins.jetbrains.com/plugin/dev.webbies.dotenvify) for a better experience with full IDE
-> integration. See the [CLI README](./cli#upgrading-from-v0x-go-version) for the full migration guide.
+## Repository
 
-## Ecosystem
-
-| Package                                                                                                                                                                     | Description                                   |
-|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------|
-| <a href="./cli"><img src="https://img.shields.io/badge/CLI-Command--line_tool-4A154B?style=flat-square&logo=windowsterminal&logoColor=white" alt="CLI" /></a>               | File conversion, scripting, CI/CD pipelines   |
-| <a href="./packages/core"><img src="https://img.shields.io/badge/@dotenvify/core-Shared_library-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="Core" /></a> | Parser, formatter, IO. Powers CLI and plugins |
-| <a href="./landing"><img src="https://img.shields.io/badge/Landing_Page-Product_site-FF6F61?style=flat-square&logo=vercel&logoColor=white" alt="Landing" /></a>             | Live demo and docs                            |
+| Path               | Description                              |
+|--------------------|------------------------------------------|
+| `packages/core`    | `@dotenvify/core` — parser, formatter, IO |
+| `cli`              | `@webbies.dev/dotenvify` — CLI tool       |
+| `plugins/jetbrains`| IntelliJ-platform plugin (Kotlin/Gradle)  |
+| `landing`          | Product site                              |
 
 ## Development
 
 ```bash
-npm install          # Install dependencies
-npm run build        # Build all packages
-npm run test         # Run tests
-npm run dev:landing  # Dev mode (landing page)
+npm install     # install dependencies
+npm run build   # build all packages
+npm run test    # run tests
 ```
 
-<details>
-<summary><strong>Project Structure</strong></summary>
+JetBrains plugin (from `plugins/jetbrains`, builds on **JDK 17** — pinned via
+`gradle/gradle-daemon-jvm.properties`):
 
-```
-dotenvify/
-├── packages/core/       # @dotenvify/core (shared TS library)
-├── cli/                 # CLI tool (Commander.js)
-├── plugins/
-│   ├── jetbrains/       # Kotlin, Gradle build
-│   └── vscode/          # VS Code extension
-├── landing/             # Product landing page
-└── docs/                # Shared docs & assets
+```bash
+./gradlew test buildPlugin   # artifact in build/distributions/
+./gradlew runIde             # launch a sandbox IDE
 ```
 
-</details>
+## Releasing
 
-## Contributing
-
-Found a bug? Have a feature idea? PRs welcome!
-
-Check out
-the <a href="https://github.com/webb1es/dotenvify/issues"><img src="https://img.shields.io/badge/issues-GitHub-red?style=flat-square&logo=github&logoColor=white" alt="Issues" /></a>
-or submit
-a <a href="https://github.com/webb1es/dotenvify/pulls"><img src="https://img.shields.io/badge/pull_requests-GitHub-blue?style=flat-square&logo=github&logoColor=white" alt="Pull Requests" /></a>
+- **CLI** — `npm run build && npm run test`, then push a tag; GitHub Actions
+  publishes to npm via OIDC:
+  ```bash
+  git tag -a v<version> -m "Release v<version>" && git push origin main v<version>
+  ```
+- **JetBrains** — first upload the built `.zip` manually to the Marketplace, then:
+  ```bash
+  JETBRAINS_MARKETPLACE_TOKEN=<token> ./gradlew publishPlugin
+  ```
+  Signing keys (`private.pem`, `chain.crt`) are git-ignored — keep them safe.
 
 ## License
 
-<a href="./LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square" alt="MIT License" /></a>
-
-Go wild, make millions, just don't blame us when it formats your grocery list.
-
----
-
-<p align="center"><i>"Life's too short for manual formatting."</i></p>
+MIT — see [LICENSE](./LICENSE).

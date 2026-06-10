@@ -24,6 +24,8 @@ class DotEnvifySettings : PersistentStateComponent<DotEnvifySettings.State> {
         var defaultOutputPath: String = ".env",
         /** Persisted Azure DevOps organization URL for re-use across sessions. */
         var azureOrgUrl: String = "",
+        /** Optional path to the Azure CLI (`az`) executable. Empty = auto-detect. */
+        var azCliPath: String = "",
     )
 
     private var state = State()

@@ -25,6 +25,16 @@ internal fun JsonObject.int(key: String): Int? {
     }
 }
 
+internal fun JsonObject.long(key: String): Long? {
+    val el = get(key) ?: return null
+    if (el is JsonNull) return null
+    return try {
+        el.asLong
+    } catch (_: Exception) {
+        null
+    }
+}
+
 internal fun JsonObject.bool(key: String): Boolean? {
     val el = get(key) ?: return null
     if (el is JsonNull) return null

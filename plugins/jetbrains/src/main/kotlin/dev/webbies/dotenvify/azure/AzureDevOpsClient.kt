@@ -63,31 +63,4 @@ class AzureDevOpsClient(private val organization: String, private val project: S
         return groups.find { it.name == name }
             ?: throw RuntimeException("Variable group '$name' not found. Available: ${groups.joinToString { it.name }}")
     }
-
-    /** Fetches variables from a single variable group. */
-    fun fetchVariables(groupName: String, accessToken: String): FetchResult {
-        val name = groupName.trim()
-        if (name.isEmpty()) throw IllegalArgumentException("No group name provided")
-
-        val group = getVariableGroupByName(name, accessToken)
-        val variables = mutableMapOf<String, String>()
-        val warnings = mutableListOf<String>()
-
-        for ((key, variable) in group.variables) {
-            if (variable.isSecret) {
-                warnings.add("'$key' is a secret. Value not available via API")
-                continue
-            }
-            variables[key] = variable.value
-        }
-
-        return FetchResult(variables, warnings, group.name, group.description)
-    }
-
-    data class FetchResult(
-        val variables: Map<String, String>,
-        val warnings: List<String>,
-        val groupName: String = "",
-        val groupDescription: String = "",
-    )
 }

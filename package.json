@@ -5,15 +5,14 @@
   "workspaces": [
     "packages/*",
     "cli",
-    "plugins/vscode",
     "landing"
   ],
   "scripts": {
     "build": "turbo run build",
     "test": "turbo run test",
     "lint": "turbo run lint",
-    "dev:landing": "npm run dev --workspace=landing",
-    "dev:cli": "npm run dev --workspace=cli"
+    "dev:landing": "turbo run dev --filter=@dotenvify/site",
+    "dev:cli": "turbo run dev --filter=@webbies.dev/dotenvify"
   },
   "devDependencies": {
     "turbo": "^2.0.0",

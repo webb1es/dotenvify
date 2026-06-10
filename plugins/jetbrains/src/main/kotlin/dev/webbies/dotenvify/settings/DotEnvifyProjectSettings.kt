@@ -24,6 +24,8 @@ class DotEnvifyProjectSettings : PersistentStateComponent<DotEnvifyProjectSettin
         var preserveKeys: String = "",
         /** Persisted Azure DevOps variable group name for this project. */
         var azureGroupName: String = "",
+        /** Target .env file for Azure DevOps fetches (relative to project root, or absolute). */
+        var azureTargetFile: String = ".env",
     )
 
     private var state = State()

@@ -56,12 +56,6 @@ class AzureModelsTest {
     }
 
     @Test
-    fun `AzureConnection organization property`() {
-        val conn = AzureConnection("https://dev.azure.com/myorg/myproject", "myproject")
-        assertEquals("myorg", conn.organization)
-    }
-
-    @Test
     fun `VariableGroup data class`() {
         val group = VariableGroup(
             id = 1,

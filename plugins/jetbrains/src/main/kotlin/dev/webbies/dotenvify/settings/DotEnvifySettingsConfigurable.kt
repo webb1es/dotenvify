@@ -14,6 +14,9 @@ class DotEnvifySettingsConfigurable : Configurable {
     private val azureOrgUrlField = JTextField("", 30).apply {
         toolTipText = "e.g. https://dev.azure.com/myorg/myproject (shared across all projects)"
     }
+    private val azCliPathField = JTextField("", 30).apply {
+        toolTipText = "Leave blank to auto-detect. Set if 'az' is installed in a non-standard location."
+    }
 
     override fun getDisplayName(): String = "DotEnvify"
 
@@ -31,6 +34,7 @@ class DotEnvifySettingsConfigurable : Configurable {
             .addSeparator()
             .addComponent(JLabel("Azure DevOps"))
             .addLabeledComponent("Organization URL:", azureOrgUrlField)
+            .addLabeledComponent("Azure CLI path (optional):", azCliPathField)
             .addComponentFillVertically(JPanel(), 0)
             .panel
     }
@@ -42,7 +46,8 @@ class DotEnvifySettingsConfigurable : Configurable {
                 noLowerCheckbox.isSelected != s.ignoreLowercase ||
                 urlOnlyCheckbox.isSelected != s.urlOnly ||
                 outputPathField.text != s.defaultOutputPath ||
-                azureOrgUrlField.text != s.azureOrgUrl
+                azureOrgUrlField.text != s.azureOrgUrl ||
+                azCliPathField.text != s.azCliPath
     }
 
     override fun apply() {
@@ -53,6 +58,7 @@ class DotEnvifySettingsConfigurable : Configurable {
         s.urlOnly = urlOnlyCheckbox.isSelected
         s.defaultOutputPath = outputPathField.text
         s.azureOrgUrl = azureOrgUrlField.text.trim()
+        s.azCliPath = azCliPathField.text.trim()
     }
 
     override fun reset() {
@@ -63,5 +69,6 @@ class DotEnvifySettingsConfigurable : Configurable {
         urlOnlyCheckbox.isSelected = s.urlOnly
         outputPathField.text = s.defaultOutputPath
         azureOrgUrlField.text = s.azureOrgUrl
+        azCliPathField.text = s.azCliPath
     }
 }

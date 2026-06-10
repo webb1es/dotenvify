@@ -5,6 +5,7 @@ import LiveDemo from "@/components/LiveDemo";
 import ProductCard from "@/components/ProductCard";
 import FormatsCell from "@/components/FormatsCell";
 import FeaturesCell from "@/components/FeaturesCell";
+import ClosingCTA from "@/components/ClosingCTA";
 import Footer from "@/components/Footer";
 
 const Index = () => (
@@ -66,6 +67,11 @@ const Index = () => (
                     </div>
                     <div className="lg:col-span-7">
                         <FeaturesCell/>
+                    </div>
+
+                    {/* Row 4: Closing CTA */}
+                    <div className="lg:col-span-12">
+                        <ClosingCTA/>
                     </div>
                 </div>
             </main>

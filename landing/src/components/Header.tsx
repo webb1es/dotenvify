@@ -2,9 +2,9 @@ import {Github} from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
 
 const Header = () => (
-    <header className="flex items-center justify-between px-4 lg:px-6 py-3">
+    <header className="sticky top-0 z-50 flex items-center justify-between px-4 lg:px-6 py-3 border-b border-border bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/60">
         <a href="/" className="flex items-center gap-2" aria-label="DotEnvify home">
-            <img src="/logo.gif" alt="" aria-hidden="true" className="w-7 h-7"/>
+            <img src="/logo.gif" alt="" aria-hidden="true" className="w-14 h-14 -my-3 shrink-0"/>
             <span className="font-display font-semibold text-foreground text-sm tracking-tight">
         dotenvify
       </span>

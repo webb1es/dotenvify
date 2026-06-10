@@ -8,8 +8,7 @@
   },
   "files": [
     "bin/",
-    "dist/",
-    "README.md"
+    "dist/"
   ],
   "scripts": {
     "build": "tsup",
