@@ -1,5 +1,6 @@
 import {useState} from "react";
-import {Check, Copy, Download, Star} from "lucide-react";
+import {Check, Copy, Star} from "lucide-react";
+import JetBrainsWidget from "@/components/JetBrainsWidget";
 
 const REPO = "webb1es/dotenvify";
 const INSTALL_CMD = "npx @webbies.dev/dotenvify input.txt -o .env";
@@ -39,16 +40,8 @@ const ClosingCTA = () => {
                 )}
             </button>
 
-            <div className="flex flex-wrap gap-2 justify-center">
-                <a
-                    href="https://plugins.jetbrains.com/plugin/32351-dotenvify"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 h-9 px-5 rounded-lg bg-primary text-primary-foreground font-mono text-xs font-semibold hover:opacity-90 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                >
-                    <Download className="w-3.5 h-3.5"/>
-                    get plugin
-                </a>
+            <div className="flex flex-wrap gap-2 justify-center items-center">
+                <JetBrainsWidget type="install"/>
                 <a
                     href={`https://github.com/${REPO}/stargazers`}
                     target="_blank"
