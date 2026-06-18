@@ -1,5 +1,6 @@
 import {Github} from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
+import JetBrainsWidget from "@/components/JetBrainsWidget";
 
 const Header = () => (
     <header className="sticky top-0 z-50 flex items-center justify-between px-4 lg:px-6 py-3 border-b border-border bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/60">
@@ -10,7 +11,7 @@ const Header = () => (
       </span>
         </a>
         <div className="flex items-center gap-1.5">
-            <ThemeToggle/>
+            <JetBrainsWidget type="install" className="flex items-center"/>
             <a
                 href="https://github.com/webb1es/dotenvify"
                 target="_blank"
@@ -21,6 +22,7 @@ const Header = () => (
                 <Github className="w-4 h-4"/>
                 <span className="hidden sm:inline text-xs">GitHub</span>
             </a>
+            <ThemeToggle/>
         </div>
     </header>
 );
