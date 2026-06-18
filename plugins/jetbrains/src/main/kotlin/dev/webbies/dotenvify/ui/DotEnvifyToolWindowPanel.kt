@@ -45,7 +45,7 @@ class DotEnvifyToolWindowPanel(private val project: Project) : JPanel(BorderLayo
         toolTipText = "Automatically refresh preview when .env file changes"
     }
 
-    // Action buttons as fields so we can update their enabled state
+    // Action buttons held as fields to toggle their enabled state
     private val clearButton = JButton("Clear").apply {
         icon = AllIcons.Actions.GC; isEnabled = false
     }

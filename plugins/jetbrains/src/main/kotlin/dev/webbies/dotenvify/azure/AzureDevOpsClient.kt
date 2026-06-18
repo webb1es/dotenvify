@@ -16,9 +16,8 @@ class AzureDevOpsClient(private val organization: String, private val project: S
         .connectTimeout(Duration.ofSeconds(30))
         .build()
 
-    // The organization and project are slices of the user-supplied Azure DevOps URL, so they
-    // are already URL-encoded. Interpolate them as-is — re-encoding here would double-encode
-    // (e.g. "My%20Project" -> "My%2520Project") and 404.
+    // organization/project are already-encoded segments of the user's URL; interpolate as-is
+    // (re-encoding would double-encode them).
     private val baseUrl get() = "https://dev.azure.com/$organization/$project/_apis"
 
     /** Fetches all variable groups from the Azure DevOps project. */

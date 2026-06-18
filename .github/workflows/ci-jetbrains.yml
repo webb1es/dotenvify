@@ -1,8 +1,7 @@
 name: CI — JetBrains Plugin
 
-# Builds and unit-tests the plugin on the platforms we don't develop on, so
-# OS-specific issues (path separators, az.cmd handling) surface automatically.
-# macOS is covered by local development.
+# Builds and unit-tests the plugin on Linux and Windows (macOS is covered locally),
+# so OS-specific issues surface in CI.
 
 on:
   push:

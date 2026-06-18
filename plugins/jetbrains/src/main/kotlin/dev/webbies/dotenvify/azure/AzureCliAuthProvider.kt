@@ -14,9 +14,9 @@ import java.time.format.DateTimeFormatter
 /**
  * Authenticates to Azure DevOps using the user's local Azure CLI (`az`) session.
  *
- * Instead of an in-IDE OAuth flow, this shells out to `az account get-access-token`
- * for a Bearer token scoped to Azure DevOps. The user signs in once with `az login`
- * (in a terminal or via the in-IDE button) and the plugin reuses that session.
+ * Shells out to `az account get-access-token` for a Bearer token scoped to Azure DevOps.
+ * The user signs in once with `az login` (in a terminal or via the in-IDE button) and the
+ * plugin reuses that session.
  *
  * `az` owns credential storage; this plugin never persists tokens. Acquired tokens
  * are only cached in memory until just before they expire.

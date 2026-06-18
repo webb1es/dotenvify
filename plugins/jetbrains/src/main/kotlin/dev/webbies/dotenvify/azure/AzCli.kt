@@ -105,11 +105,9 @@ object AzCli {
             .withCharset(Charsets.UTF_8)
 
     /**
-     * Builds the full command token list for `az`. On Windows the Azure CLI is a batch file
-     * (`az.cmd`), which the JVM cannot launch directly (`CreateProcess error=193`) — it must run
-     * through `cmd.exe /c`. On macOS/Linux `az` is a normal executable and runs directly.
-     *
-     * Pure and OS-parameterized so the Windows branch can be unit-tested on any platform.
+     * Builds the `az` command tokens. A Windows `.cmd`/`.bat` cannot be launched directly by the
+     * JVM and must run via `cmd.exe /c`; elsewhere `az` runs directly. [isWindows] is a parameter
+     * rather than [SystemInfo] so the branch is testable off-Windows.
      */
     internal fun commandTokens(isWindows: Boolean, exePath: String, args: List<String>): List<String> {
         val isBatch = isWindows &&

@@ -208,7 +208,7 @@ class AzureVariableGroupPanel(private val project: Project) : JPanel(BorderLayou
         // Row 1: Azure DevOps URL
         gbc.gridy = 1; gbc.gridx = 0; gbc.gridwidth = 1
         gbc.fill = GridBagConstraints.NONE; gbc.weightx = 0.0
-        panel.add(JLabel("Azure DevOps URL:"), gbc)
+        panel.add(JLabel("Azure DevOps Project URL:"), gbc)
         gbc.gridx = 1; gbc.gridwidth = 2
         gbc.fill = GridBagConstraints.HORIZONTAL; gbc.weightx = 1.0
         panel.add(orgUrlField, gbc)
