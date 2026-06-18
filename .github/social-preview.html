@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap"
+          rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 1280px;
+            height: 640px;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: #0c0c12;
+            color: #e8e8ee;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glow {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(90px);
+        }
+
+        .glow.purple {
+            width: 540px;
+            height: 540px;
+            background: #7c3aed;
+            opacity: .50;
+            top: -190px;
+            left: -130px;
+        }
+
+        .glow.cyan {
+            width: 480px;
+            height: 480px;
+            background: #0891b2;
+            opacity: .38;
+            bottom: -210px;
+            right: -90px;
+        }
+
+        .grid {
+            position: absolute;
+            inset: 0;
+            opacity: .05;
+            background-image: linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        .wrap {
+            position: relative;
+            display: flex;
+            height: 100%;
+            padding: 72px;
+            gap: 52px;
+            align-items: center;
+        }
+
+        .left {
+            width: 50%;
+        }
+
+        .brandrow {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            margin-bottom: 26px;
+        }
+
+        .logo {
+            width: 58px;
+            height: 58px;
+            border-radius: 15px;
+            background: linear-gradient(135deg, #a78bfa, #22d3ee);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono';
+            font-weight: 700;
+            font-size: 30px;
+            color: #0c0c12;
+        }
+
+        .wordmark {
+            font-family: 'JetBrains Mono';
+            font-weight: 700;
+            font-size: 62px;
+            letter-spacing: -2px;
+            background: linear-gradient(120deg, #c4b5fd, #22d3ee);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .tagline {
+            font-size: 31px;
+            font-weight: 600;
+            margin-bottom: 14px;
+            line-height: 1.25;
+        }
+
+        .sub {
+            font-size: 21px;
+            color: #8b8b9e;
+            line-height: 1.55;
+            margin-bottom: 32px;
+            max-width: 92%;
+        }
+
+        .sub b {
+            color: #cfcfe0;
+            font-weight: 600;
+        }
+
+        .badges {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 38px;
+        }
+
+        .badge {
+            font-size: 17px;
+            font-weight: 600;
+            padding: 9px 16px;
+            border-radius: 999px;
+            border: 1px solid #2b2b3a;
+            background: #15151e;
+            color: #cfcfe0;
+            display: flex;
+            gap: 9px;
+            align-items: center;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .url {
+            font-family: 'JetBrains Mono';
+            font-size: 20px;
+            color: #a78bfa;
+        }
+
+        .card {
+            width: 50%;
+            background: #15151e;
+            border: 1px solid #23232e;
+            border-radius: 18px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, .5);
+            overflow: hidden;
+        }
+
+        .bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 16px 20px;
+            border-bottom: 1px solid #23232e;
+        }
+
+        .tdot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .fname {
+            margin-left: 10px;
+            font-family: 'JetBrains Mono';
+            font-size: 15px;
+            color: #8b8b9e;
+        }
+
+        .code {
+            padding: 22px 26px;
+            font-family: 'JetBrains Mono';
+            font-size: 19px;
+            line-height: 1.72;
+        }
+
+        .muted {
+            color: #6b6b7e;
+        }
+
+        .k {
+            color: #a78bfa;
+        }
+
+        .e {
+            color: #6b6b7e;
+        }
+
+        .v {
+            color: #34d399;
+        }
+
+        .s {
+            color: #fbbf24;
+        }
+
+        .arrow {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 15px 0;
+            color: #22d3ee;
+            font-size: 14px;
+            font-weight: 700;
+            font-family: 'Inter';
+            letter-spacing: .5px;
+        }
+
+        .arrow .line {
+            height: 1px;
+            flex: 1;
+            background: linear-gradient(90deg, rgba(34, 211, 238, .45), transparent);
+        }
+
+        .arrow .line.l {
+            background: linear-gradient(90deg, transparent, rgba(34, 211, 238, .45));
+        }
+    </style>
+</head>
+<body>
+<div class="glow purple"></div>
+<div class="glow cyan"></div>
+<div class="grid"></div>
+<div class="wrap">
+    <div class="left">
+        <div class="brandrow">
+            <div class="logo">.e</div>
+            <div class="wordmark">dotenvify</div>
+        </div>
+        <div class="tagline">Environment variables, sorted.</div>
+        <div class="sub">Turn messy key&ndash;value text into a clean, properly quoted <b>.env</b> &mdash; from the CLI
+            or your JetBrains IDE.
+        </div>
+        <div class="badges">
+            <div class="badge"><span class="dot" style="background:#34d399"></span>CLI</div>
+            <div class="badge"><span class="dot" style="background:#a78bfa"></span>JetBrains plugin</div>
+            <div class="badge"><span class="dot" style="background:#22d3ee"></span>MIT</div>
+        </div>
+        <div class="url">dotenvify.webbies.dev</div>
+    </div>
+    <div class="card">
+        <div class="bar">
+            <span class="tdot" style="background:#ff5f57"></span>
+            <span class="tdot" style="background:#febc2e"></span>
+            <span class="tdot" style="background:#28c840"></span>
+            <span class="fname">paste &rarr; .env</span>
+        </div>
+        <div class="code">
+            <div class="muted">API_KEY</div>
+            <div class="muted">a1b2c3d4e5f6g7h8i9j0</div>
+            <div class="muted">DATABASE_URL</div>
+            <div class="muted">postgres://localhost/db</div>
+            <div class="arrow"><span class="line l"></span>DOTENVIFY<span class="line"></span></div>
+            <div><span class="k">API_KEY</span><span class="e">=</span><span class="v">a1b2c3d4e5f6g7h8i9j0</span></div>
+            <div><span class="k">DATABASE_URL</span><span class="e">=</span><span class="s">"</span><span class="v">postgres://localhost/db</span><span
+                    class="s">"</span></div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
