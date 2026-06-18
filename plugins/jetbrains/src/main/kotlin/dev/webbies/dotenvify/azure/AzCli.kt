@@ -6,6 +6,7 @@ import com.intellij.execution.process.ProcessOutput
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.util.SystemInfo
+import dev.webbies.dotenvify.azure.AzCli.resolve
 import java.io.File
 
 /**
@@ -89,17 +90,29 @@ object AzCli {
     }
 
     /** Runs a short `az` command with a fixed timeout. Capture-only; never blocks the EDT. */
-    fun exec(exePath: String, vararg args: String): ProcessOutput {
-        val cmd = GeneralCommandLine(exePath, *args).withCharset(Charsets.UTF_8)
-        return CapturingProcessHandler(cmd).runProcess(EXEC_TIMEOUT_MS)
-    }
+    fun exec(exePath: String, vararg args: String): ProcessOutput =
+        CapturingProcessHandler(buildCommandLine(exePath, args)).runProcess(EXEC_TIMEOUT_MS)
 
     /**
      * Runs a long-running, cancelable `az` command (e.g. `az login`, which blocks
      * until the browser flow completes). Cancelling [indicator] kills the process.
      */
-    fun execInteractive(exePath: String, indicator: ProgressIndicator, vararg args: String): ProcessOutput {
-        val cmd = GeneralCommandLine(exePath, *args).withCharset(Charsets.UTF_8)
-        return CapturingProcessHandler(cmd).runProcessWithProgressIndicator(indicator)
+    fun execInteractive(exePath: String, indicator: ProgressIndicator, vararg args: String): ProcessOutput =
+        CapturingProcessHandler(buildCommandLine(exePath, args)).runProcessWithProgressIndicator(indicator)
+
+    /**
+     * Builds the command line for `az`. On Windows the Azure CLI is a batch file (`az.cmd`),
+     * which the JVM cannot launch directly (`CreateProcess error=193`) — it must run through
+     * `cmd.exe /c`. On macOS/Linux `az` is a normal executable and runs directly.
+     */
+    private fun buildCommandLine(exePath: String, args: Array<out String>): GeneralCommandLine {
+        val isBatch = SystemInfo.isWindows &&
+                (exePath.endsWith(".cmd", ignoreCase = true) || exePath.endsWith(".bat", ignoreCase = true))
+        val cmd = if (isBatch) {
+            GeneralCommandLine("cmd.exe", "/c", exePath, *args)
+        } else {
+            GeneralCommandLine(exePath, *args)
+        }
+        return cmd.withCharset(Charsets.UTF_8)
     }
 }

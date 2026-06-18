@@ -6,7 +6,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.openapi.vfs.newvfs.BulkFileListener
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent
-import java.nio.file.Path
 import java.util.concurrent.CopyOnWriteArrayList
 
 /**
@@ -42,7 +41,9 @@ class EnvFileWatcher(private val project: Project) : Disposable {
             object : BulkFileListener {
                 override fun after(events: List<VFileEvent>) {
                     val basePath = project.basePath ?: return
-                    val envPath = Path.of(basePath, ".env").toString()
+                    // project.basePath and VFS event paths both use '/' separators on every OS;
+                    // building this with Path.of would yield '\' on Windows and never match.
+                    val envPath = "$basePath/.env"
 
                     val envChanged = events.any { event ->
                         val path = event.path

@@ -3,11 +3,9 @@ package dev.webbies.dotenvify.azure
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import java.net.URI
-import java.net.URLEncoder
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
-import java.nio.charset.StandardCharsets
 import java.time.Duration
 
 /** REST API client for Azure DevOps variable groups. */
@@ -18,11 +16,10 @@ class AzureDevOpsClient(private val organization: String, private val project: S
         .connectTimeout(Duration.ofSeconds(30))
         .build()
 
-    // Encode each path segment; Azure DevOps project names may contain spaces and other chars.
-    private fun encodeSegment(value: String) =
-        URLEncoder.encode(value, StandardCharsets.UTF_8).replace("+", "%20")
-
-    private val baseUrl get() = "https://dev.azure.com/${encodeSegment(organization)}/${encodeSegment(project)}/_apis"
+    // The organization and project are slices of the user-supplied Azure DevOps URL, so they
+    // are already URL-encoded. Interpolate them as-is — re-encoding here would double-encode
+    // (e.g. "My%20Project" -> "My%2520Project") and 404.
+    private val baseUrl get() = "https://dev.azure.com/$organization/$project/_apis"
 
     /** Fetches all variable groups from the Azure DevOps project. */
     fun getVariableGroups(accessToken: String): List<VariableGroup> {
