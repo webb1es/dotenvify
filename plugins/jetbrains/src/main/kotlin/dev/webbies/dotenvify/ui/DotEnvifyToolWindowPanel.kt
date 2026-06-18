@@ -173,7 +173,7 @@ class DotEnvifyToolWindowPanel(private val project: Project) : JPanel(BorderLayo
         val basePath = project.basePath?.let { LocalFileSystem.getInstance().findFileByPath(it) }
         val wrapper = FileChooserFactory.getInstance()
             .createSaveFileDialog(FileSaverDescriptor("Save .env File", "Choose where to save the .env file"), project)
-            .save(basePath, ".env") ?: return
+            .save(basePath, EnvFileApplicator.defaultOutputPath(project)) ?: return
 
         val targetPath = Path.of(wrapper.file.absolutePath)
         EnvFileApplicator.apply(project, currentEntries, targetPath, "New Input", optionsPanel.options())

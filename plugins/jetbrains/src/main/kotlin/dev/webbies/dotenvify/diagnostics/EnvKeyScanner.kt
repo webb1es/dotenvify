@@ -2,6 +2,7 @@ package dev.webbies.dotenvify.diagnostics
 
 import java.io.IOException
 import java.nio.file.Files
+import java.nio.file.LinkOption
 import java.nio.file.Path
 import kotlin.io.path.extension
 import kotlin.io.path.fileSize
@@ -104,7 +105,8 @@ object EnvKeyScanner {
         if (!Files.isDirectory(root)) return emptyList()
         return Files.walk(root).use { stream ->
             stream.filter { path ->
-                path.isRegularFile() &&
+                // NOFOLLOW_LINKS: never read a symlinked file that points outside the project.
+                path.isRegularFile(LinkOption.NOFOLLOW_LINKS) &&
                         path.extension in SOURCE_EXTENSIONS &&
                         path.fileSize() <= MAX_FILE_SIZE &&
                         SKIP_DIRS.none { dir ->

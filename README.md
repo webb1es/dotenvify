@@ -2,7 +2,7 @@
 
 # DotEnvify
 
-Convert messy key-value pairs into clean, standardized `.env` files — from the CLI or your IDE.
+Turn messy key-value text into a clean `.env` file — from the command line or your JetBrains IDE.
 
 <a href="https://www.npmjs.com/package/@webbies.dev/dotenvify"><img src="https://img.shields.io/npm/v/@webbies.dev/dotenvify.svg" alt="npm" /></a>
 &nbsp;
@@ -12,7 +12,7 @@ Convert messy key-value pairs into clean, standardized `.env` files — from the
 
 <br clear="left" />
 
-**Transform this:**
+You paste this:
 
 ```
 API_KEY
@@ -21,102 +21,73 @@ DATABASE_URL
 postgres://user:password@localhost:5432/db
 ```
 
-**Into this:**
+You get this:
 
 ```env
 API_KEY=a1b2c3d4e5f6g7h8i9j0
 DATABASE_URL="postgres://user:password@localhost:5432/db"
 ```
 
+Keys are sorted, values that need quotes get quoted, and your existing `.env` is
+backed up before anything is written.
+
 ## Install
 
 ```bash
 npm install -g @webbies.dev/dotenvify
-# or run without installing:
+# or run it once, without installing:
 npx @webbies.dev/dotenvify vars.txt -o .env
 ```
 
-## CLI usage
+## Usage
 
 ```bash
 dotenvify <source> [options]
 ```
 
-| Option              | Alias | Description                                              |
-|---------------------|-------|----------------------------------------------------------|
-| `--output <file>`   | `-o`  | Output file path (default: `.env`)                       |
-| `--export`          | `-e`  | Add `export` prefix to all variables                     |
-| `--overwrite`       | `-f`  | Overwrite output without creating a backup               |
-| `--preserve <vars>` | `-k`  | Comma-separated variables to keep existing values for    |
-| `--skip-sort`       |       | Maintain original order (default: sorted alphabetically) |
-| `--skip-lower`      |       | Skip variables with lowercase keys                       |
-| `--url-only`        |       | Include only variables with HTTP/HTTPS URL values        |
+`<source>` is the file you want to convert.
 
-Backups (`.env.backup.N`) are written before any overwrite unless `-f` is given.
+| Option              | Short | What it does                                         |
+|---------------------|-------|------------------------------------------------------|
+| `--output <file>`   | `-o`  | Where to write (default: `.env`)                     |
+| `--export`          | `-e`  | Add an `export ` prefix to every line                |
+| `--overwrite`       | `-f`  | Overwrite without making a backup                    |
+| `--preserve <vars>` | `-k`  | Keep current values for these keys (comma-separated) |
+| `--skip-sort`       |       | Keep the original order instead of sorting           |
+| `--skip-lower`      |       | Drop keys that contain lowercase letters             |
+| `--url-only`        |       | Keep only values that are URLs                       |
 
-### Supported formats
+### Input it understands
 
-Auto-detected and handled, even when mixed in one file (`#` lines are ignored):
+You can mix any of these in one file — DotEnvify figures out each line. Lines
+starting with `#` are left alone.
 
 ```bash
-API_KEY=a1b2c3d4e5f6g7h8i9j0          # KEY=VALUE
+API_KEY=a1b2c3d4e5f6g7h8i9j0          # already KEY=VALUE
 SECRET="my secret value"              # quoted
-export NODE_ENV=production            # export prefix (stripped)
-REDIS_HOST localhost                  # space-separated
+export NODE_ENV=production            # export prefix (removed)
+REDIS_HOST localhost                  # separated by a space
 DATABASE_URL                          # key on one line,
 postgres://user:pass@localhost/db     #   value on the next
 ```
 
 ## JetBrains plugin
 
-Pull Azure DevOps variable groups into `.env` and format right inside the IDE
-(IntelliJ, WebStorm, GoLand, PyCharm, Rider, …). Install from the
-[JetBrains Marketplace](https://plugins.jetbrains.com/plugin/dev.webbies.dotenvify).
+Do the same thing inside IntelliJ, WebStorm, PyCharm, GoLand, Rider, and other
+JetBrains IDEs — plus a couple of extras. Install it from the
+[Marketplace](https://plugins.jetbrains.com/plugin/dev.webbies.dotenvify).
 
-- **Azure DevOps** — sign in with the local Azure CLI (`az login`); load a variable
-  group, pick which variables to apply, edit values inline, and write to a chosen
-  `.env*` file with a merge preview. Secret values are shown but skipped (Azure does
-  not expose them via API). Requires the [Azure CLI](https://aka.ms/azcli) installed.
-- **Convert** — paste or convert files/selections to `.env` with live preview.
-- **Diagnostics** — detect missing/unused keys across many languages.
+- **Convert** — paste or convert a file/selection to `.env` with a live preview.
+- **Azure DevOps** — sign in with the Azure CLI (`az login`), pick a variable
+  group, and pull its variables into a `.env` file. Secret values stay in Azure.
+  Needs the [Azure CLI](https://aka.ms/azcli).
+- **Diagnostics** — find keys your code uses but the `.env` is missing, and keys
+  in the `.env` that nothing uses.
 
-## Repository
+## Contributing
 
-| Path               | Description                              |
-|--------------------|------------------------------------------|
-| `packages/core`    | `@dotenvify/core` — parser, formatter, IO |
-| `cli`              | `@webbies.dev/dotenvify` — CLI tool       |
-| `plugins/jetbrains`| IntelliJ-platform plugin (Kotlin/Gradle)  |
-| `landing`          | Product site                              |
-
-## Development
-
-```bash
-npm install     # install dependencies
-npm run build   # build all packages
-npm run test    # run tests
-```
-
-JetBrains plugin (from `plugins/jetbrains`, builds on **JDK 17** — pinned via
-`gradle/gradle-daemon-jvm.properties`):
-
-```bash
-./gradlew test buildPlugin   # artifact in build/distributions/
-./gradlew runIde             # launch a sandbox IDE
-```
-
-## Releasing
-
-- **CLI** — `npm run build && npm run test`, then push a tag; GitHub Actions
-  publishes to npm via OIDC:
-  ```bash
-  git tag -a v<version> -m "Release v<version>" && git push origin main v<version>
-  ```
-- **JetBrains** — first upload the built `.zip` manually to the Marketplace, then:
-  ```bash
-  JETBRAINS_MARKETPLACE_TOKEN=<token> ./gradlew publishPlugin
-  ```
-  Signing keys (`private.pem`, `chain.crt`) are git-ignored — keep them safe.
+Building from source, the repo layout, and how releases work are in
+[CONTRIBUTING.md](./CONTRIBUTING.md).
 
 ## License
 

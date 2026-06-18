@@ -41,7 +41,7 @@ class ConvertFileAction : AnAction() {
             val descriptor = FileSaverDescriptor("Save .env File", "Choose where to save the .env file")
             val wrapper = FileChooserFactory.getInstance()
                 .createSaveFileDialog(descriptor, project)
-                .save(virtualFile.parent, ".env") ?: return
+                .save(virtualFile.parent, EnvFileApplicator.defaultOutputPath(project)) ?: return
 
             val targetPath = Path.of(wrapper.file.absolutePath)
             DotEnvIO.writeEnvFile(targetPath, output, backup = true)

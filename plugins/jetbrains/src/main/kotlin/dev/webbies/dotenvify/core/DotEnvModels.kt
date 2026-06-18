@@ -24,6 +24,4 @@ data class FormatOptions(
     val ignoreLowercase: Boolean = true,
     /** Only include entries whose values are URLs. */
     val urlOnly: Boolean = false,
-    /** Keys whose existing values should not be overwritten on merge. */
-    val preserveKeys: Set<String> = emptySet(),
 )
