@@ -6,7 +6,7 @@ Turn messy key-value text into a clean `.env` file — from the command line or 
 
 <a href="https://www.npmjs.com/package/@webbies.dev/dotenvify"><img src="https://img.shields.io/npm/v/@webbies.dev/dotenvify.svg" alt="npm" /></a>
 &nbsp;
-<a href="https://plugins.jetbrains.com/plugin/dev.webbies.dotenvify"><img src="https://img.shields.io/badge/JetBrains-Plugin-000000?style=flat-square&logo=jetbrains&logoColor=white" alt="JetBrains" /></a>
+<a href="https://plugins.jetbrains.com/plugin/32351-dotenvify"><img src="https://img.shields.io/badge/JetBrains-Plugin-000000?style=flat-square&logo=jetbrains&logoColor=white" alt="JetBrains" /></a>
 &nbsp;
 <a href="./LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT" /></a>
 
@@ -75,7 +75,7 @@ postgres://user:pass@localhost/db     #   value on the next
 
 Do the same thing inside IntelliJ, WebStorm, PyCharm, GoLand, Rider, and other
 JetBrains IDEs — plus a couple of extras. Install it from the
-[Marketplace](https://plugins.jetbrains.com/plugin/dev.webbies.dotenvify).
+[Marketplace](https://plugins.jetbrains.com/plugin/32351-dotenvify).
 
 - **Convert** — paste or convert a file/selection to `.env` with a live preview.
 - **Azure DevOps** — sign in with the Azure CLI (`az login`), pick a variable

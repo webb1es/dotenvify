@@ -41,7 +41,7 @@ const ClosingCTA = () => {
 
             <div className="flex flex-wrap gap-2 justify-center">
                 <a
-                    href="https://plugins.jetbrains.com/plugin/dev.webbies.dotenvify"
+                    href="https://plugins.jetbrains.com/plugin/32351-dotenvify"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 h-9 px-5 rounded-lg bg-primary text-primary-foreground font-mono text-xs font-semibold hover:opacity-90 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
