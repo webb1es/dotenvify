@@ -1,0 +1,41 @@
+name: CI — JetBrains Plugin
+
+# Builds and unit-tests the plugin on the platforms we don't develop on, so
+# OS-specific issues (path separators, az.cmd handling) surface automatically.
+# macOS is covered by local development.
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'plugins/jetbrains/**'
+      - '.github/workflows/ci-jetbrains.yml'
+  pull_request:
+    paths:
+      - 'plugins/jetbrains/**'
+      - '.github/workflows/ci-jetbrains.yml'
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, windows-latest ]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: plugins/jetbrains
+        shell: bash   # use the gradlew shell script consistently, incl. Git Bash on Windows
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: gradle
+
+      - name: Build and test
+        run: ./gradlew test buildPlugin --console=plain

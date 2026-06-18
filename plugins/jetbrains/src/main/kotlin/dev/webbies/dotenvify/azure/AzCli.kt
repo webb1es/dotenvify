@@ -100,19 +100,24 @@ object AzCli {
     fun execInteractive(exePath: String, indicator: ProgressIndicator, vararg args: String): ProcessOutput =
         CapturingProcessHandler(buildCommandLine(exePath, args)).runProcessWithProgressIndicator(indicator)
 
+    private fun buildCommandLine(exePath: String, args: Array<out String>): GeneralCommandLine =
+        GeneralCommandLine(commandTokens(SystemInfo.isWindows, exePath, args.toList()))
+            .withCharset(Charsets.UTF_8)
+
     /**
-     * Builds the command line for `az`. On Windows the Azure CLI is a batch file (`az.cmd`),
-     * which the JVM cannot launch directly (`CreateProcess error=193`) — it must run through
-     * `cmd.exe /c`. On macOS/Linux `az` is a normal executable and runs directly.
+     * Builds the full command token list for `az`. On Windows the Azure CLI is a batch file
+     * (`az.cmd`), which the JVM cannot launch directly (`CreateProcess error=193`) — it must run
+     * through `cmd.exe /c`. On macOS/Linux `az` is a normal executable and runs directly.
+     *
+     * Pure and OS-parameterized so the Windows branch can be unit-tested on any platform.
      */
-    private fun buildCommandLine(exePath: String, args: Array<out String>): GeneralCommandLine {
-        val isBatch = SystemInfo.isWindows &&
+    internal fun commandTokens(isWindows: Boolean, exePath: String, args: List<String>): List<String> {
+        val isBatch = isWindows &&
                 (exePath.endsWith(".cmd", ignoreCase = true) || exePath.endsWith(".bat", ignoreCase = true))
-        val cmd = if (isBatch) {
-            GeneralCommandLine("cmd.exe", "/c", exePath, *args)
+        return if (isBatch) {
+            listOf("cmd.exe", "/c", exePath) + args
         } else {
-            GeneralCommandLine(exePath, *args)
+            listOf(exePath) + args
         }
-        return cmd.withCharset(Charsets.UTF_8)
     }
 }
