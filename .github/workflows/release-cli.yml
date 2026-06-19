@@ -51,7 +51,7 @@ jobs:
 
       - name: Publish to npm
         working-directory: cli
-        run: npm publish --provenance --access public || echo "npm publish failed (version may already exist)"
+        run: npm publish --provenance --access public
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
