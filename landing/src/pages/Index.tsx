@@ -48,7 +48,7 @@ const Index = () => (
                             icon={<Puzzle className="w-4 h-4"/>}
                             description="Azure DevOps variable groups, paste & format, real-time .env diagnostics. All without leaving your IDE."
                             href="https://plugins.jetbrains.com/plugin/32351-dotenvify"
-                            ctaLabel="view plugin"
+                            ctaLabel="get plugin"
                             badges={["IntelliJ", "GoLand", "WebStorm", "PyCharm", "Rider"]}
                         />
                     </div>

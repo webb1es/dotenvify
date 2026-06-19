@@ -210,7 +210,7 @@ class DotEnvifyToolWindowPanel(private val project: Project) : JPanel(BorderLayo
                         val file = files.firstOrNull() ?: return
                         val path = file.toPath()
 
-                        // Reject files over 10MB to prevent OOM
+                        // Reject files over 5MB to prevent OOM
                         val size = Files.size(path)
                         if (size > MAX_DROP_FILE_SIZE) {
                             statusLabel.text = "File too large (${size / 1_048_576}MB). Max 5MB."

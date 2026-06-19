@@ -11,7 +11,7 @@ program
     .option("-o, --output <path>", "Output file path", ".env")
     .option("-e, --export", "Add 'export' prefix to variables", false)
     .option("--skip-sort", "Do not sort variables alphabetically", false)
-    .option("--skip-lower", "Ignore variables with lowercase keys", false)
+    .option("--skip-lower", "Ignore keys that are entirely lowercase", false)
     .option("--url-only", "Include only variables with HTTP/HTTPS URL values", false)
     .option("-f, --overwrite", "Overwrite output file without backup", false)
     .option("-k, --preserve <keys>", "Comma-separated list of variables to preserve", "")

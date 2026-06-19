@@ -4,7 +4,9 @@
     <vendor email="dotenvify@webbies.dev" url="https://webbies.dev">Webbies</vendor>
 
     <description><![CDATA[
-    Pull environment variables from Azure DevOps Variable Groups directly into your .env file. No CLI, no portal copy-paste.
+    Pull environment variables from Azure DevOps Variable Groups directly into your .env file — no portal copy-paste, no manual exports.
+
+    Plus a multi-format .env converter and missing/unused-key diagnostics for 10+ languages.
 
     <h3>Azure DevOps Integration</h3>
     <ul>
@@ -28,7 +30,7 @@
     <ul>
         <li>Detect missing env keys (referenced in code but not in .env)</li>
         <li>Detect unused keys (in .env but never referenced)</li>
-        <li>Click to navigate to source file. Supports JS, Python, Go, Java, Kotlin, Ruby, PHP, Rust, C#, YAML</li>
+        <li>Click to navigate to source file. Supports JS/TS, Python, Go, Java, Kotlin, Ruby, PHP, Rust, C#, Swift, Dart, Elixir, and YAML/TOML/JSON</li>
         <li>Auto-watch: re-run diagnostics when .env changes</li>
     </ul>
     ]]></description>

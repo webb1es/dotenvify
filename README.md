@@ -6,7 +6,9 @@ Turn messy key-value text into a clean `.env` file — from the command line or 
 
 <a href="https://www.npmjs.com/package/@webbies.dev/dotenvify"><img src="https://img.shields.io/npm/v/@webbies.dev/dotenvify.svg" alt="npm" /></a>
 &nbsp;
-<a href="https://plugins.jetbrains.com/plugin/32351-dotenvify"><img src="https://img.shields.io/badge/JetBrains-Plugin-000000?style=flat-square&logo=jetbrains&logoColor=white" alt="JetBrains" /></a>
+<a href="https://plugins.jetbrains.com/plugin/32351-dotenvify"><img src="https://img.shields.io/jetbrains/plugin/v/32351?label=JetBrains&logo=jetbrains" alt="JetBrains Marketplace version" /></a>
+&nbsp;
+<a href="https://plugins.jetbrains.com/plugin/32351-dotenvify"><img src="https://img.shields.io/jetbrains/plugin/d/32351?label=downloads" alt="JetBrains Marketplace downloads" /></a>
 &nbsp;
 <a href="./LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT" /></a>
 
@@ -54,8 +56,8 @@ dotenvify <source> [options]
 | `--overwrite`       | `-f`  | Overwrite without making a backup                    |
 | `--preserve <vars>` | `-k`  | Keep current values for these keys (comma-separated) |
 | `--skip-sort`       |       | Keep the original order instead of sorting           |
-| `--skip-lower`      |       | Drop keys that contain lowercase letters             |
-| `--url-only`        |       | Keep only values that are URLs                       |
+| `--skip-lower`      |       | Drop keys that are entirely lowercase                |
+| `--url-only`        |       | Keep only values that are HTTP/HTTPS URLs            |
 
 ### Input it understands
 

@@ -48,8 +48,8 @@ dotenvify <source> [options]
 | `--overwrite`       | `-f`  | Overwrite without making a backup                    |
 | `--preserve <vars>` | `-k`  | Keep current values for these keys (comma-separated) |
 | `--skip-sort`       |       | Keep the original order instead of sorting           |
-| `--skip-lower`      |       | Drop keys that contain lowercase letters             |
-| `--url-only`        |       | Keep only values that are URLs                       |
+| `--skip-lower`      |       | Drop keys that are entirely lowercase                |
+| `--url-only`        |       | Keep only values that are HTTP/HTTPS URLs            |
 
 ### Input it understands
 
