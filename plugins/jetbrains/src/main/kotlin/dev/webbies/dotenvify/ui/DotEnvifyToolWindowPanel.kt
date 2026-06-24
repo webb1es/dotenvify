@@ -49,10 +49,10 @@ class DotEnvifyToolWindowPanel(private val project: Project) : JPanel(BorderLayo
     private val clearButton = JButton("Clear").apply {
         icon = AllIcons.Actions.GC; isEnabled = false
     }
-    private val applyButton = JButton("Apply to .env").apply {
+    private val applyButton = JButton("Save to .env…").apply {
         icon = AllIcons.Actions.MenuSaveall; isEnabled = false
     }
-    private val copyButton = JButton("Copy to Clipboard").apply {
+    private val copyButton = JButton("Copy to clipboard").apply {
         icon = AllIcons.Actions.Copy; isEnabled = false
     }
 
@@ -172,7 +172,7 @@ class DotEnvifyToolWindowPanel(private val project: Project) : JPanel(BorderLayo
 
         val basePath = project.basePath?.let { LocalFileSystem.getInstance().findFileByPath(it) }
         val wrapper = FileChooserFactory.getInstance()
-            .createSaveFileDialog(FileSaverDescriptor("Save .env File", "Choose where to save the .env file"), project)
+            .createSaveFileDialog(FileSaverDescriptor("Save .env file", "Choose where to save the .env file"), project)
             .save(basePath, EnvFileApplicator.defaultOutputPath(project)) ?: return
 
         val targetPath = Path.of(wrapper.file.absolutePath)

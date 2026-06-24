@@ -51,11 +51,11 @@ class AzureVariableGroupPanel(private val project: Project) : JPanel(BorderLayou
         arrayOf(".env", ".env.local", ".env.development", ".env.staging", ".env.production")
     ).apply {
         isEditable = true
-        toolTipText = "File to write (relative to project root, or an absolute path)"
+        toolTipText = "Output file (relative to project root, or an absolute path)"
     }
 
     // --- Auth controls (Azure CLI / `az login`) ---
-    private val connectButton = JButton("Connect").apply {
+    private val connectButton = JButton("Check sign-in").apply {
         icon = AllIcons.Actions.Refresh
         toolTipText = "Check the local Azure CLI (az) session"
     }
@@ -76,8 +76,8 @@ class AzureVariableGroupPanel(private val project: Project) : JPanel(BorderLayou
     private val authStatusLabel = JLabel("Not connected")
 
     // --- Action controls ---
-    private val fetchButton = JButton("Fetch Variables").apply { isEnabled = false; icon = AllIcons.Actions.Download }
-    private val applyButton = JButton("Apply to .env").apply { isEnabled = false; icon = AllIcons.Actions.MenuSaveall }
+    private val fetchButton = JButton("Fetch variables").apply { isEnabled = false; icon = AllIcons.Actions.Download }
+    private val applyButton = JButton("Save to .env").apply { isEnabled = false; icon = AllIcons.Actions.MenuSaveall }
     private val copyButton = JButton("Copy").apply { isEnabled = false; icon = AllIcons.Actions.Copy }
     private val openInBrowserButton = JButton(AllIcons.Ide.External_link_arrow).apply {
         isVisible = false
@@ -479,7 +479,7 @@ class AzureVariableGroupPanel(private val project: Project) : JPanel(BorderLayou
             .map { (key, v) -> VarRow(key, v.value, v.isSecret, include = !v.isSecret) }
         recomputeTargetDiff(fire = false) // refresh target snapshot before showing rows
         tableModel.setRows(rows)
-        applyFiltersToSelection() // honor active Ignore-lowercase / URL-only on first display
+        applyFiltersToSelection() // honor active skip-lowercase / URL-value filters on first display
 
         groupInfoLabel.text = if (group.description.isNotEmpty()) "${group.name}: ${group.description}" else group.name
         openInBrowserButton.isVisible = group.id > 0
@@ -514,7 +514,7 @@ class AzureVariableGroupPanel(private val project: Project) : JPanel(BorderLayou
         }
     }
 
-    /** Tick/untick rows so the selection reflects the active Ignore-lowercase / URL-only filters. */
+    /** Tick/untick rows so the selection reflects the active skip-lowercase / URL-value filters. */
     private fun applyFiltersToSelection() {
         tableModel.setIncludeWhere { row -> !row.isSecret && !filteredOut(row) }
     }
@@ -665,7 +665,7 @@ class AzureVariableGroupPanel(private val project: Project) : JPanel(BorderLayou
                 }
                 toolTipText = when {
                     r.isSecret -> "Secret — value not exposed by Azure; set it manually"
-                    filteredOut(r) -> "Excluded by the current format options (Ignore lowercase / URL-only)"
+                    filteredOut(r) -> "Excluded by the current format options (Skip lowercase keys / Keep only URL values)"
                     else -> null
                 }
                 return this

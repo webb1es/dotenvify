@@ -5,6 +5,8 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.content.ContentFactory
+import dev.webbies.dotenvify.actions.ConvertActiveFileAction
+import dev.webbies.dotenvify.actions.ConvertActiveSelectionAction
 import dev.webbies.dotenvify.azure.AzureVariableGroupPanel
 import dev.webbies.dotenvify.diagnostics.DiagnosticsPanel
 
@@ -18,7 +20,7 @@ class DotEnvifyToolWindowFactory : ToolWindowFactory {
             icon = AllIcons.Providers.Azure
         }
         val convertTab =
-            contentFactory.createContent(DotEnvifyToolWindowPanel(project), "Paste & Format", false).apply {
+            contentFactory.createContent(DotEnvifyToolWindowPanel(project), "Paste & Convert", false).apply {
                 icon = AllIcons.Actions.RealIntentionBulb
             }
         val diagnosticsTab = contentFactory.createContent(DiagnosticsPanel(project), "Diagnostics", false).apply {
@@ -28,5 +30,13 @@ class DotEnvifyToolWindowFactory : ToolWindowFactory {
         toolWindow.contentManager.addContent(azureTab)
         toolWindow.contentManager.addContent(convertTab)
         toolWindow.contentManager.addContent(diagnosticsTab)
+
+        // Convert actions as toolbar buttons in the tool-window header
+        toolWindow.setTitleActions(
+            listOf(
+                ConvertActiveSelectionAction(project),
+                ConvertActiveFileAction(project),
+            )
+        )
     }
 }

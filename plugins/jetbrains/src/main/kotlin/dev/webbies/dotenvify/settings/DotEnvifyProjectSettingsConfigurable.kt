@@ -11,8 +11,8 @@ class DotEnvifyProjectSettingsConfigurable(private val project: Project) : Confi
     private val useGlobalCheckbox = JCheckBox("Use global defaults", true)
     private val exportCheckbox = JCheckBox("Add export prefix")
     private val sortCheckbox = JCheckBox("Sort alphabetically", true)
-    private val noLowerCheckbox = JCheckBox("Ignore lowercase keys")
-    private val urlOnlyCheckbox = JCheckBox("URL-only values")
+    private val noLowerCheckbox = JCheckBox("Skip lowercase keys")
+    private val urlOnlyCheckbox = JCheckBox("Keep only URL values")
     private val outputPathField = JTextField(".env", 20)
     private val preserveKeysField = JTextField("", 30)
     private val azureGroupNameField = JTextField("", 25).apply {

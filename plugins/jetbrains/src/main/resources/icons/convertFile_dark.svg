@@ -1,0 +1,9 @@
+<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"
+     fill="none" stroke="#CED0D6" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+    <!-- document with folded corner -->
+    <path d="M4 2 H10 L13 5 V14 H4 Z"/>
+    <polyline points="10,2 10,5 13,5"/>
+    <!-- convert arrow -->
+    <line x1="6" y1="9.5" x2="10.5" y2="9.5"/>
+    <polyline points="9,8 10.5,9.5 9,11"/>
+</svg>

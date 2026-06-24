@@ -36,6 +36,12 @@
     ]]></description>
 
     <change-notes><![CDATA[
+    <h3>0.3.0</h3>
+    <ul>
+        <li>New plugin, tool window, and menu icons</li>
+        <li>Convert Selection and Convert File buttons added to the tool window toolbar</li>
+        <li>Clearer labels across dialogs, buttons, and settings</li>
+    </ul>
     <h3>0.2.0</h3>
     <ul>
         <li>Azure DevOps sign-in now uses your local Azure CLI session (<code>az login</code>)
@@ -67,27 +73,29 @@
     <depends>com.intellij.modules.platform</depends>
 
     <actions>
-        <group id="DotEnvify.EditorPopupMenu" text="DotEnvify" popup="true">
+        <group id="DotEnvify.EditorPopupMenu" text="DotEnvify" popup="true" icon="/icons/dotenvify.svg">
             <add-to-group group-id="EditorPopupMenu" anchor="last"/>
             <action id="DotEnvify.ConvertSelection"
                     class="dev.webbies.dotenvify.actions.ConvertSelectionAction"
                     text="Convert Selection to .env"
-                    description="Convert selected key-value text to .env format">
+                    description="Convert selected key-value text to .env format"
+                    icon="/icons/convertSelection.svg">
                 <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt E"/>
             </action>
         </group>
 
-        <group id="DotEnvify.ProjectViewPopupMenu" text="DotEnvify" popup="true">
+        <group id="DotEnvify.ProjectViewPopupMenu" text="DotEnvify" popup="true" icon="/icons/dotenvify.svg">
             <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
             <action id="DotEnvify.ConvertFile"
                     class="dev.webbies.dotenvify.actions.ConvertFileAction"
                     text="Convert File to .env"
-                    description="Parse this file and convert to .env format">
+                    description="Parse this file and convert to .env format"
+                    icon="/icons/convertFile.svg">
                 <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt shift E"/>
             </action>
         </group>
 
-        <group id="DotEnvify.ToolsMenu" text="DotEnvify" popup="true">
+        <group id="DotEnvify.ToolsMenu" text="DotEnvify" popup="true" icon="/icons/dotenvify.svg">
             <add-to-group group-id="ToolsMenu" anchor="last"/>
             <reference ref="DotEnvify.ConvertSelection"/>
             <reference ref="DotEnvify.ConvertFile"/>
@@ -98,7 +106,7 @@
         <toolWindow id="DotEnvify"
                     anchor="bottom"
                     factoryClass="dev.webbies.dotenvify.ui.DotEnvifyToolWindowFactory"
-                    icon="AllIcons.FileTypes.Properties"
+                    icon="/icons/toolWindowDotEnvify.svg"
                     secondary="false"/>
 
         <applicationService serviceImplementation="dev.webbies.dotenvify.settings.DotEnvifySettings"/>

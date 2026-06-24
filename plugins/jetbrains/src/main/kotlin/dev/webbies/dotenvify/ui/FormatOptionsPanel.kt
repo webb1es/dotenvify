@@ -12,10 +12,10 @@ import javax.swing.*
  */
 class FormatOptionsPanel(project: Project? = null) : JPanel() {
 
-    private val exportCheckbox = JCheckBox("export prefix")
-    private val sortCheckbox = JCheckBox("Sort A-Z", true)
-    private val noLowerCheckbox = JCheckBox("Ignore lowercase")
-    private val urlOnlyCheckbox = JCheckBox("URL-only")
+    private val exportCheckbox = JCheckBox("Add export prefix")
+    private val sortCheckbox = JCheckBox("Sort alphabetically", true)
+    private val noLowerCheckbox = JCheckBox("Skip lowercase keys")
+    private val urlOnlyCheckbox = JCheckBox("Keep only URL values")
     private val checkboxes = listOf(exportCheckbox, sortCheckbox, noLowerCheckbox, urlOnlyCheckbox)
 
     init {

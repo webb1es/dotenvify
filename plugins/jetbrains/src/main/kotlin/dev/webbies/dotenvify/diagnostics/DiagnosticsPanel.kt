@@ -24,11 +24,11 @@ import javax.swing.*
 
 class DiagnosticsPanel(private val project: Project) : JPanel(BorderLayout()) {
 
-    private val scanButton = JButton("Run Diagnostics").apply { icon = AllIcons.Actions.Find }
+    private val scanButton = JButton("Run diagnostics").apply { icon = AllIcons.Actions.Find }
     private val autoWatchCheckbox = JCheckBox("Auto-watch .env", true).apply {
         toolTipText = "Automatically re-run diagnostics when .env file changes"
     }
-    private val statusLabel = JLabel("Click 'Run Diagnostics' to scan your project")
+    private val statusLabel = JLabel("Click 'Run diagnostics' to scan your project")
 
     /** Each item is a navigable diagnostic entry. */
     private data class DiagnosticItem(
