@@ -1,4 +1,4 @@
-# Contributing to DotEnvify
+# Contributing to Dotenvify
 
 This is a monorepo (managed with [Turbo](https://turbo.build/)) holding the CLI,
 the JetBrains plugin, the shared core library, and the landing page.

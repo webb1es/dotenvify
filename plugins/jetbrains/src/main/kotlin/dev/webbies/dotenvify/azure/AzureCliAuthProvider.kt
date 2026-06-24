@@ -23,7 +23,7 @@ import java.time.format.DateTimeFormatter
  */
 object AzureCliAuthProvider {
 
-    private val LOG = Logger.getInstance("[DotEnvify]")
+    private val LOG = Logger.getInstance("[Dotenvify]")
 
     /** Fixed, Microsoft-assigned Azure DevOps resource (application) ID in Entra. */
     private const val DEVOPS_RESOURCE = "499b84ac-1321-427f-aa17-267ca6975798"

@@ -35,7 +35,7 @@ function loadWidgetScript(): Promise<void> {
 let instanceCount = 0;
 
 /**
- * Renders an official JetBrains Marketplace widget for the DotEnvify plugin.
+ * Renders an official JetBrains Marketplace widget for the dotenvify plugin.
  * `install` is a one-click install button; `card` shows live version/downloads/rating.
  * Stays empty when the widget can't load (e.g. before the plugin is public).
  */

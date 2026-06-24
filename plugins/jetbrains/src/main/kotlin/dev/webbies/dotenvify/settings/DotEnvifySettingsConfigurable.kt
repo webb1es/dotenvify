@@ -18,7 +18,7 @@ class DotEnvifySettingsConfigurable : Configurable {
         toolTipText = "Leave blank to auto-detect. Set if 'az' is installed in a non-standard location."
     }
 
-    override fun getDisplayName(): String = "DotEnvify"
+    override fun getDisplayName(): String = "Dotenvify"
 
     override fun createComponent(): JComponent {
         reset()

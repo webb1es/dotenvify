@@ -3,11 +3,11 @@ import LegalPage, {type LegalSection} from "@/components/LegalPage";
 const sections: LegalSection[] = [
     {
         title: "1. acceptance",
-        body: 'By using DotEnvify (the "Service"), including the CLI tool, the JetBrains plugin, and the website, you agree to these Terms of Service. If you do not agree, do not use the Service.'
+        body: 'By using dotenvify (the "Service"), including the CLI tool, the JetBrains plugin, and the website, you agree to these Terms of Service. If you do not agree, do not use the Service.'
     },
     {
         title: "2. what this is",
-        body: "DotEnvify is an open-source tool that converts environment variables into standardized .env files. It is available as a CLI tool and a JetBrains plugin, with an interactive demo on the website. The Service may integrate with third-party platforms such as Azure DevOps."
+        body: "dotenvify is an open-source tool that converts environment variables into standardized .env files. It is available as a CLI tool and a JetBrains plugin, with an interactive demo on the website. The Service may integrate with third-party platforms such as Azure DevOps."
     },
     {
         title: "3. your responsibilities",
@@ -19,7 +19,7 @@ const sections: LegalSection[] = [
     },
     {
         title: "5. license",
-        body: "DotEnvify is released under the MIT License. You may use, copy, modify, and distribute the software in accordance with the license terms."
+        body: "dotenvify is released under the MIT License. You may use, copy, modify, and distribute the software in accordance with the license terms."
     },
     {
         title: "6. no warranties",

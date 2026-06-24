@@ -1,6 +1,6 @@
 name: Release JetBrains Plugin
 
-# Builds, signs, and publishes the DotEnvify plugin to the JetBrains Marketplace.
+# Builds, signs, and publishes the dotenvify plugin to the JetBrains Marketplace.
 # Triggers on tags like jetbrains-v0.2.1 (jetbrains-vMAJOR.MINOR.PATCH).
 #
 # NOTE: The FIRST version of a new plugin CANNOT be published via the API — it must be

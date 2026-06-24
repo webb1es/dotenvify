@@ -1,4 +1,4 @@
-# DotEnvify
+# Dotenvify
 
 Turn messy key-value text into a clean `.env` file — from the command line.
 
@@ -53,7 +53,7 @@ dotenvify <source> [options]
 
 ### Input it understands
 
-You can mix any of these in one file — DotEnvify figures out each line. Lines
+You can mix any of these in one file — Dotenvify figures out each line. Lines
 starting with `#` are left alone.
 
 ```bash

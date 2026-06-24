@@ -2,6 +2,7 @@ package dev.webbies.dotenvify.ui
 
 import com.intellij.icons.AllIcons
 import com.intellij.notification.NotificationType
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.service
 import com.intellij.openapi.fileChooser.FileChooserFactory
@@ -31,7 +32,7 @@ import javax.swing.*
 import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener
 
-class DotEnvifyToolWindowPanel(private val project: Project) : JPanel(BorderLayout()) {
+class DotEnvifyToolWindowPanel(private val project: Project) : JPanel(BorderLayout()), Disposable {
 
     private val inputArea = JBTextArea().apply {
         font = MONO_FONT; lineWrap = true
@@ -133,6 +134,12 @@ class DotEnvifyToolWindowPanel(private val project: Project) : JPanel(BorderLayo
             if (autoWatchCheckbox.isSelected) watcher.addListener(watcherListener)
             else watcher.removeListener(watcherListener)
         }
+    }
+
+    override fun dispose() {
+        // Release timer and listener refs so the plugin can unload cleanly.
+        debounceTimer.stop()
+        project.service<EnvFileWatcher>().removeListener(watcherListener)
     }
 
     private fun updateButtonStates() {

@@ -1,6 +1,7 @@
 package dev.webbies.dotenvify.diagnostics
 
 import com.intellij.icons.AllIcons
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.service
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
@@ -22,7 +23,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 import javax.swing.*
 
-class DiagnosticsPanel(private val project: Project) : JPanel(BorderLayout()) {
+class DiagnosticsPanel(private val project: Project) : JPanel(BorderLayout()), Disposable {
 
     private val scanButton = JButton("Run diagnostics").apply { icon = AllIcons.Actions.Find }
     private val autoWatchCheckbox = JCheckBox("Auto-watch .env", true).apply {
@@ -111,6 +112,11 @@ class DiagnosticsPanel(private val project: Project) : JPanel(BorderLayout()) {
                 }
             }
         })
+    }
+
+    override fun dispose() {
+        // Release the listener ref so the plugin can unload cleanly.
+        project.service<EnvFileWatcher>().removeListener(watcherListener)
     }
 
     private fun navigateTo(item: DiagnosticItem) {

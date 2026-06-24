@@ -22,7 +22,7 @@ import java.io.File
  */
 object AzCli {
 
-    private val LOG = Logger.getInstance("[DotEnvify]")
+    private val LOG = Logger.getInstance("[Dotenvify]")
     private const val EXEC_TIMEOUT_MS = 30_000
 
     @Volatile private var cachedExePath: String? = null

@@ -3,11 +3,11 @@ import LegalPage, {type LegalSection} from "@/components/LegalPage";
 const sections: LegalSection[] = [
     {
         title: "1. overview",
-        body: "DotEnvify is built by Webbies. This Privacy Policy explains how we handle information when you use our CLI tool, the JetBrains plugin, and the website."
+        body: "dotenvify is built by Webbies. This Privacy Policy explains how we handle information when you use our CLI tool, the JetBrains plugin, and the website."
     },
     {
         title: "2. data collection",
-        body: "We do not collect personal data. DotEnvify processes environment variables entirely on your local machine (CLI and JetBrains plugin) or in your browser (website). No data is sent to our servers."
+        body: "We do not collect personal data. dotenvify processes environment variables entirely on your local machine (CLI and JetBrains plugin) or in your browser (website). No data is sent to our servers."
     },
     {
         title: "3. azure devops",
@@ -15,11 +15,11 @@ const sections: LegalSection[] = [
     },
     {
         title: "4. local data",
-        body: "The CLI and JetBrains plugin read and write .env files on your local filesystem. These files may contain sensitive information such as API keys, database credentials, and other secrets. You are responsible for securing these files. DotEnvify writes output files with restrictive permissions (owner read/write only)."
+        body: "The CLI and JetBrains plugin read and write .env files on your local filesystem. These files may contain sensitive information such as API keys, database credentials, and other secrets. You are responsible for securing these files. dotenvify writes output files with restrictive permissions (owner read/write only)."
     },
     {
         title: "5. website",
-        body: "The DotEnvify website is a static site. We do not use cookies, analytics, or tracking scripts. Any environment variable conversion done on the website happens entirely in your browser. No data leaves your device."
+        body: "The dotenvify website is a static site. We do not use cookies, analytics, or tracking scripts. Any environment variable conversion done on the website happens entirely in your browser. No data leaves your device."
     },
     {
         title: "6. third parties",

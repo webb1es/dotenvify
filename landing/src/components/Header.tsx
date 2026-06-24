@@ -5,8 +5,8 @@ import {GITHUB_URL} from "@/lib/constants";
 
 const Header = () => (
     <header className="sticky top-0 z-50 flex items-center justify-between px-4 lg:px-6 py-3 border-b border-border bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/60">
-        <a href="/" className="flex items-center gap-2" aria-label="DotEnvify home">
-            <img src="/logo.gif" alt="" aria-hidden="true" className="w-14 h-14 -my-3 shrink-0"/>
+        <a href="/" className="flex items-center gap-2" aria-label="dotenvify home">
+            <img src="/logo.svg" alt="" aria-hidden="true" className="w-8 h-8 shrink-0"/>
             <span className="font-display font-semibold text-foreground text-sm tracking-tight">
         dotenvify
       </span>

@@ -22,7 +22,7 @@ class DotEnvifyProjectSettingsConfigurable(private val project: Project) : Confi
         exportCheckbox, sortCheckbox, noLowerCheckbox, urlOnlyCheckbox, outputPathField, preserveKeysField,
     )
 
-    override fun getDisplayName(): String = "DotEnvify (Project)"
+    override fun getDisplayName(): String = "Dotenvify (Project)"
 
     override fun createComponent(): JComponent {
         useGlobalCheckbox.addItemListener { e ->

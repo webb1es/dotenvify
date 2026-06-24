@@ -438,7 +438,7 @@ class AzureVariableGroupPanel(private val project: Project) : JPanel(BorderLayou
                 authStatusIcon.icon = AllIcons.General.InspectionsError
                 authStatusLabel.text = "Azure CLI not found"
                 authStatusLabel.toolTipText =
-                    "Install the Azure CLI (https://aka.ms/azcli) or set its path in Settings → DotEnvify."
+                    "Install the Azure CLI (https://aka.ms/azcli) or set its path in Settings → Dotenvify."
                 authStatusLabel.foreground = JBColor.GRAY
             }
             is AzureCliAuthProvider.Status.Failed -> {
@@ -467,7 +467,7 @@ class AzureVariableGroupPanel(private val project: Project) : JPanel(BorderLayou
                                 updateAuthState()
                             }
                             AzureCliAuthProvider.TokenResult.NotInstalled ->
-                                showError("Azure CLI ('az') not found. Install it or set its path in Settings → DotEnvify.")
+                                showError("Azure CLI ('az') not found. Install it or set its path in Settings → Dotenvify.")
                             AzureCliAuthProvider.TokenResult.NotLoggedIn ->
                                 showError("Sign-in did not complete. Try again.")
                             is AzureCliAuthProvider.TokenResult.Failed ->
@@ -482,7 +482,7 @@ class AzureVariableGroupPanel(private val project: Project) : JPanel(BorderLayou
         val confirm = Messages.showYesNoDialog(
             project,
             "This runs 'az logout' and ends your Azure CLI session for ALL tools on this machine, " +
-                "not just DotEnvify. Continue?",
+                "not just Dotenvify. Continue?",
             "Sign out of Azure CLI",
             "Sign out", "Cancel", Messages.getWarningIcon(),
         )
@@ -602,7 +602,7 @@ class AzureVariableGroupPanel(private val project: Project) : JPanel(BorderLayou
     private fun resolveToken(): String? = when (val r = AzureCliAuthProvider.getAccessTokenResult()) {
         is AzureCliAuthProvider.TokenResult.Success -> r.accessToken
         AzureCliAuthProvider.TokenResult.NotInstalled -> {
-            showError("Azure CLI ('az') not found. Install it or set its path in Settings → DotEnvify."); null
+            showError("Azure CLI ('az') not found. Install it or set its path in Settings → Dotenvify."); null
         }
         AzureCliAuthProvider.TokenResult.NotLoggedIn -> {
             showError("Not signed in to Azure. Run 'az login' (or click 'Run az login'), then Connect."); null

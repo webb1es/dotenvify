@@ -2,6 +2,7 @@ package dev.webbies.dotenvify.ui
 
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.content.ContentFactory
@@ -19,13 +20,18 @@ class DotEnvifyToolWindowFactory : ToolWindowFactory {
         val azureTab = contentFactory.createContent(AzureVariableGroupPanel(project), "Azure DevOps", false).apply {
             icon = AllIcons.Providers.Azure
         }
-        val convertTab =
-            contentFactory.createContent(DotEnvifyToolWindowPanel(project), "Paste & Convert", false).apply {
-                icon = AllIcons.Actions.RealIntentionBulb
-            }
-        val diagnosticsTab = contentFactory.createContent(DiagnosticsPanel(project), "Diagnostics", false).apply {
+        val convertPanel = DotEnvifyToolWindowPanel(project)
+        val convertTab = contentFactory.createContent(convertPanel, "Paste & Convert", false).apply {
+            icon = AllIcons.Actions.RealIntentionBulb
+        }
+        // Dispose panels with their content so listeners/timers release on unload.
+        Disposer.register(convertTab, convertPanel)
+
+        val diagnosticsPanel = DiagnosticsPanel(project)
+        val diagnosticsTab = contentFactory.createContent(diagnosticsPanel, "Diagnostics", false).apply {
             icon = AllIcons.Actions.Find
         }
+        Disposer.register(diagnosticsTab, diagnosticsPanel)
 
         toolWindow.contentManager.addContent(azureTab)
         toolWindow.contentManager.addContent(convertTab)
