@@ -13,8 +13,8 @@ import dev.webbies.dotenvify.settings.DotEnvifySettings
 import java.nio.file.Path
 
 /**
- * Shared utility for the apply-to-.env workflow:
- * read existing → show merge dialog if needed → write with backup → VFS refresh → notify.
+ * Drives the apply-to-.env workflow:
+ * read existing, show merge dialog if needed, write with backup, refresh VFS, notify.
  */
 object EnvFileApplicator {
 
@@ -43,8 +43,8 @@ object EnvFileApplicator {
     }
 
     /**
-     * The configured default .env file name for save dialogs — the project's output path
-     * when project overrides are active, otherwise the global default. Falls back to `.env`.
+     * The default .env file name for save dialogs: the project output path when overrides
+     * are active, otherwise the global default. Falls back to `.env`.
      */
     fun defaultOutputPath(project: Project): String {
         val projectState = DotEnvifyProjectSettings.getInstance(project).state

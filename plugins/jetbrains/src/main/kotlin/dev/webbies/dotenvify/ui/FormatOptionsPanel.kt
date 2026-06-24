@@ -3,19 +3,20 @@ package dev.webbies.dotenvify.ui
 import com.intellij.openapi.project.Project
 import dev.webbies.dotenvify.core.FormatOptions
 import dev.webbies.dotenvify.settings.DotEnvifyProjectSettings
+import dev.webbies.dotenvify.settings.FormatOptionLabels
 import dev.webbies.dotenvify.settings.DotEnvifySettings
 import javax.swing.*
 
 /**
- * Reusable panel of format-option checkboxes.
+ * Panel of format-option checkboxes.
  * Initialises from saved settings (project or global).
  */
 class FormatOptionsPanel(project: Project? = null) : JPanel() {
 
-    private val exportCheckbox = JCheckBox("Add export prefix")
-    private val sortCheckbox = JCheckBox("Sort alphabetically", true)
-    private val noLowerCheckbox = JCheckBox("Skip lowercase keys")
-    private val urlOnlyCheckbox = JCheckBox("Keep only URL values")
+    private val exportCheckbox = JCheckBox(FormatOptionLabels.EXPORT)
+    private val sortCheckbox = JCheckBox(FormatOptionLabels.SORT, true)
+    private val noLowerCheckbox = JCheckBox(FormatOptionLabels.SKIP_LOWERCASE)
+    private val urlOnlyCheckbox = JCheckBox(FormatOptionLabels.URL_ONLY)
     private val checkboxes = listOf(exportCheckbox, sortCheckbox, noLowerCheckbox, urlOnlyCheckbox)
 
     init {

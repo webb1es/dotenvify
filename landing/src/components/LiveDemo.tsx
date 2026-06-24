@@ -3,6 +3,7 @@ import type {FormatOptions} from "@dotenvify/core/browser";
 import {formatDotEnv, parseDotEnv} from "@dotenvify/core/browser";
 import {ArrowDownAZ, CaseLower, Check, Copy, FileOutput, Link} from "lucide-react";
 import {LOAD_EXAMPLE_EVENT} from "@/lib/demo";
+import {useCopyToClipboard} from "@/lib/useCopyToClipboard";
 
 const PLACEHOLDER = `API_KEY abc123
 DATABASE_URL="postgres://localhost:5432/db"
@@ -20,8 +21,8 @@ const LiveDemo = () => {
         urlOnly: false,
     });
     const [output, setOutput] = useState("");
-    const [copied, setCopied] = useState(false);
     const [flashKey, setFlashKey] = useState(0);
+    const {copied, copy} = useCopyToClipboard();
     const timerRef = useRef<ReturnType<typeof setTimeout>>();
     const rootRef = useRef<HTMLDivElement>(null);
 
@@ -48,13 +49,6 @@ const LiveDemo = () => {
         window.addEventListener(LOAD_EXAMPLE_EVENT, loadExample);
         return () => window.removeEventListener(LOAD_EXAMPLE_EVENT, loadExample);
     }, []);
-
-    const handleCopy = async () => {
-        if (!output) return;
-        await navigator.clipboard.writeText(output);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-    };
 
     const toggle = (key: keyof FormatOptions) =>
         setOptions((prev) => ({...prev, [key]: !prev[key]}));
@@ -86,7 +80,7 @@ const LiveDemo = () => {
                     ))}
                 </div>
                 <button
-                    onClick={handleCopy}
+                    onClick={() => copy(output)}
                     aria-label={copied ? "Copied" : "Copy output"}
                     className="flex-shrink-0 inline-flex items-center gap-1 h-6 px-2 rounded font-mono text-[10px] text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >

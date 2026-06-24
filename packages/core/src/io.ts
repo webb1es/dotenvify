@@ -2,6 +2,9 @@ import {copyFileSync, existsSync, readFileSync, writeFileSync} from "node:fs";
 import {parseDotEnv} from "./parser.js";
 import type {EnvEntry} from "./models.js";
 
+/** Owner-only read/write; .env files routinely hold secrets. */
+const ENV_FILE_MODE = 0o600;
+
 /**
  * Read an existing .env file and return entries as a key-value map.
  * Returns an empty map if the file doesn't exist.
@@ -15,10 +18,10 @@ export function readEnvFile(filePath: string): Map<string, string> {
 }
 
 /**
- * Write formatted content to a file with secure permissions (0o600).
+ * Write formatted content to a file with owner-only permissions.
  */
 export function writeEnvFile(filePath: string, content: string): void {
-    writeFileSync(filePath, content, {mode: 0o600});
+    writeFileSync(filePath, content, {mode: ENV_FILE_MODE});
 }
 
 /**

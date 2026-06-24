@@ -6,10 +6,10 @@ import javax.swing.*
 
 class DotEnvifySettingsConfigurable : Configurable {
 
-    private val exportCheckbox = JCheckBox("Add export prefix")
-    private val sortCheckbox = JCheckBox("Sort alphabetically", true)
-    private val noLowerCheckbox = JCheckBox("Skip lowercase keys")
-    private val urlOnlyCheckbox = JCheckBox("Keep only URL values")
+    private val exportCheckbox = JCheckBox(FormatOptionLabels.EXPORT)
+    private val sortCheckbox = JCheckBox(FormatOptionLabels.SORT, true)
+    private val noLowerCheckbox = JCheckBox(FormatOptionLabels.SKIP_LOWERCASE)
+    private val urlOnlyCheckbox = JCheckBox(FormatOptionLabels.URL_ONLY)
     private val outputPathField = JTextField(".env", 20)
     private val azureOrgUrlField = JTextField("", 30).apply {
         toolTipText = "e.g. https://dev.azure.com/myorg/myproject (shared across all projects)"

@@ -1,18 +1,10 @@
-import {useState} from "react";
 import {Check, Copy, Star} from "lucide-react";
 import JetBrainsWidget from "@/components/JetBrainsWidget";
-
-const REPO = "webb1es/dotenvify";
-const INSTALL_CMD = "npx @webbies.dev/dotenvify input.txt -o .env";
+import {GITHUB_URL, INSTALL_CMD} from "@/lib/constants";
+import {useCopyToClipboard} from "@/lib/useCopyToClipboard";
 
 const ClosingCTA = () => {
-    const [copied, setCopied] = useState(false);
-
-    const handleCopy = async () => {
-        await navigator.clipboard.writeText(INSTALL_CMD);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-    };
+    const {copied, copy} = useCopyToClipboard();
 
     return (
         <div className="bento-cell-static p-6 lg:p-10 flex flex-col items-center text-center gap-4">
@@ -27,7 +19,7 @@ const ClosingCTA = () => {
             </p>
 
             <button
-                onClick={handleCopy}
+                onClick={() => copy(INSTALL_CMD)}
                 className="w-full max-w-md flex items-center gap-2 px-2.5 py-1.5 rounded-md bg-de-surface border border-de-surface-border font-mono text-[11px] text-left hover:border-primary/30 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring group"
                 aria-label={copied ? "Copied" : `Copy: ${INSTALL_CMD}`}
             >
@@ -43,7 +35,7 @@ const ClosingCTA = () => {
             <div className="flex flex-wrap gap-2 justify-center items-center">
                 <JetBrainsWidget type="install"/>
                 <a
-                    href={`https://github.com/${REPO}/stargazers`}
+                    href={`${GITHUB_URL}/stargazers`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 h-9 px-5 rounded-lg border border-border text-foreground font-mono text-xs font-semibold hover:bg-accent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"

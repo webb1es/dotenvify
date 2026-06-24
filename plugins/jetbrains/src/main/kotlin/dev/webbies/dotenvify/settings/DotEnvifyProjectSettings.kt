@@ -22,8 +22,10 @@ class DotEnvifyProjectSettings : PersistentStateComponent<DotEnvifyProjectSettin
         var outputPath: String = ".env",
         /** Comma-separated list of keys whose values should be preserved on merge. */
         var preserveKeys: String = "",
-        /** Persisted Azure DevOps variable group name for this project. */
+        /** Persisted Azure DevOps variable group name for this project (single-group preset). */
         var azureGroupName: String = "",
+        /** Persisted Azure DevOps variable group selection (newline-separated, ordered by selection). */
+        var azureGroupNames: String = "",
         /** Target .env file for Azure DevOps fetches (relative to project root, or absolute). */
         var azureTargetFile: String = ".env",
     )

@@ -7,6 +7,7 @@ import FormatsCell from "@/components/FormatsCell";
 import FeaturesCell from "@/components/FeaturesCell";
 import ClosingCTA from "@/components/ClosingCTA";
 import Footer from "@/components/Footer";
+import {INSTALL_CMD} from "@/lib/constants";
 
 const Index = () => (
     <>
@@ -37,7 +38,7 @@ const Index = () => (
                             name="CLI"
                             icon={<Terminal className="w-4 h-4"/>}
                             description="Pipe-friendly. Reads KEY=VALUE, exports, line-pairs, quoted strings. Outputs a clean .env. Fits into any CI/CD pipeline."
-                            installCmd="npx @webbies.dev/dotenvify input.txt -o .env"
+                            installCmd={INSTALL_CMD}
                             href="https://www.npmjs.com/package/@webbies.dev/dotenvify"
                             ctaLabel="view source"
                         />

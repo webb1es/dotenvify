@@ -52,7 +52,7 @@ const JetBrainsWidget = ({type = "install", className}: { type?: "install" | "ca
                 window.MarketplaceWidget.setupMarketplaceWidget(type, PLUGIN_ID, `#${elementId}`);
             })
             .catch(() => {
-                // Unavailable (offline, or plugin not yet public) — leave the element empty.
+                // Unavailable (offline or plugin not yet public); leave empty.
             });
         return () => {
             cancelled = true;

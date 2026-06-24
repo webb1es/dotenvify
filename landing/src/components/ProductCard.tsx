@@ -1,5 +1,5 @@
-import {useState} from "react";
 import {Check, Clock, Copy, Download, ExternalLink, Github} from "lucide-react";
+import {useCopyToClipboard} from "@/lib/useCopyToClipboard";
 
 const IDE_ICONS: Record<string, { src: string; color: string }> = {
     IntelliJ: {src: "/icons/intellij.svg", color: "#E44332"},
@@ -39,14 +39,7 @@ const ProductCard = ({
                          comingSoon,
                          badges,
                      }: ProductCardProps) => {
-    const [copied, setCopied] = useState(false);
-
-    const handleCopy = async () => {
-        if (!installCmd) return;
-        await navigator.clipboard.writeText(installCmd);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-    };
+    const {copied, copy} = useCopyToClipboard();
 
     return (
         <div className={`bento-cell p-4 flex flex-col justify-between h-full ${comingSoon ? "opacity-60" : ""}`}>
@@ -69,7 +62,7 @@ const ProductCard = ({
 
                 {installCmd && (
                     <button
-                        onClick={handleCopy}
+                        onClick={() => copy(installCmd)}
                         className="w-full flex items-center gap-2 mt-3 px-2.5 py-1.5 rounded-md bg-de-surface border border-de-surface-border font-mono text-[11px] text-left hover:border-primary/30 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring group"
                         aria-label={copied ? "Copied" : `Copy: ${installCmd}`}
                     >

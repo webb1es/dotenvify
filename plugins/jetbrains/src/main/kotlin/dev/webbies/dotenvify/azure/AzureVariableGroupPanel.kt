@@ -10,10 +10,13 @@ import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.Messages
+import com.intellij.openapi.ui.popup.JBPopupFactory
+import com.intellij.ui.CheckBoxList
 import com.intellij.ui.JBColor
 import com.intellij.ui.JBSplitter
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.components.JBTextArea
+import com.intellij.ui.components.labels.LinkLabel
 import com.intellij.ui.table.JBTable
 import com.intellij.util.ui.JBUI
 import dev.webbies.dotenvify.core.DotEnvFormatter
@@ -40,9 +43,21 @@ class AzureVariableGroupPanel(private val project: Project) : JPanel(BorderLayou
     private val orgUrlField = JTextField().apply {
         toolTipText = "e.g. https://dev.azure.com/myorg/myproject"
     }
-    private val groupCombo = ComboBox<String>().apply {
-        isEditable = true
-        toolTipText = "Pick a variable group, or type its name. Use ↻ to load the list."
+
+    /** Names of all variable groups available in the project (populated by ↻ Load). */
+    private val availableGroups = mutableListOf<String>()
+
+    /** Checked group names in check order; sets the default merge precedence (last wins). */
+    private val selectedGroups = mutableListOf<String>()
+
+    private val groupCheckList = CheckBoxList<String>()
+    private var suppressCheckEvent = false
+
+    private val groupSelectButton = JButton("Select variable groups…").apply {
+        icon = AllIcons.General.ArrowDown
+        horizontalTextPosition = SwingConstants.LEFT
+        horizontalAlignment = SwingConstants.LEFT
+        toolTipText = "Pick one or more variable groups. Use ↻ to load the list."
     }
     private val loadGroupsButton = JButton(AllIcons.Actions.Refresh).apply {
         toolTipText = "Load variable groups for this project"
@@ -83,6 +98,17 @@ class AzureVariableGroupPanel(private val project: Project) : JPanel(BorderLayou
         isVisible = false
         toolTipText = "Open this variable group in Azure DevOps"
     }
+
+    // --- Conflict resolution (only shown when the same key exists in multiple groups) ---
+    private val conflictPolicyLabel = JLabel("On conflict, prefer:").apply { isVisible = false }
+    private val conflictPolicyCombo = ComboBox<String>().apply {
+        isVisible = false
+        toolTipText = "Which group's value wins when the same key appears in more than one group"
+    }
+    private var suppressPolicyEvent = false
+
+    /** Last fetched groups, in selection order; reused to re-merge when the conflict policy changes. */
+    private var lastFetchedGroups: List<VariableGroup> = emptyList()
 
     // --- Format options ---
     private val optionsPanel = FormatOptionsPanel(project)
@@ -125,9 +151,14 @@ class AzureVariableGroupPanel(private val project: Project) : JPanel(BorderLayou
         }
 
         // === CENTER: table (top) + live preview (bottom), resizable ===
+        val tableHeaderEast = JPanel(FlowLayout(FlowLayout.RIGHT, 4, 0)).apply {
+            add(conflictPolicyLabel)
+            add(conflictPolicyCombo)
+            add(openInBrowserButton)
+        }
         val tableHeader = JPanel(BorderLayout()).apply {
             add(groupInfoLabel, BorderLayout.CENTER)
-            add(openInBrowserButton, BorderLayout.EAST)
+            add(tableHeaderEast, BorderLayout.EAST)
         }
         val tablePanel = JPanel(BorderLayout(0, 4)).apply {
             border = BorderFactory.createTitledBorder("Variables")
@@ -166,12 +197,23 @@ class AzureVariableGroupPanel(private val project: Project) : JPanel(BorderLayou
         switchAccountButton.addActionListener { runAzLogin() }
         signOutButton.addActionListener { signOut() }
         loadGroupsButton.addActionListener { loadGroups() }
+        groupSelectButton.addActionListener { showGroupPopup() }
         fetchButton.addActionListener { fetchVariables() }
         applyButton.addActionListener { applyToFile() }
         copyButton.addActionListener { copyToClipboard() }
         openInBrowserButton.addActionListener { openInBrowser() }
 
-        groupCombo.addActionListener { persistGroup() }
+        groupCheckList.setCheckBoxListListener { index, value ->
+            if (suppressCheckEvent) return@setCheckBoxListListener
+            val name = groupCheckList.getItemAt(index) ?: return@setCheckBoxListListener
+            if (value) {
+                if (name !in selectedGroups) selectedGroups.add(name)
+            } else {
+                selectedGroups.remove(name)
+            }
+            onSelectionChanged()
+        }
+        conflictPolicyCombo.addActionListener { onConflictPolicyChanged() }
         targetCombo.addActionListener {
             persistTarget()
             recomputeTargetDiff() // diff status is relative to the chosen file
@@ -216,10 +258,10 @@ class AzureVariableGroupPanel(private val project: Project) : JPanel(BorderLayou
         // Row 2: Variable group picker + load + fetch
         gbc.gridy = 2; gbc.gridx = 0; gbc.gridwidth = 1
         gbc.fill = GridBagConstraints.NONE; gbc.weightx = 0.0
-        panel.add(JLabel("Variable Group:"), gbc)
+        panel.add(JLabel("Variable Groups:"), gbc)
         gbc.gridx = 1; gbc.gridwidth = 1
         gbc.fill = GridBagConstraints.HORIZONTAL; gbc.weightx = 1.0
-        panel.add(groupCombo, gbc)
+        panel.add(groupSelectButton, gbc)
         gbc.gridx = 2; gbc.gridwidth = 1
         gbc.fill = GridBagConstraints.NONE; gbc.weightx = 0.0
         panel.add(
@@ -241,6 +283,68 @@ class AzureVariableGroupPanel(private val project: Project) : JPanel(BorderLayou
         return panel
     }
 
+    // --- Group selection popup ---
+
+    private fun showGroupPopup() {
+        if (availableGroups.isEmpty()) {
+            EnvFileApplicator.notify(
+                project, "Click ↻ to load this project's variable groups first.", NotificationType.WARNING,
+            )
+            return
+        }
+        suppressCheckEvent = true
+        groupCheckList.clear()
+        for (name in availableGroups) groupCheckList.addItem(name, name, name in selectedGroups)
+        suppressCheckEvent = false
+
+        val scroll = JBScrollPane(groupCheckList).apply {
+            preferredSize = Dimension(JBUI.scale(280), JBUI.scale(8 + 24 * minOf(availableGroups.size, 12)))
+        }
+        val toolbar = JPanel(FlowLayout(FlowLayout.LEFT, 8, 2)).apply {
+            add(LinkLabel<Any>("Select all", null) { _, _ -> setAllGroupsChecked(true) })
+            add(LinkLabel<Any>("None", null) { _, _ -> setAllGroupsChecked(false) })
+        }
+        val content = JPanel(BorderLayout()).apply {
+            add(toolbar, BorderLayout.NORTH)
+            add(scroll, BorderLayout.CENTER)
+        }
+        JBPopupFactory.getInstance()
+            .createComponentPopupBuilder(content, groupCheckList)
+            .setRequestFocus(true)
+            .setTitle("Select variable groups")
+            .createPopup()
+            .showUnderneathOf(groupSelectButton)
+    }
+
+    /** Check or uncheck every group at once (used by the popup's Select all / None links). */
+    private fun setAllGroupsChecked(checked: Boolean) {
+        selectedGroups.clear()
+        if (checked) selectedGroups.addAll(availableGroups) // availableGroups is sorted; defines precedence
+        suppressCheckEvent = true
+        for (i in 0 until groupCheckList.itemsCount) {
+            val name = groupCheckList.getItemAt(i) ?: continue
+            groupCheckList.setItemSelected(name, checked)
+        }
+        suppressCheckEvent = false
+        groupCheckList.repaint()
+        onSelectionChanged()
+    }
+
+    /** Called whenever the set of checked groups changes. */
+    private fun onSelectionChanged() {
+        updateGroupButtonText()
+        persistGroup()
+        maybeUpdateAutoTarget()
+    }
+
+    private fun updateGroupButtonText() {
+        groupSelectButton.text = when (selectedGroups.size) {
+            0 -> "Select variable groups…"
+            1 -> selectedGroups[0]
+            else -> "${selectedGroups.size} groups selected"
+        }
+    }
+
     // --- Persistence ---
 
     private fun loadPersistedFields() {
@@ -248,7 +352,12 @@ class AzureVariableGroupPanel(private val project: Project) : JPanel(BorderLayou
         if (globalState.azureOrgUrl.isNotEmpty()) orgUrlField.text = globalState.azureOrgUrl
 
         val projectState = DotEnvifyProjectSettings.getInstance(project).state
-        if (projectState.azureGroupName.isNotEmpty()) groupCombo.editor.item = projectState.azureGroupName
+        // Seed multi-select from the new field, falling back to the legacy single-group setting.
+        val persisted = projectState.azureGroupNames.ifBlank { projectState.azureGroupName }
+        selectedGroups.clear()
+        selectedGroups.addAll(persisted.split('\n').map { it.trim() }.filter { it.isNotEmpty() })
+        updateGroupButtonText()
+
         targetCombo.editor.item = projectState.azureTargetFile.ifBlank { ".env" }
 
         orgUrlField.document.addDocumentListener(SimpleDocListener {
@@ -257,18 +366,32 @@ class AzureVariableGroupPanel(private val project: Project) : JPanel(BorderLayou
     }
 
     private fun persistGroup() {
-        DotEnvifyProjectSettings.getInstance(project).state.azureGroupName = currentGroupName()
+        DotEnvifyProjectSettings.getInstance(project).state.azureGroupNames = selectedGroups.joinToString("\n")
     }
 
     private fun persistTarget() {
         DotEnvifyProjectSettings.getInstance(project).state.azureTargetFile = currentTargetFile()
     }
 
-    private fun currentGroupName(): String =
-        (groupCombo.editor.item as? String ?: groupCombo.selectedItem as? String ?: "").trim()
-
     private fun currentTargetFile(): String =
         (targetCombo.editor.item as? String ?: targetCombo.selectedItem as? String ?: "").trim()
+
+    /**
+     * Tracks the output name to the selection (`.env-N-groups` for multiple groups, else `.env`)
+     * while it stays auto-managed. A name the user typed is left untouched.
+     */
+    private fun maybeUpdateAutoTarget() {
+        val current = currentTargetFile()
+        if (!isAutoTargetName(current)) return
+        val auto = if (selectedGroups.size > 1) ".env-${selectedGroups.size}-groups" else ".env"
+        if (current == auto) return
+        targetCombo.editor.item = auto
+        persistTarget()
+        recomputeTargetDiff()
+    }
+
+    private fun isAutoTargetName(name: String): Boolean =
+        name.isBlank() || name == ".env" || AUTO_TARGET_REGEX.matches(name)
 
     private fun resolvedTargetPath(): Path? {
         val target = currentTargetFile().ifBlank { ".env" }
@@ -282,7 +405,7 @@ class AzureVariableGroupPanel(private val project: Project) : JPanel(BorderLayou
 
     private fun updateAuthState() {
         connectButton.isEnabled = false
-        // Shells out to `az` — never run on the EDT.
+        // Shells out to `az`; never run on the EDT.
         ApplicationManager.getApplication().executeOnPooledThread {
             val status = AzureCliAuthProvider.status()
             ApplicationManager.getApplication().invokeLater { applyAuthState(status) }
@@ -402,11 +525,11 @@ class AzureVariableGroupPanel(private val project: Project) : JPanel(BorderLayou
                         if (proj == null) throw IllegalArgumentException("URL must include the project, e.g. https://dev.azure.com/myorg/myproject")
                         val groups = AzureDevOpsClient(org, proj).getVariableGroups(token).sortedBy { it.name }
                         ApplicationManager.getApplication().invokeLater {
-                            val keep = currentGroupName()
-                            groupCombo.model = DefaultComboBoxModel(groups.map { it.name }.toTypedArray())
-                            if (keep.isNotEmpty()) groupCombo.editor.item = keep
+                            availableGroups.clear()
+                            availableGroups.addAll(groups.map { it.name })
                             enableLoadGroups()
                             EnvFileApplicator.notify(project, "Loaded ${groups.size} variable groups")
+                            showGroupPopup()
                         }
                     } catch (e: Exception) {
                         showError("Could not load groups: ${rootMessage(e)}")
@@ -420,30 +543,47 @@ class AzureVariableGroupPanel(private val project: Project) : JPanel(BorderLayou
 
     private fun fetchVariables() {
         val orgUrl = orgUrlField.text.trim()
-        val groupName = currentGroupName()
+        val names = selectedGroups.toList()
         if (orgUrl.isEmpty()) {
             EnvFileApplicator.notify(project, "Please enter your Azure DevOps URL.", NotificationType.WARNING)
             return
         }
-        if (groupName.isEmpty()) {
-            EnvFileApplicator.notify(project, "Please enter or pick a variable group.", NotificationType.WARNING)
+        if (names.isEmpty()) {
+            EnvFileApplicator.notify(project, "Please select at least one variable group.", NotificationType.WARNING)
             return
         }
         persistGroup()
 
         fetchButton.isEnabled = false
+        val title = if (names.size == 1) "Fetching '${names[0]}'..." else "Fetching ${names.size} groups..."
         ProgressManager.getInstance()
-            .run(object : Task.Backgroundable(project, "Fetching '$groupName'...", true) {
+            .run(object : Task.Backgroundable(project, title, true) {
                 override fun run(indicator: ProgressIndicator) {
                     val token = resolveToken() ?: run { enableFetch(); return }
                     try {
                         val (org, proj) = AzureConnection.parseUrl(orgUrl)
                         if (proj == null) throw IllegalArgumentException("URL must include the project, e.g. https://dev.azure.com/myorg/myproject")
-                        val group = AzureDevOpsClient(org, proj).getVariableGroupByName(groupName, token)
+                        // One API call returns every group; pick the selected ones in selection order.
+                        val byName = AzureDevOpsClient(org, proj).getVariableGroups(token).associateBy { it.name }
+                        val ordered = names.mapNotNull { byName[it] }
+                        val missing = names.filter { it !in byName }
                         ApplicationManager.getApplication().invokeLater {
-                            populateFromGroup(group)
+                            if (ordered.isEmpty()) {
+                                showError("None of the selected groups were found in this project.")
+                                enableFetch()
+                                return@invokeLater
+                            }
+                            populateFromGroups(ordered)
                             fetchButton.isEnabled = true
-                            EnvFileApplicator.notify(project, "Fetched ${group.variables.size} variables from '${group.name}'")
+                            val totalVars = ordered.sumOf { it.variables.size }
+                            val msg = buildString {
+                                append("Fetched $totalVars variables from ${ordered.size} group(s)")
+                                if (missing.isNotEmpty()) append(" · not found: ${missing.joinToString()}")
+                            }
+                            EnvFileApplicator.notify(
+                                project, msg,
+                                if (missing.isEmpty()) NotificationType.INFORMATION else NotificationType.WARNING,
+                            )
                         }
                     } catch (e: IllegalArgumentException) {
                         showError("Invalid input: ${e.message}"); enableFetch()
@@ -472,17 +612,85 @@ class AzureVariableGroupPanel(private val project: Project) : JPanel(BorderLayou
         }
     }
 
-    private fun populateFromGroup(group: VariableGroup) {
-        currentGroupId = group.id
-        val rows = group.variables.entries
-            .sortedBy { it.key }
-            .map { (key, v) -> VarRow(key, v.value, v.isSecret, include = !v.isSecret) }
+    /** Merges the chosen groups into the table, honoring the active conflict policy. */
+    private fun populateFromGroups(groups: List<VariableGroup>) {
+        lastFetchedGroups = groups
+        currentGroupId = if (groups.size == 1) groups.first().id else 0
+
+        val rows = mergeGroups(groups, currentPreferPolicy())
         recomputeTargetDiff(fire = false) // refresh target snapshot before showing rows
         tableModel.setRows(rows)
         applyFiltersToSelection() // honor active skip-lowercase / URL-value filters on first display
+        updateConflictControls(rows, groups)
 
-        groupInfoLabel.text = if (group.description.isNotEmpty()) "${group.name}: ${group.description}" else group.name
-        openInBrowserButton.isVisible = group.id > 0
+        groupInfoLabel.text = groupInfoText(groups)
+        openInBrowserButton.isVisible = groups.size == 1 && groups.first().id > 0
+    }
+
+    private fun groupInfoText(groups: List<VariableGroup>): String = when (groups.size) {
+        0 -> " "
+        1 -> groups[0].let { it.name + if (it.description.isNotEmpty()) ": ${it.description}" else "" }
+        else -> "${groups.size} groups: ${groups.joinToString(", ") { it.name }}"
+    }
+
+    /**
+     * Flattens the selected groups into one row per key. Last group in selection order wins by
+     * default; [preferGroup] (when set) overrides that for keys that group defines. A key with
+     * differing non-secret values across groups is flagged as a conflict.
+     */
+    private fun mergeGroups(groups: List<VariableGroup>, preferGroup: String?): List<VarRow> {
+        val occurrences = LinkedHashMap<String, MutableList<GroupVar>>()
+        for (group in groups) {
+            for ((key, v) in group.variables) {
+                occurrences.getOrPut(key) { mutableListOf() }.add(GroupVar(group.name, v.value, v.isSecret))
+            }
+        }
+        return occurrences.entries
+            .sortedBy { it.key }
+            .map { (key, occ) ->
+                val winner = pickWinner(occ, preferGroup)
+                val conflict = occ.filterNot { it.isSecret }.map { it.value }.distinct().size > 1
+                VarRow(
+                    key = key,
+                    value = winner.value,
+                    isSecret = winner.isSecret,
+                    include = !winner.isSecret,
+                    source = winner.group,
+                    conflict = conflict,
+                    candidates = occ.toList(),
+                )
+            }
+    }
+
+    private fun pickWinner(occ: List<GroupVar>, preferGroup: String?): GroupVar =
+        (preferGroup?.let { p -> occ.lastOrNull { it.group == p } }) ?: occ.last()
+
+    private fun currentPreferPolicy(): String? {
+        if (!conflictPolicyCombo.isVisible) return null
+        val selected = conflictPolicyCombo.selectedItem as? String
+        return if (selected == null || selected == PREFER_LAST) null else selected
+    }
+
+    private fun updateConflictControls(rows: List<VarRow>, groups: List<VariableGroup>) {
+        val hasConflicts = rows.any { it.conflict }
+        conflictPolicyLabel.isVisible = hasConflicts
+        conflictPolicyCombo.isVisible = hasConflicts
+        if (!hasConflicts) return
+
+        val previous = conflictPolicyCombo.selectedItem as? String
+        val options = (listOf(PREFER_LAST) + groups.map { it.name }).toTypedArray()
+        suppressPolicyEvent = true
+        conflictPolicyCombo.model = DefaultComboBoxModel(options)
+        conflictPolicyCombo.selectedItem = if (previous != null && previous in options) previous else PREFER_LAST
+        suppressPolicyEvent = false
+    }
+
+    private fun onConflictPolicyChanged() {
+        if (suppressPolicyEvent || lastFetchedGroups.isEmpty()) return
+        val rows = mergeGroups(lastFetchedGroups, currentPreferPolicy())
+        recomputeTargetDiff(fire = false)
+        tableModel.setRows(rows)
+        applyFiltersToSelection()
     }
 
     // --- Live derived state: preview, counts, diff ---
@@ -525,7 +733,7 @@ class AzureVariableGroupPanel(private val project: Project) : JPanel(BorderLayou
     }
 
     private fun refreshPreview() {
-        // Filters already applied via the checkboxes — only sort/export shape the output here.
+        // Checkboxes apply the filters; only sort/export shape the output here.
         previewArea.text = DotEnvFormatter.format(tableModel.includedEntries(), formatOptionsForOutput())
         previewArea.caretPosition = 0
     }
@@ -558,7 +766,7 @@ class AzureVariableGroupPanel(private val project: Project) : JPanel(BorderLayou
         val path = resolvedTargetPath() ?: return
         persistTarget()
         EnvFileApplicator.apply(project, entries, path, "Azure DevOps", formatOptionsForOutput())
-        recomputeTargetDiff() // file changed — refresh the diff status
+        recomputeTargetDiff() // file changed; refresh diff status
     }
 
     private fun copyToClipboard() {
@@ -579,7 +787,7 @@ class AzureVariableGroupPanel(private val project: Project) : JPanel(BorderLayou
                     "?itemType=VariableGroups&view=VariableGroupView&variableGroupId=$currentGroupId"
             )
         } catch (_: IllegalArgumentException) {
-            // invalid URL — nothing to open
+            // invalid URL; nothing to open
         }
     }
 
@@ -589,6 +797,9 @@ class AzureVariableGroupPanel(private val project: Project) : JPanel(BorderLayou
         tableModel.setRows(emptyList())
         groupInfoLabel.text = " "
         openInBrowserButton.isVisible = false
+        conflictPolicyLabel.isVisible = false
+        conflictPolicyCombo.isVisible = false
+        lastFetchedGroups = emptyList()
         currentGroupId = 0
         refreshDerived()
     }
@@ -634,6 +845,15 @@ class AzureVariableGroupPanel(private val project: Project) : JPanel(BorderLayou
         else -> DiffStatus.SAME
     }
 
+    /** Tooltip listing every group that defines a conflicting key, and which value won. */
+    private fun conflictTooltip(row: VarRow): String = buildString {
+        append("<html>Defined in ${row.candidates.size} groups:<br>")
+        row.candidates.forEach {
+            append("&nbsp;&nbsp;${it.group} = ${if (it.isSecret) "(secret)" else it.value}<br>")
+        }
+        append("<i>Using <b>${row.source}</b>. Change \"On conflict, prefer\" or edit the value.</i></html>")
+    }
+
     /** True when the row would be dropped by the active format-option filters. */
     private fun filteredOut(row: VarRow): Boolean {
         val opts = optionsPanel.options()
@@ -647,6 +867,7 @@ class AzureVariableGroupPanel(private val project: Project) : JPanel(BorderLayou
     private fun configureTable() {
         varTable.columnModel.getColumn(COL_INCLUDE).apply { maxWidth = JBUI.scale(34); minWidth = JBUI.scale(34) }
         varTable.columnModel.getColumn(COL_KEY).preferredWidth = JBUI.scale(200)
+        varTable.columnModel.getColumn(COL_SOURCE).apply { preferredWidth = JBUI.scale(110); maxWidth = JBUI.scale(180) }
         varTable.columnModel.getColumn(COL_STATUS).apply { maxWidth = JBUI.scale(90); minWidth = JBUI.scale(70) }
 
         val textRenderer = object : DefaultTableCellRenderer() {
@@ -664,7 +885,7 @@ class AzureVariableGroupPanel(private val project: Project) : JPanel(BorderLayou
                     }
                 }
                 toolTipText = when {
-                    r.isSecret -> "Secret — value not exposed by Azure; set it manually"
+                    r.isSecret -> "Secret: value not exposed by Azure; set it manually"
                     filteredOut(r) -> "Excluded by the current format options (Skip lowercase keys / Keep only URL values)"
                     else -> null
                 }
@@ -674,12 +895,37 @@ class AzureVariableGroupPanel(private val project: Project) : JPanel(BorderLayou
         varTable.columnModel.getColumn(COL_KEY).cellRenderer = textRenderer
         varTable.columnModel.getColumn(COL_VALUE).cellRenderer = textRenderer
         varTable.columnModel.getColumn(COL_STATUS).cellRenderer = textRenderer
+
+        val sourceRenderer = object : DefaultTableCellRenderer() {
+            override fun getTableCellRendererComponent(
+                table: JTable, value: Any?, isSelected: Boolean, hasFocus: Boolean, row: Int, col: Int,
+            ): Component {
+                super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col)
+                val r = tableModel.rowAt(table.convertRowIndexToModel(row))
+                text = if (r.conflict) "${r.source} ⚠" else r.source
+                if (!isSelected) foreground = if (r.conflict) DiffStatus.CHANGED.color else JBColor.GRAY
+                toolTipText = if (r.conflict) conflictTooltip(r) else r.source.ifEmpty { null }
+                return this
+            }
+        }
+        varTable.columnModel.getColumn(COL_SOURCE).cellRenderer = sourceRenderer
     }
 
-    private data class VarRow(val key: String, var value: String, val isSecret: Boolean, var include: Boolean)
+    /** One variable from one group, used to resolve cross-group conflicts. */
+    private data class GroupVar(val group: String, val value: String, val isSecret: Boolean)
+
+    private data class VarRow(
+        val key: String,
+        var value: String,
+        val isSecret: Boolean,
+        var include: Boolean,
+        val source: String = "",
+        val conflict: Boolean = false,
+        val candidates: List<GroupVar> = emptyList(),
+    )
 
     private inner class VarTableModel : AbstractTableModel() {
-        private val columns = arrayOf("", "Key", "Value", "Status")
+        private val columns = arrayOf("", "Key", "Value", "Source", "Status")
         private var rows: List<VarRow> = emptyList()
 
         fun setRows(newRows: List<VarRow>) {
@@ -718,7 +964,8 @@ class AzureVariableGroupPanel(private val project: Project) : JPanel(BorderLayou
             return when (col) {
                 COL_INCLUDE -> r.include && !r.isSecret
                 COL_KEY -> r.key
-                COL_VALUE -> if (r.isSecret) "(secret — set in Azure)" else r.value
+                COL_VALUE -> if (r.isSecret) "(secret; set in Azure)" else r.value
+                COL_SOURCE -> r.source
                 COL_STATUS -> statusOf(r).label
                 else -> ""
             }
@@ -738,6 +985,10 @@ class AzureVariableGroupPanel(private val project: Project) : JPanel(BorderLayou
         const val COL_INCLUDE = 0
         const val COL_KEY = 1
         const val COL_VALUE = 2
-        const val COL_STATUS = 3
+        const val COL_SOURCE = 3
+        const val COL_STATUS = 4
+
+        const val PREFER_LAST = "Last selected (default)"
+        val AUTO_TARGET_REGEX = Regex("""\.env-\d+-groups""")
     }
 }

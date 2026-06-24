@@ -1,4 +1,5 @@
 import type {EnvEntry, ParseResult} from "./models.js";
+import {unquote} from "./quote.js";
 
 /**
  * Parse messy environment variable input into structured entries.
@@ -30,7 +31,7 @@ export function parseDotEnv(input: string): ParseResult {
         if (!key) return;
         const idx = seen.get(key);
         if (idx !== undefined) {
-            // Overwrite duplicate — last wins
+            // Overwrite duplicate: last wins
             entries[idx] = {key, value};
         } else {
             seen.set(key, entries.length);
@@ -86,20 +87,10 @@ export function parseDotEnv(input: string): ParseResult {
             continue;
         }
 
-        // Orphan key — no value
+        // Orphan key: no value
         warnings.push(`Line ${lineNum}: Key '${line}' has no value`);
         i++;
     }
 
     return {entries, warnings};
-}
-
-function unquote(value: string): string {
-    if (
-        (value.startsWith('"') && value.endsWith('"')) ||
-        (value.startsWith("'") && value.endsWith("'"))
-    ) {
-        return value.slice(1, -1);
-    }
-    return value;
 }

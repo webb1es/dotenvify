@@ -139,7 +139,7 @@ object AzureCliAuthProvider {
     /**
      * Runs `az logout`, ending the user's Azure CLI session for the whole machine.
      * Clears the token cache. Returns [TokenResult.Success] even if no account was
-     * active (the end state — signed out — is what the caller wants).
+     * active; the desired end state of signed-out is reached either way.
      */
     fun logout(): TokenResult {
         val exe = when (val r = AzCli.resolve(configuredPath())) {
@@ -148,7 +148,7 @@ object AzureCliAuthProvider {
         }
         cache = null
         val out = AzCli.exec(exe, "logout")
-        // "az logout" exits non-zero when already signed out — treat that as success.
+        // "az logout" exits non-zero when already signed out; treat that as success.
         val stderr = out.stderr.lowercase()
         return if (out.exitCode == 0 || "no active account" in stderr || "not logged in" in stderr) {
             TokenResult.Success("")

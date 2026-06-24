@@ -9,10 +9,10 @@ import javax.swing.*
 class DotEnvifyProjectSettingsConfigurable(private val project: Project) : Configurable {
 
     private val useGlobalCheckbox = JCheckBox("Use global defaults", true)
-    private val exportCheckbox = JCheckBox("Add export prefix")
-    private val sortCheckbox = JCheckBox("Sort alphabetically", true)
-    private val noLowerCheckbox = JCheckBox("Skip lowercase keys")
-    private val urlOnlyCheckbox = JCheckBox("Keep only URL values")
+    private val exportCheckbox = JCheckBox(FormatOptionLabels.EXPORT)
+    private val sortCheckbox = JCheckBox(FormatOptionLabels.SORT, true)
+    private val noLowerCheckbox = JCheckBox(FormatOptionLabels.SKIP_LOWERCASE)
+    private val urlOnlyCheckbox = JCheckBox(FormatOptionLabels.URL_ONLY)
     private val outputPathField = JTextField(".env", 20)
     private val preserveKeysField = JTextField("", 30)
     private val azureGroupNameField = JTextField("", 25).apply {

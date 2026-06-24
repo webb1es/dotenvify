@@ -1,4 +1,5 @@
 import {Github} from "lucide-react";
+import {GITHUB_URL} from "@/lib/constants";
 
 const CURRENT_YEAR = new Date().getFullYear();
 const BUILD_DATE = "2026-03-10";
@@ -21,7 +22,7 @@ const Footer = () => (
             <a href="/privacy" className={linkClass}>privacy</a>
             <Dot/>
             <a
-                href="https://github.com/webb1es/dotenvify"
+                href={GITHUB_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={`inline-flex items-center gap-1 ${linkClass}`}

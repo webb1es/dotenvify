@@ -97,7 +97,7 @@ object EnvKeyScanner {
         return references
     }
 
-    /** Convenience method returning just the set of distinct key names found in source files. */
+    /** Returns the distinct key names referenced in source files. */
     fun scanProjectKeys(projectRoot: Path): Set<String> =
         scanProject(projectRoot).mapTo(mutableSetOf()) { it.key }
 

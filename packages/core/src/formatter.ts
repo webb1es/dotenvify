@@ -1,4 +1,5 @@
 import type {EnvEntry, FormatOptions} from "./models.js";
+import {isQuoted} from "./quote.js";
 
 const URL_PREFIXES = [
     "http://",
@@ -21,13 +22,6 @@ export function isURL(value: string): boolean {
 
 export function isHTTPURL(value: string): boolean {
     return value.startsWith("http://") || value.startsWith("https://");
-}
-
-function isQuoted(value: string): boolean {
-    return (
-        (value.startsWith('"') && value.endsWith('"')) ||
-        (value.startsWith("'") && value.endsWith("'"))
-    );
 }
 
 function isLowercase(key: string): boolean {
