@@ -36,6 +36,13 @@
     ]]></description>
 
     <change-notes><![CDATA[
+    <h3>0.3.3</h3>
+    <ul>
+        <li>Preview changes before every save, including the first save to a new file</li>
+        <li>Save shows a confirmation dialog when it completes</li>
+        <li>An open .env editor now reloads from disk after saving</li>
+        <li>Clearer, consistent labels for the Azure variable and variable group actions</li>
+    </ul>
     <h3>0.3.2</h3>
     <ul>
         <li>New ".e" badge icons for the plugin, tool window, and menus</li>
