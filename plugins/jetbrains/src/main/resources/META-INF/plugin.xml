@@ -112,7 +112,7 @@
         <toolWindow id="Dotenvify"
                     anchor="bottom"
                     factoryClass="dev.webbies.dotenvify.ui.DotEnvifyToolWindowFactory"
-                    icon="/icons/dotenvify.svg"
+                    icon="/icons/dotenvify_toolwindow.svg"
                     secondary="false"/>
 
         <applicationService serviceImplementation="dev.webbies.dotenvify.settings.DotEnvifySettings"/>

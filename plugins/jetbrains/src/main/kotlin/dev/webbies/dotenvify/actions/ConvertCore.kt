@@ -6,10 +6,8 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.fileChooser.FileChooserFactory
 import com.intellij.openapi.fileChooser.FileSaverDescriptor
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import dev.webbies.dotenvify.core.DotEnvFormatter
-import dev.webbies.dotenvify.core.DotEnvIO
 import dev.webbies.dotenvify.core.DotEnvParser
 import dev.webbies.dotenvify.ui.EnvFileApplicator
 import java.nio.file.Path
@@ -72,9 +70,8 @@ object ConvertCore {
                 .save(virtualFile.parent, EnvFileApplicator.defaultOutputPath(project)) ?: return
 
             val targetPath = Path.of(wrapper.file.absolutePath)
-            DotEnvIO.writeEnvFile(targetPath, output, backup = true)
-            LocalFileSystem.getInstance().refreshAndFindFileByNioFile(targetPath)
-            EnvFileApplicator.notify(project, "Saved ${parseResult.entries.size} variables to ${wrapper.file.name}")
+            EnvFileApplicator.writeAndRefresh(targetPath, output)
+            EnvFileApplicator.notifySaved(project, parseResult.entries.size, targetPath)
         }
     }
 }

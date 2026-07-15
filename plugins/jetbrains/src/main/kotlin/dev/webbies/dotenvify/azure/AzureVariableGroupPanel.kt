@@ -44,7 +44,7 @@ class AzureVariableGroupPanel(private val project: Project) : JPanel(BorderLayou
         toolTipText = "e.g. https://dev.azure.com/myorg/myproject"
     }
 
-    /** Names of all variable groups available in the project (populated by ↻ Load). */
+    /** Names of all variable groups available in the project (populated by Load Groups). */
     private val availableGroups = mutableListOf<String>()
 
     /** Checked group names in check order; sets the default merge precedence (last wins). */
@@ -53,13 +53,13 @@ class AzureVariableGroupPanel(private val project: Project) : JPanel(BorderLayou
     private val groupCheckList = CheckBoxList<String>()
     private var suppressCheckEvent = false
 
-    private val groupSelectButton = JButton("Select variable groups…").apply {
+    private val groupSelectButton = JButton("Select Variable Groups…").apply {
         icon = AllIcons.General.ArrowDown
         horizontalTextPosition = SwingConstants.LEFT
         horizontalAlignment = SwingConstants.LEFT
-        toolTipText = "Pick one or more variable groups. Use ↻ to load the list."
+        toolTipText = "Pick one or more variable groups. Use 'Load Variable Groups' to load the list."
     }
-    private val loadGroupsButton = JButton(AllIcons.Actions.Refresh).apply {
+    private val loadGroupsButton = JButton("Load Variable Groups", AllIcons.Actions.Refresh).apply {
         toolTipText = "Load variable groups for this project"
     }
     private val targetCombo = ComboBox(
@@ -91,7 +91,7 @@ class AzureVariableGroupPanel(private val project: Project) : JPanel(BorderLayou
     private val authStatusLabel = JLabel("Not connected")
 
     // --- Action controls ---
-    private val fetchButton = JButton("Fetch variables").apply { isEnabled = false; icon = AllIcons.Actions.Download }
+    private val fetchButton = JButton("Fetch Variables").apply { isEnabled = false; icon = AllIcons.Actions.Download }
     private val applyButton = JButton("Save to .env").apply { isEnabled = false; icon = AllIcons.Actions.MenuSaveall }
     private val copyButton = JButton("Copy").apply { isEnabled = false; icon = AllIcons.Actions.Copy }
     private val openInBrowserButton = JButton(AllIcons.Ide.External_link_arrow).apply {
@@ -288,7 +288,7 @@ class AzureVariableGroupPanel(private val project: Project) : JPanel(BorderLayou
     private fun showGroupPopup() {
         if (availableGroups.isEmpty()) {
             EnvFileApplicator.notify(
-                project, "Click ↻ to load this project's variable groups first.", NotificationType.WARNING,
+                project, "Click 'Load Variable Groups' to load this project's variable groups first.", NotificationType.WARNING,
             )
             return
         }
@@ -339,7 +339,7 @@ class AzureVariableGroupPanel(private val project: Project) : JPanel(BorderLayou
 
     private fun updateGroupButtonText() {
         groupSelectButton.text = when (selectedGroups.size) {
-            0 -> "Select variable groups…"
+            0 -> "Select Variable Groups…"
             1 -> selectedGroups[0]
             else -> "${selectedGroups.size} groups selected"
         }
@@ -528,6 +528,7 @@ class AzureVariableGroupPanel(private val project: Project) : JPanel(BorderLayou
                             availableGroups.clear()
                             availableGroups.addAll(groups.map { it.name })
                             enableLoadGroups()
+                            loadGroupsButton.text = "Reload Variable Groups"
                             EnvFileApplicator.notify(project, "Loaded ${groups.size} variable groups")
                             showGroupPopup()
                         }
@@ -575,6 +576,7 @@ class AzureVariableGroupPanel(private val project: Project) : JPanel(BorderLayou
                             }
                             populateFromGroups(ordered)
                             fetchButton.isEnabled = true
+                            fetchButton.text = "Refetch Variables"
                             val totalVars = ordered.sumOf { it.variables.size }
                             val msg = buildString {
                                 append("Fetched $totalVars variables from ${ordered.size} group(s)")
@@ -801,6 +803,8 @@ class AzureVariableGroupPanel(private val project: Project) : JPanel(BorderLayou
         conflictPolicyCombo.isVisible = false
         lastFetchedGroups = emptyList()
         currentGroupId = 0
+        loadGroupsButton.text = "Load Variable Groups"
+        fetchButton.text = "Fetch Variables"
         refreshDerived()
     }
 

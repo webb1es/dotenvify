@@ -1,0 +1,9 @@
+---
+description: Diagnose and propose before editing
+alwaysApply: true
+---
+
+# Review Workflow
+
+- For non-trivial changes: diagnose, propose the fix, wait for approval, then apply.
+- Only apply directly when the user explicitly requested a trivial, unambiguous edit.

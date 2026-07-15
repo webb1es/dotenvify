@@ -1,0 +1,11 @@
+---
+description: Code quality and review standards
+alwaysApply: true
+---
+
+# Code Quality
+
+- Minimize LOC without sacrificing robustness or scalability. Flag major smells (duplication, dead code, blocking work on UI/hot threads).
+- Preserve existing behavior. Get approval before changing any response, output, or contract.
+- Comments explain intent or constraints, never narrate obvious code. No prompt/chat content, no filler, no gratuitous em dashes or jargon.
+- Code must pass senior review: clean, easy to explain and maintain.

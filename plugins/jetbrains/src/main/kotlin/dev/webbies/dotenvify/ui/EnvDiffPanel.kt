@@ -58,7 +58,7 @@ class EnvDiffDialog(
         }
 
     init {
-        title = "Merge Preview"
+        title = if (existingEntries.isEmpty()) "Save Preview" else "Merge Preview"
         init()
     }
 

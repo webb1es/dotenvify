@@ -2,7 +2,10 @@ package dev.webbies.dotenvify.ui
 
 import com.intellij.notification.NotificationGroupManager
 import com.intellij.notification.NotificationType
+import com.intellij.openapi.application.WriteAction
+import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.vfs.LocalFileSystem
 import dev.webbies.dotenvify.core.DotEnvFormatter
 import dev.webbies.dotenvify.core.DotEnvIO
@@ -28,18 +31,35 @@ object EnvFileApplicator {
         val existingEntries = DotEnvIO.readEnvFile(targetPath)
         val incoming = DotEnvIO.applyPreserve(entries, existingEntries, preserveKeys(project))
 
-        if (existingEntries.isNotEmpty()) {
-            val dialog = EnvDiffDialog(project, existingEntries, incoming, sourceName)
-            if (!dialog.showAndGet()) return
-            val output = DotEnvFormatter.format(dialog.mergedEntries, options)
-            DotEnvIO.writeEnvFile(targetPath, output, backup = true)
-        } else {
-            val output = DotEnvFormatter.format(incoming, options)
-            DotEnvIO.writeEnvFile(targetPath, output, backup = true)
-        }
+        val dialog = EnvDiffDialog(project, existingEntries, incoming, sourceName)
+        if (!dialog.showAndGet()) return
+        val merged = dialog.mergedEntries
 
-        LocalFileSystem.getInstance().refreshAndFindFileByNioFile(targetPath)
-        notify(project, "Saved ${entries.size} variables to ${targetPath.fileName}")
+        writeAndRefresh(targetPath, DotEnvFormatter.format(merged, options))
+        notifySaved(project, merged.size, targetPath)
+    }
+
+    /** Confirms a successful save with a modal so it can't be missed. */
+    fun notifySaved(project: Project, count: Int, targetPath: Path) {
+        Messages.showInfoMessage(
+            project,
+            "Saved $count variables to ${targetPath.fileName}.",
+            "Saved to .env",
+        )
+    }
+
+    /**
+     * Writes [output] to [targetPath] (with backup), refreshes the VFS entry, and reloads
+     * an open editor for the file so it reflects the new content even if it had unsaved edits.
+     */
+    fun writeAndRefresh(targetPath: Path, output: String) {
+        DotEnvIO.writeEnvFile(targetPath, output, backup = true)
+        // A synchronous VFS refresh on the EDT requires the write lock.
+        WriteAction.runAndWait<Throwable> {
+            val vf = LocalFileSystem.getInstance().refreshAndFindFileByNioFile(targetPath)
+            val doc = vf?.let { FileDocumentManager.getInstance().getCachedDocument(it) }
+            if (doc != null) FileDocumentManager.getInstance().reloadFromDisk(doc)
+        }
     }
 
     /**

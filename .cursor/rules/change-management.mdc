@@ -1,0 +1,10 @@
+---
+description: Change scope, docs, and commit conventions
+alwaysApply: true
+---
+
+# Change Management
+
+- Limit changes to files in the task's scope. Ask before touching anything outside it.
+- Update docs/READMEs only where directly affected. Update manifests when env vars change.
+- On completion, output a short Conventional Commit message. Never commit or push.
